@@ -63,6 +63,15 @@ public final class BlockQueue {
         return this.total == 0L ? 1.0 : Math.min(1.0, (double)this.done / (double)this.total);
     }
 
+    /** Trabajo de una sola vez sobre el mundo (carteles, estandartes, cuadros…), después de los bloques encolados antes. */
+    public static Job worldJob(java.util.function.Consumer<World> action) {
+        return (world, budget) -> {
+            budget.use(1);
+            action.accept(world);
+            return true;
+        };
+    }
+
     public static Job clearJob(final int var0, final int var1, final int var2, final int var3, final int var4, final int var5) {
         return new Job() {
             int x = var0;

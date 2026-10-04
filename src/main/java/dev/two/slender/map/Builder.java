@@ -45,6 +45,33 @@ public final class Builder {
         this.q.add(BlockQueue.schematicJob(var1, var5, this.ox + var2, this.oy + var3, this.oz + var4), (long)var1.solidCount());
     }
 
+    /** Aplica los extras de un schematic pegado en (dx, dy, dz) relativo a este builder. Un fallo se avisa y se sigue. */
+    public void extras(dev.two.slender.map.schem.SchematicExtras e, int dx, int dy, int dz) {
+        int bx = this.ox + dx;
+        int by = this.oy + dy;
+        int bz = this.oz + dz;
+        for (dev.two.slender.map.schem.SchematicExtras.SignText s : e.signs()) {
+            this.q.add(BlockQueue.worldJob(w -> safely("cartel", () -> ExtrasApplier.sign(w, bx, by, bz, s))), 1L);
+        }
+        for (dev.two.slender.map.schem.SchematicExtras.BannerData b : e.banners()) {
+            this.q.add(BlockQueue.worldJob(w -> safely("estandarte", () -> ExtrasApplier.banner(w, bx, by, bz, b))), 1L);
+        }
+        for (dev.two.slender.map.schem.SchematicExtras.HeadData h : e.heads()) {
+            this.q.add(BlockQueue.worldJob(w -> safely("cabeza", () -> ExtrasApplier.head(w, bx, by, bz, h))), 1L);
+        }
+        for (dev.two.slender.map.schem.SchematicExtras.PaintingData p : e.paintings()) {
+            this.q.add(BlockQueue.worldJob(w -> safely("cuadro", () -> ExtrasApplier.painting(w, bx, by, bz, p))), 1L);
+        }
+    }
+
+    private static void safely(String what, Runnable r) {
+        try {
+            r.run();
+        } catch (RuntimeException ex) {
+            LOG.warning("No se pudo poner un " + what + ": " + ex.getMessage());
+        }
+    }
+
     public BlockData data(String var1) {
         String var2 = var1.contains(":") ? var1 : "minecraft:" + var1;
         return (BlockData)this.byString.computeIfAbsent(var2, s -> SafeBlockData.resolve(s, Bukkit::createBlockData,
