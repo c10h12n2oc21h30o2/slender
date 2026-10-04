@@ -1,8 +1,8 @@
 {
  "spawns": [
   [
-   -182,
-   111,
+   -183,
+   110,
    542,
    0
   ],
@@ -97,14 +97,14 @@
    "Galería de criaturas"
   ],
   [
-   -202,
+   -203,
    121,
-   554,
+   553,
    "NORTH",
    "Club de cromos"
   ],
   [
-   -207,
+   -205,
    118,
    611,
    "SOUTH",
@@ -400,7 +400,7 @@
   "¡SILENCIO EN CLASE!",
   "LAS CAMAS ESTÁN CALIENTES",
   "EL ENCERADO SE BORRA SOLO",
-  "NO TIENE CARA",
+  "LA TIZA ESCRIBE TU NOMBRE",
   "NADIE PASA LISTA",
   "LA PUERTA SE CIERRA SOLA",
   "YA ESTÁ AQUÍ"

@@ -94,6 +94,7 @@ def compile_section(d: sections.SectionDef, c: dict, ctx: sections.Context, othe
         board = {'pos': pos(conv(b['pos'])), 'title': b['title'],
                  'places': [[n, x + OX, z + OZ] for n, x, z in b['places']]}
     lights = [conv(l[:3]) for l in c['lights']]
+    wet = wet_mask(sctx.vol)
     return {
         'id': d.id, 'name': d.name, 'order': d.order, 'icon': d.icon, 'story': d.order,
         'bounds': bounds, 'fallY': int(ys.min()) - 6,
@@ -101,6 +102,8 @@ def compile_section(d: sections.SectionDef, c: dict, ctx: sections.Context, othe
         'pages': [f'{pos(conv(p[:3]))}|{p[3]}|{p[4]}' for p in c['pages']],
         'batteries': [pos(conv(p)) for p in c['batteries']],
         'gate': [pos(g) for g in gate], 'gateBlock': c['gate_block'], 'exit': exit_,
+        # celdas de la verja que estaban en agua: reja anegada al cerrar y agua al abrir
+        'gateWet': [i for i, g in enumerate(gate) if wet[g[1], g[2], g[0]]],
         'seal': [[x, y, z, s] for x, y, z, s in seal],
         'board': board,
         'notes': [{'pos': pos(conv(n['pos'])), 'facing': n['facing'], 'lines': n['lines'], 'support': n['support']}
@@ -110,7 +113,7 @@ def compile_section(d: sections.SectionDef, c: dict, ctx: sections.Context, othe
         'sounds': [f'{pos(conv(s[:3]))}|{s[3]}|{s[4]}|{s[5]}|{s[6]}|{s[7]}' for s in c['sounds']],
         'phrases': c['phrases'],
         # pies alcanzables y secos (Director: Slender no aparece tras un derrumbe ni dentro de roca vaciada)
-        'floor': encode_cells(res['reached_mask'] & res['region'] & ~wet_mask(sctx.vol)),
+        'floor': encode_cells(res['reached_mask'] & res['region'] & ~wet),
     }
 
 
@@ -161,7 +164,15 @@ NON_FULL = ('_slab', '_stairs', '_pane', 'iron_bars', '_fence', '_wall', '_door'
             'chest', 'bed', 'anvil', 'brewing_stand', 'hopper', 'campfire', 'bell', 'flower_pot', 'end_rod',
             'lightning_rod', 'scaffolding', 'cobweb', 'candle', 'cake', 'grindstone', 'composter', 'glass',
             'water', 'shulker', 'barrel', 'bookshelf', 'loom', 'blast_furnace', 'command', 'piston', 'observer',
-            'dispenser', 'dropper', 'note_block', 'jukebox', 'crafting', 'furnace', 'smoker', 'beehive', 'enchanting')
+            'dispenser', 'dropper', 'note_block', 'jukebox', 'crafting', 'furnace', 'smoker', 'beehive', 'enchanting',
+            'potted_', 'dragon_egg', 'daylight_detector', 'stonecutter', 'snow', 'turtle_egg', 'sea_pickle',
+            'pointed_dripstone', 'amethyst', 'decorated_pot', 'conduit', 'azalea', 'dripleaf', 'heavy_core', 'frogspawn',
+            'sniffer_egg', 'beacon', 'spawner')
+AIRY = ('minecraft:air', 'minecraft:cave_air')
+
+
+def air_mask(vol: Volume) -> np.ndarray:
+    return vol.mask(lambda st: st.split('[')[0] in AIRY)
 
 
 WET = ('minecraft:water', 'minecraft:bubble_column', 'minecraft:kelp', 'minecraft:kelp_plant', 'minecraft:seagrass',
@@ -186,6 +197,7 @@ def dry_feet(vol: Volume, ctx: sections.Context, reached: np.ndarray) -> np.ndar
 def wall_candidates(vol: Volume, ctx: sections.Context, reached: np.ndarray):
     """(x, y, z, cara) de paredes macizas con aire delante a la altura de los ojos y suelo alcanzable debajo."""
     full = vol.mask(lambda s: not any(k in s for k in NON_FULL)) & ~ctx.pas
+    air = air_mask(vol)
     out = []
     feet = reached
     for f, (dx, dz) in FACES.items():
@@ -194,7 +206,7 @@ def wall_candidates(vol: Volume, ctx: sections.Context, reached: np.ndarray):
         fx, fz = xs + dx, zs + dz
         ok = (fx >= 0) & (fx < W) & (fz >= 0) & (fz < L) & (ys >= 1)
         ys, zs, xs, fx, fz = ys[ok], zs[ok], xs[ok], fx[ok], fz[ok]
-        ok = ctx.pas[ys, fz, fx] & feet[ys - 1, fz, fx]
+        ok = ctx.pas[ys, fz, fx] & feet[ys - 1, fz, fx] & air[ys, fz, fx]
         for y, z, x in zip(ys[ok], zs[ok], xs[ok]):
             out.append((int(x), int(y), int(z), f))
     return out
@@ -247,7 +259,10 @@ def propose(sid: str, vol: Volume, ctx: sections.Context, seed: int = 7) -> dict
     sx, sy, sz = res['starts'][0]
     near = feet[np.argsort(np.abs(feet - [sx, sy, sz]).sum(axis=1))]
     spawns = []
+    air = air_mask(vol)
     for x, y, z in near:
+        if not (air[y, z, x] and air[y + 1, z, x]):
+            continue
         if all(abs(x - a) + abs(z - c) >= 2 for a, _, c, _ in spawns) and abs(y - sy) <= 1:
             spawns.append([int(x), int(y), int(z), 0])
         if len(spawns) == 4:

@@ -19,6 +19,16 @@ public final class HogwartsMaps {
     private HogwartsMaps() {
     }
 
+    /** all() sin tumbar el plugin: si el recurso está roto, se avisa y se sigue sin Hogwarts. */
+    public static List<MapBuilder> safely(java.util.function.Supplier<List<MapBuilder>> all, java.util.logging.Logger log) {
+        try {
+            return all.get();
+        } catch (RuntimeException e) {
+            log.severe("Hogwarts no se carga (" + e.getMessage() + "); el resto de mapas sigue.");
+            return List.of();
+        }
+    }
+
     /** Los 7 mapas; registra también dónde puede aparecer Slender en cada uno. */
     public static List<MapBuilder> all() {
         List<MapBuilder> out = new java.util.ArrayList<>();

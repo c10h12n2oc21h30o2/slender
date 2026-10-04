@@ -10,7 +10,10 @@ FACE = {'NORTH': (0, -1), 'SOUTH': (0, 1), 'EAST': (1, 0), 'WEST': (-1, 0)}
 NON_FULL = ('_slab', '_stairs', '_pane', 'iron_bars', '_fence', '_wall', 'glass_pane', '_door', '_trapdoor', '_sign',
             '_banner', 'leaves', 'chain', 'lantern', 'ladder', 'barrier', '_carpet', 'head', 'skull', 'lectern',
             'cauldron', 'chest', 'bed', 'anvil', 'brewing_stand', 'hopper', 'campfire', 'bell', 'flower_pot',
-            'end_rod', 'lightning_rod', 'scaffolding', 'cobweb', 'candle', 'cake', 'grindstone', 'composter')
+            'end_rod', 'lightning_rod', 'scaffolding', 'cobweb', 'candle', 'cake', 'grindstone', 'composter',
+            'potted_', 'dragon_egg', 'enchanting_table', 'daylight_detector', 'stonecutter', 'snow', 'turtle_egg',
+            'sea_pickle', 'pointed_dripstone', 'amethyst', 'decorated_pot', 'conduit', 'azalea', 'dripleaf',
+            'heavy_core', 'piston_head', 'frogspawn', 'sniffer_egg', 'beacon', 'spawner')
 
 def test_sound_field():
     assert content.sound_field('block.bell.use') == 'BLOCK_BELL_USE'
@@ -214,3 +217,41 @@ def test_cells_codec_roundtrip():
     m[1, 2, 3] = m[3, 4, 5] = m[0, 0, 0] = True
     enc = content.encode_cells(m)
     assert content.decode_cells(enc) == [0, 3 + 2 * 6 + 1 * 6 * 5, 5 + 4 * 6 + 3 * 6 * 5]
+
+def test_phrases_unique_across_sections():
+    """En LA NOCHE ENTERA se juegan las 7 seguidas: ninguna frase de página se repite entre secciones."""
+    seen = {}
+    for d in sections.load_defs():
+        for ph in content.load_content(d.id)['phrases']:
+            assert ph not in seen, (ph, seen.get(ph), d.id)
+            seen[ph] = d.id
+
+
+AIRY = ('minecraft:air', 'minecraft:cave_air')
+
+@needs_world
+def test_page_front_is_air(built):
+    """Delante de la página solo hay aire: el plugin la vacía y si no se llevaría media puerta, una escalera…"""
+    vol, _, data = built
+    for s in data['sections']:
+        for pg in s['pages']:
+            (x, y, z), f = p3(pg), pg.split('|')[1]
+            dx, dz = FACE[f]
+            assert vol.get(x + dx, y, z + dz).split('[')[0] in AIRY, (s['id'], pg, vol.get(x + dx, y, z + dz))
+
+@needs_world
+def test_gate_wet_cells(built):
+    """Las celdas de la verja que estaban en agua van marcadas para poner la reja anegada (y agua al abrir)."""
+    vol, _, data = built
+    for s in data['sections']:
+        expect = [i for i, g in enumerate(s['gate']) if wet(vol.get(*p3(g)))]
+        assert s['gateWet'] == expect, s['id']
+
+@needs_world
+def test_spawns_free(built):
+    """Pies y cabeza del spawn en aire (no en una puerta, una trampilla o un cartel)."""
+    vol, _, data = built
+    for s in data['sections']:
+        for sp in s['spawns']:
+            x, y, z = p3(sp)
+            assert vol.get(x, y, z).split('[')[0] in AIRY and vol.get(x, y + 1, z).split('[')[0] in AIRY, (s['id'], sp, vol.get(x, y, z))

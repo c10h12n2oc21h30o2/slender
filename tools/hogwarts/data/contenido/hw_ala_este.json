@@ -1,13 +1,13 @@
 {
  "spawns": [
   [
-   -120,
+   -121,
    75,
-   456,
+   457,
    0
   ],
   [
-   -118,
+   -119,
    75,
    456,
    0
@@ -42,9 +42,9 @@
   ],
   [
    -136,
-   85,
+   86,
    435,
-   "EAST",
+   "SOUTH",
    "Sala de los retratos"
   ],
   [
@@ -83,10 +83,10 @@
    "Biblioteca de música"
   ],
   [
-   -92,
-   84,
-   491,
-   "NORTH",
+   -93,
+   85,
+   489,
+   "WEST",
    "Baños del puente"
   ],
   [
@@ -330,7 +330,7 @@
   "¡FUERA DE AQUÍ!",
   "LOS DUENDECILLOS SE ESCONDEN",
   "LOCKHART NO SONRÍE",
-  "NO TIENE CARA",
+  "EL METRÓNOMO NO SE PARA",
   "ALGUIEN AFINA EL PIANO",
   "EL PUENTE CRUJE",
   "TE HA OÍDO"

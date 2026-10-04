@@ -55,4 +55,16 @@ class Anden934Test {
             assertTrue(l.length() <= 15);
         }
     }
+
+    /** El andén 1 está a y = 1 (se pisa a y = 2): el hueco del muro y el andén 9¾ van a esa misma altura, sin bajar. */
+    @Test
+    void levelWithPlatformOne() {
+        assertEquals(2, Anden934.gapCells().stream().mapToInt(BlockPos::y).min().orElseThrow());
+        assertEquals(4, Anden934.gapCells().stream().mapToInt(BlockPos::y).max().orElseThrow());
+        assertEquals(Anden934.FLOOR_Y + 1, 2);
+        for (Zone z : Anden934.doors().values()) {
+            // la puerta del vagón está un escalón por encima del andén (se pisa a y = 3)
+            assertEquals(3, z.min().y());
+        }
+    }
 }

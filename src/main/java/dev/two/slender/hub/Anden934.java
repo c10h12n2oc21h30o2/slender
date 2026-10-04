@@ -14,12 +14,15 @@ import org.bukkit.Material;
 
 /**
  * Andén 9¾ en el patio sin usar de la estación (x 0…34, z −24…−4, relativo a su origen).
- * Se entra cruzando un muro de ladrillo: el hueco central son block_display (Java ve ladrillos,
- * Bedrock ve un hueco). Detrás, el Expreso con una puerta por sección y una 8.ª tapiada.
+ * El andén 1 se alarga hasta un muro (z = −6) con un tramo de ladrillo: su hueco central son block_display
+ * (Java ve ladrillos y lo cruza, Bedrock ve un hueco). Detrás, a la misma altura, el Expreso de Hogwarts con una
+ * puerta por sección y una 8.ª tapiada.
  */
 public final class Anden934 {
     /** Etiqueta de scoreboard de los block_display del hueco. */
     public static final String TAG = "slender_hub";
+    /** y del suelo del andén 1 y del 9¾ (se pisa a y = 2). */
+    static final int FLOOR_Y = 1;
     static final int WALL_Z = -6;
     static final int GAP_X = 16;
     /** Fachada sur del tren; las puertas se abren en esta fila. */
@@ -28,11 +31,12 @@ public final class Anden934 {
     private static final int[] DOOR_X = {3, 6, 9, 14, 17, 20, 24};
     /** La 8.ª puerta, tapiada: el modo historia ("la noche entera"). */
     private static final int SEALED_X = 26;
-    /** Vagones (x de inicio y fin) y enganches entre ellos. */
+    /** Vagones (x de inicio y fin) y enganches entre ellos; la locomotora va de 28 a 34. */
     private static final int[][] CARRIAGES = {{1, 10}, {12, 21}, {23, 27}};
     private static final int[] COUPLINGS = {11, 22};
-    private static final String[] FLOOR = {"stone_bricks", "stone_bricks", "polished_andesite", "cracked_stone_bricks"};
-    private static final String[] YARD_WALL = {"stone_bricks", "stone_bricks", "cracked_stone_bricks", "mossy_stone_bricks"};
+    private static final String[] FLOOR = {"smooth_stone", "smooth_stone", "smooth_stone", "polished_andesite", "andesite",
+        "cracked_stone_bricks"};
+    private static final String[] WALL = {"stone_bricks", "stone_bricks", "cracked_stone_bricks", "mossy_stone_bricks"};
 
     private Anden934() {
     }
@@ -41,18 +45,19 @@ public final class Anden934 {
     public static LinkedHashMap<String, Zone> doors() {
         LinkedHashMap<String, Zone> out = new LinkedHashMap<>();
         List<String> ids = HogwartsMaps.IDS;
+        int y = FLOOR_Y + 2;
         for (int i = 0; i < ids.size(); i++) {
             int x = DOOR_X[i];
-            out.put(ids.get(i), Zone.of(new BlockPos(x - 1, 2, TRAIN_Z), new BlockPos(x + 1, 4, TRAIN_Z)));
+            out.put(ids.get(i), Zone.of(new BlockPos(x - 1, y, TRAIN_Z), new BlockPos(x + 1, y + 2, TRAIN_Z)));
         }
         return out;
     }
 
-    /** Las 9 celdas del hueco del muro (3 de ancho × 3 de alto), relativas a la estación. */
+    /** Las 9 celdas del hueco del muro (3 de ancho × 3 de alto, desde el suelo del andén), relativas a la estación. */
     public static List<BlockPos> gapCells() {
         List<BlockPos> out = new ArrayList<>();
         for (int x = GAP_X; x < GAP_X + 3; x++) {
-            for (int y = 1; y <= 3; y++) {
+            for (int y = FLOOR_Y + 1; y <= FLOOR_Y + 3; y++) {
                 out.add(new BlockPos(x, y, WALL_Z));
             }
         }
@@ -94,11 +99,14 @@ public final class Anden934 {
 
     /** Construye el andén (después de yard(), que deja árboles secos por aquí) y devuelve las puertas en absoluto. */
     public static Map<String, Zone> build(Builder b) {
-        b.air(0, 1, -24, 34, 10, -4);
-        enclosure(b);
+        b.air(-5, 1, -24, 34, 12, -3);
+        platformOne(b);
+        walls(b);
         magicWall(b);
-        platform(b);
-        train(b);
+        // todo lo de detrás del muro se construye sobre el suelo del andén: en h, el suelo es y = 0
+        Builder h = b.shifted(0, FLOOR_Y, 0);
+        platform(h);
+        train(h);
         Map<String, String> names = new LinkedHashMap<>();
         for (HogwartsSections.Section s : HogwartsSections.resource()) {
             names.put(s.id(), s.name());
@@ -106,52 +114,68 @@ public final class Anden934 {
         List<String> ids = HogwartsMaps.IDS;
         for (int i = 0; i < ids.size(); i++) {
             int x = DOOR_X[i];
-            b.set(x, 1, TRAIN_Z + 1, "stone_brick_slab[type=bottom]");
+            h.set(x, 1, TRAIN_Z + 1, "stone_brick_slab[type=bottom]");
             List<String> l = doorSign(i + 1, names.getOrDefault(ids.get(i), ids.get(i)));
-            b.sign(x, 4, TRAIN_Z + 1, "south", DyeColor.YELLOW, l.toArray(String[]::new));
+            h.sign(x, 4, TRAIN_Z + 1, "south", DyeColor.YELLOW, l.toArray(String[]::new));
         }
-        b.fill(SEALED_X, 2, TRAIN_Z, SEALED_X, 3, TRAIN_Z, "bricks");
-        b.sign(SEALED_X, 4, TRAIN_Z + 1, "south", DyeColor.RED, "LA NOCHE", "ENTERA", "", "próximamente");
-        b.sign(1, 3, -9, "east", DyeColor.WHITE, "Hogwarts por", "Gabbel", "v1.1.0", "planetminecraft");
+        h.fill(SEALED_X, 2, TRAIN_Z, SEALED_X, 3, TRAIN_Z, "bricks");
+        h.sign(SEALED_X, 4, TRAIN_Z + 1, "south", DyeColor.RED, "LA NOCHE", "ENTERA", "", "próximamente");
+        h.sign(1, 3, -9, "east", DyeColor.WHITE, "Hogwarts por", "Gabbel", "v1.1.0", "planetminecraft");
         LinkedHashMap<String, Zone> out = new LinkedHashMap<>();
         doors().forEach((id, z) -> out.put(id, Zone.of(b.abs(z.min().x(), z.min().y(), z.min().z()),
                 b.abs(z.max().x(), z.max().y(), z.max().z()))));
         return out;
     }
 
-    /** Cierra el andén por el sur (z = −6) y el oeste (x = 0); al norte y al este están los muros de la estación. */
-    private static void enclosure(Builder b) {
-        for (int x = 0; x <= 34; x++) {
-            for (int y = 1; y <= 7; y++) {
-                b.set(x, y, WALL_Z, b.pick(YARD_WALL));
+    /** El andén 1 sigue hasta el muro (z −5…−3) en vez de acabar en la valla: se llega al 9¾ sin bajar. */
+    private static void platformOne(Builder b) {
+        for (int x = -5; x <= 34; x++) {
+            for (int z = -5; z <= -3; z++) {
+                b.set(x, 0, z, Material.STONE);
+                b.set(x, FLOOR_Y, z, b.pick(FLOOR));
+            }
+        }
+        for (int x : new int[]{4, 30}) {
+            b.fill(x, 2, -4, x, 4, -4, "dark_oak_fence");
+            b.set(x, 5, -4, "lantern[hanging=false]");
+        }
+        b.sign(8, 4, WALL_Z + 1, "south", DyeColor.WHITE, "", "ANDÉN 9", "", "");
+        b.sign(26, 4, WALL_Z + 1, "south", DyeColor.WHITE, "", "ANDÉN 10", "", "");
+    }
+
+    /**
+     * Muro del andén (z = −6, de x −5 a 34) y cierre oeste (x = 0): el 9¾ y el patio de detrás quedan cerrados;
+     * al norte y al este están los muros de la estación.
+     */
+    private static void walls(Builder b) {
+        for (int x = -5; x <= 34; x++) {
+            for (int y = 1; y <= 8; y++) {
+                b.set(x, y, WALL_Z, b.pick(WALL));
             }
         }
         for (int z = -24; z < WALL_Z; z++) {
-            for (int y = 1; y <= 7; y++) {
-                b.set(0, y, z, b.pick(YARD_WALL));
+            for (int y = 1; y <= 8; y++) {
+                b.set(0, y, z, b.pick(WALL));
             }
-        }
-        // hueco en la valla del andén 1, con escalón, frente al muro
-        b.air(GAP_X, 1, -3, GAP_X + 2, 2, -3);
-        for (int x = GAP_X; x < GAP_X + 3; x++) {
-            b.stairs(x, 1, -3, "stone_brick_stairs", "south");
         }
     }
 
     private static void magicWall(Builder b) {
-        b.fill(13, 1, WALL_Z, 21, 6, WALL_Z, Material.BRICKS);
-        b.fill(12, 1, WALL_Z, 12, 7, WALL_Z, Material.STONE_BRICKS);
-        b.fill(22, 1, WALL_Z, 22, 7, WALL_Z, Material.STONE_BRICKS);
-        b.fill(13, 7, WALL_Z, 21, 7, WALL_Z, "stone_brick_slab[type=bottom]");
+        int top = FLOOR_Y + 6;
+        b.fill(13, 1, WALL_Z, 21, top, WALL_Z, Material.BRICKS);
+        b.fill(12, 1, WALL_Z, 12, top + 1, WALL_Z, Material.STONE_BRICKS);
+        b.fill(22, 1, WALL_Z, 22, top + 1, WALL_Z, Material.STONE_BRICKS);
+        b.fill(13, top + 1, WALL_Z, 21, top + 1, WALL_Z, "stone_brick_slab[type=bottom]");
         for (BlockPos p : gapCells()) {
             b.set(p.x(), p.y(), p.z(), Material.AIR);
             b.display(p.x(), p.y(), p.z(), "minecraft:bricks", TAG);
         }
-        b.sign(GAP_X + 1, 5, WALL_Z + 1, "south", DyeColor.WHITE, "", "9¾", "", "");
-        b.sign(GAP_X + 1, 5, WALL_Z - 1, "north", DyeColor.WHITE, "ANDÉN 9¾", "HOGWARTS", "", "");
+        b.sign(GAP_X + 1, FLOOR_Y + 4, WALL_Z + 1, "south", DyeColor.WHITE, "", "9¾", "", "");
+        b.sign(GAP_X + 1, FLOOR_Y + 5, WALL_Z - 1, "north", DyeColor.YELLOW, "ANDÉN 9¾", "HOGWARTS", "", "");
     }
 
-    private static void platform(Builder b) {
+    /** Suelo del 9¾ (en h el suelo es y = 0), vía, farolas, bancos y equipaje. */
+    private static void platform(Builder h) {
         for (int x = 1; x <= 34; x++) {
             for (int z = -24; z <= -7; z++) {
                 String floor;
@@ -160,33 +184,43 @@ public final class Anden934 {
                 } else if (z == TRAIN_Z + 1) {
                     floor = "smooth_sandstone";
                 } else {
-                    floor = b.pick(FLOOR);
+                    floor = h.pick(FLOOR);
                 }
-                b.set(x, 0, z, floor);
+                h.set(x, -1, z, Material.STONE);
+                h.set(x, 0, z, floor);
             }
-            b.set(x, 1, -20, "rail[shape=east_west]");
+            h.set(x, 1, -20, "rail[shape=east_west]");
         }
-        for (int x : new int[]{5, 12, 25}) {
-            b.fill(x, 1, -12, x, 3, -12, "dark_oak_fence");
-            b.set(x, 4, -12, "soul_lantern[hanging=false]");
+        for (int x : new int[]{5, 12, 25, 31}) {
+            h.fill(x, 1, -12, x, 3, -12, "dark_oak_fence");
+            h.set(x, 4, -12, "lantern[hanging=false]");
         }
-        // equipaje
-        b.set(31, 1, -8, "barrel[facing=up]");
-        b.set(32, 1, -8, "chest[facing=south]");
-        b.set(31, 2, -8, "barrel[facing=north]");
-        b.set(33, 1, -9, "barrel[facing=up]");
+        for (int[] bench : new int[][]{{2, 5}, {26, 29}}) {
+            for (int x = bench[0]; x <= bench[1]; x++) {
+                h.stairs(x, 1, WALL_Z - 1, "dark_oak_stairs", "south");
+            }
+        }
+        // equipaje: baúles y la jaula de la lechuza
+        h.set(31, 1, -8, "barrel[facing=up]");
+        h.set(32, 1, -8, "chest[facing=south]");
+        h.set(31, 2, -8, "barrel[facing=north]");
+        h.set(33, 1, -9, "chest[facing=west]");
+        h.set(33, 1, -8, "iron_bars");
+        h.set(33, 2, -8, "lantern[hanging=false]");
+        h.set(9, 1, -8, "chest[facing=south]");
+        h.set(9, 2, -8, "barrel[facing=up]");
     }
 
-    private static void train(Builder b) {
+    private static void train(Builder h) {
         for (int[] c : CARRIAGES) {
-            carriage(b, c[0], c[1]);
+            carriage(h, c[0], c[1]);
         }
         for (int x : COUPLINGS) {
-            b.set(x, 2, -20, "iron_chain[axis=x]");
-            // que no se pueda pasar por el enganche al otro lado del tren
-            b.fill(x, 1, TRAIN_Z, x, 5, TRAIN_Z, Material.BARRIER);
+            // fuelle entre vagones; delante queda un hueco sin salida
+            h.fill(x, 2, -21, x, 4, -19, Material.BLACK_WOOL);
+            h.fill(x, 5, -21, x, 5, -19, "polished_blackstone_slab[type=bottom]");
         }
-        locomotive(b);
+        locomotive(h);
     }
 
     private static boolean isDoor(int x) {
@@ -201,37 +235,81 @@ public final class Anden934 {
         return false;
     }
 
-    private static void carriage(Builder b, int x1, int x2) {
-        b.fill(x1, 1, -22, x2, 1, TRAIN_Z, Material.POLISHED_BLACKSTONE);
-        b.fill(x1, 2, -22, x2, 4, TRAIN_Z, Material.RED_CONCRETE);
-        b.fill(x1, 5, -22, x2, 5, TRAIN_Z, Material.RED_TERRACOTTA);
-        b.fill(x1, 6, -22, x2, 6, TRAIN_Z, "blackstone_slab[type=bottom]");
-        for (int x = x1 + 1; x < x2; x++) {
-            if (isDoor(x)) {
-                b.air(x, 2, TRAIN_Z, x, 3, TRAIN_Z);
-                b.fill(x, 2, TRAIN_Z - 1, x, 3, TRAIN_Z - 1, Material.BLACK_CONCRETE);
+    /** Vagón granate con ventanas encendidas, techo negro curvo e interior con asientos y faroles. */
+    private static void carriage(Builder h, int x1, int x2) {
+        // bastidor y ruedas
+        h.fill(x1, 1, -22, x2, 1, TRAIN_Z, Material.POLISHED_BLACKSTONE);
+        for (int x = x1; x <= x2; x++) {
+            boolean wheel = x == x1 + 1 || x == x1 + 2 || x == x2 - 2 || x == x2 - 1;
+            if (!wheel) {
+                h.set(x, 1, TRAIN_Z, "polished_blackstone_slab[type=top]");
+                h.set(x, 1, -22, "polished_blackstone_slab[type=top]");
             } else {
-                b.set(x, 3, TRAIN_Z, Material.BLACK_STAINED_GLASS);
-                b.set(x, 3, -22, Material.BLACK_STAINED_GLASS);
+                h.set(x, 1, TRAIN_Z, Material.BLACK_CONCRETE);
+                h.set(x, 1, -22, Material.BLACK_CONCRETE);
             }
+        }
+        // caja: zócalo oscuro, ventanas, franja de arriba
+        h.fill(x1, 2, -22, x2, 5, TRAIN_Z, Material.RED_CONCRETE);
+        h.fill(x1, 2, -22, x2, 2, -22, Material.RED_TERRACOTTA);
+        h.fill(x1, 2, TRAIN_Z, x2, 2, TRAIN_Z, Material.RED_TERRACOTTA);
+        h.air(x1 + 1, 2, -21, x2 - 1, 5, -19);
+        for (int x = x1 + 1; x < x2; x++) {
+            h.fill(x, 3, -22, x, 4, -22, "glass_pane[east=true,west=true]");
+            if (isDoor(x)) {
+                h.air(x, 2, TRAIN_Z, x, 3, TRAIN_Z);
+            } else {
+                h.fill(x, 3, TRAIN_Z, x, 4, TRAIN_Z, "glass_pane[east=true,west=true]");
+            }
+        }
+        // interior: alfombra, asientos contra la pared norte y faroles colgados
+        for (int x = x1 + 1; x < x2; x++) {
+            h.fill(x, 2, -20, x, 2, -19, "red_carpet");
+            h.stairs(x, 2, -21, "dark_oak_stairs", "north");
+        }
+        for (int x = x1 + 2; x < x2; x += 3) {
+            h.set(x, 5, -20, "lantern[hanging=true]");
+        }
+        // techo negro curvo
+        h.fill(x1, 6, -21, x2, 6, -19, Material.POLISHED_BLACKSTONE);
+        for (int x = x1; x <= x2; x++) {
+            h.stairs(x, 6, TRAIN_Z, "polished_blackstone_stairs", "north");
+            h.stairs(x, 6, -22, "polished_blackstone_stairs", "south");
+            h.stairs(x, 7, -19, "polished_blackstone_stairs", "north");
+            h.stairs(x, 7, -21, "polished_blackstone_stairs", "south");
+            h.set(x, 7, -20, "polished_blackstone_slab[type=bottom]");
         }
     }
 
-    private static void locomotive(Builder b) {
-        b.fill(28, 1, -22, 34, 1, TRAIN_Z, Material.POLISHED_BLACKSTONE);
+    /** Locomotora granate: cabina con luz del hogar, caldera, caja de humos negra, chimenea con humo y cúpula de cobre. */
+    private static void locomotive(Builder h) {
+        h.fill(28, 1, -22, 34, 1, TRAIN_Z, Material.POLISHED_BLACKSTONE);
+        // ruedas motrices granates a los dos lados
+        h.fill(31, 1, TRAIN_Z, 33, 1, TRAIN_Z, Material.RED_CONCRETE);
+        h.fill(31, 1, -22, 33, 1, -22, Material.RED_CONCRETE);
         // cabina
-        b.fill(28, 2, -22, 30, 5, TRAIN_Z, Material.BLACK_CONCRETE);
-        b.set(29, 4, TRAIN_Z, Material.ORANGE_STAINED_GLASS);
-        b.set(29, 4, -22, Material.ORANGE_STAINED_GLASS);
-        b.fill(27, 6, -22, 31, 6, TRAIN_Z, "blackstone_slab[type=bottom]");
-        b.sign(29, 3, TRAIN_Z + 1, "south", DyeColor.YELLOW, "EXPRESO DE", "HOGWARTS", "", "");
-        // caldera
-        b.fill(31, 2, -21, 34, 4, -19, Material.BLACK_CONCRETE);
-        b.fill(32, 2, -21, 32, 4, -19, Material.RED_CONCRETE);
-        b.fill(34, 2, -22, 34, 2, TRAIN_Z, Material.RED_CONCRETE);
-        // chimenea con humo
-        b.set(33, 5, -20, Material.BLACK_CONCRETE);
-        b.set(33, 6, -20, "campfire[lit=true,signal_fire=true]");
-        b.set(31, 5, -20, Material.BLACK_CONCRETE);
+        h.fill(28, 2, -22, 30, 5, TRAIN_Z, Material.RED_CONCRETE);
+        h.fill(28, 2, -22, 30, 2, TRAIN_Z, Material.RED_TERRACOTTA);
+        h.fill(28, 5, -22, 30, 5, TRAIN_Z, Material.BLACK_CONCRETE);
+        h.air(29, 2, -21, 29, 4, -19);
+        h.set(29, 2, -20, "lantern[hanging=false]");
+        h.set(29, 4, TRAIN_Z, "orange_stained_glass_pane[east=true,west=true]");
+        h.set(29, 4, -22, "orange_stained_glass_pane[east=true,west=true]");
+        h.fill(28, 6, -22, 31, 6, TRAIN_Z, "polished_blackstone_slab[type=bottom]");
+        h.sign(29, 3, TRAIN_Z + 1, "south", DyeColor.YELLOW, "EXPRESO DE", "HOGWARTS", "", "5972");
+        // caldera con aros negros y estribos
+        h.fill(31, 2, -21, 33, 4, -19, Material.RED_CONCRETE);
+        h.fill(32, 2, -21, 32, 4, -19, Material.BLACK_CONCRETE);
+        h.fill(31, 5, -20, 33, 5, -20, "red_nether_brick_slab[type=bottom]");
+        h.fill(31, 2, TRAIN_Z, 34, 2, TRAIN_Z, "polished_blackstone_slab[type=bottom]");
+        h.fill(31, 2, -22, 34, 2, -22, "polished_blackstone_slab[type=bottom]");
+        // caja de humos y chimenea con humo
+        h.fill(34, 2, -21, 34, 4, -19, Material.BLACK_CONCRETE);
+        h.set(34, 5, -20, Material.BLACK_CONCRETE);
+        h.set(34, 6, -20, Material.BLACK_CONCRETE);
+        h.set(34, 7, -20, "campfire[lit=true,signal_fire=true]");
+        // cúpula y silbato
+        h.set(32, 5, -20, "waxed_copper_block");
+        h.set(31, 5, -20, "lightning_rod[facing=up]");
     }
 }
