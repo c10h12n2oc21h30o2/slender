@@ -1,0 +1,220 @@
+# Slender — configuración
+config-version: 3
+world: slender
+
+build:
+  max-blocks-per-tick: 2000
+  max-ms-per-tick: 15
+
+game:
+  pages: 8
+  countdown-seconds: 20
+  full-countdown-seconds: 5
+  escape-seconds: 60          # mínimo; si la salida queda lejos de las páginas (instituto) se alarga solo
+  end-seconds: 10
+  batteries-per-game: 6
+  coop:
+    min-players: 1
+    max-players: 8
+    time-limit-seconds: 900
+  asim:
+    min-players: 3
+    max-players: 9
+    time-limit-seconds: 600
+
+flashlight:
+  range: 14
+  battery-drain-per-second: 0.2
+  battery-charge: 40
+
+static:
+  look-rate: 18
+  look-half-angle: 30
+  look-max-distance: 48
+  proximity-rate: 25
+  proximity-radius: 6
+  decay-rate: 10
+
+stamina:
+  drain-per-second: 12.5
+  regen-per-second: 8
+  recover-at: 30
+
+slender:
+  # mannequin (entidad con forma de jugador y skin) o enderman
+  body: mannequin
+  scale: 1.45
+  skin:
+    # Lo más fácil: /slender skin <cuenta de Java comprada que lleve la skin puesta> (funciona en servidores offline)
+    # Nombre de una cuenta de Minecraft con la skin que quieras para Slender
+    player: ""
+    # O la textura directamente (value + signature de la propiedad "textures")
+    value: ""
+    signature: ""
+  observe-half-angle: 55
+  observe-max-distance: 64
+  catch-distance: 1.5
+
+isolation:
+  min-players-exclusive: 4
+  radius: 25
+  seconds: 40
+
+asim:
+  teleport-range: 40
+  teleport-cooldown: 10
+  whisper-range: 30
+  whisper-cooldown: 15
+  apparition-cooldown: 25
+  blackout-cooldown: 40
+  blackout-radius: 20
+  blackout-ticks: 80
+  grab-distance: 2.5
+  grab-cooldown: 3
+  cooldown-reduction-per-page: 0.05
+
+# Estación de Valdemora (vestíbulo)
+vestibulo:
+  # Niebla: distancia de visión en la estación, en chunks (0 = sin niebla; 2 = la más espesa).
+  # En las partidas va de 6 a 2 según las páginas.
+  niebla: 2
+  # Bruma baja de humo sobre el andén y las vías
+  bruma: true
+
+page-phrases:
+  - "SIEMPRE MIRA"
+  - "NO PUEDES CORRER"
+  - "NO MIRES O TE LLEVA"
+  - "ME SIGUE"
+  - "NO ESTÁS SOLO"
+  - "DETRÁS DE TI"
+  - "NO HAY SALIDA"
+  - "AYÚDAME"
+  - "LOS ÁRBOLES OBSERVAN"
+  - "NO GRITES"
+
+messages:
+  prefix: "<dark_gray>[<dark_red>Slender</dark_red>]</dark_gray> "
+  usage: "<gray>Uso: <white>/slender</white> (vestíbulo) · <white>/slender join <mapa> [coop|asim] | leave | list</white></gray>"
+  no-permission: "<red>No tienes permiso.</red>"
+  players-only: "<red>Solo un jugador puede usar esto.</red>"
+  unknown-map: "<red>No existe el mapa <white>{map}</white>. Mapas: {maps}</red>"
+  map-not-built: "<red>El mapa <white>{map}</white> no está generado. Un admin debe usar /slender build {map}.</red>"
+  already-in-game: "<red>Ya estás en una partida. Usa /slender leave.</red>"
+  not-in-game: "<red>No estás en ninguna partida.</red>"
+  game-running: "<red>La partida de <white>{map}</white> ya ha empezado.</red>"
+  game-full: "<red>La partida de <white>{map}</white> está llena.</red>"
+  mode-forced: "<gray>La partida ya es en modo <white>{mode}</white>; entras en ese modo.</gray>"
+  joined: "<gray>Has entrado en <white>{map}</white> (<white>{mode}</white>).</gray>"
+  left: "<gray>Has salido de la partida.</gray>"
+  player-joined: "<gray>{player} se ha unido <dark_gray>({count}/{max})</dark_gray></gray>"
+  player-left: "<gray>{player} ha salido <dark_gray>({count}/{max})</dark_gray></gray>"
+  countdown: "<gray>La partida empieza en <white>{seconds}</white>…</gray>"
+  countdown-cancelled: "<red>Faltan jugadores; cuenta atrás cancelada.</red>"
+  not-enough-players: "<red>Hacen falta al menos {min} jugadores.</red>"
+  start-coop: "<dark_red>Encontrad las {pages} páginas y escapad.</dark_red> <gray>No le mires.</gray>"
+  start-asim-survivor: "<dark_red>Uno de vosotros es Slender.</dark_red> <gray>Encontrad las {pages} páginas y escapad.</gray>"
+  start-asim-slender: "<dark_red>Eres Slender.</dark_red> <gray>No puedes moverte si te miran. Que no escape nadie.</gray>"
+  page-collected: "<gray>{player} ha encontrado una página <dark_gray>({pages}/{total})</dark_gray></gray>"
+  page-title: "<dark_red>{phrase}</dark_red>"
+  escape-start: "<dark_red><bold>¡La salida está abierta!</bold></dark_red> <gray>Tenéis {seconds} segundos.</gray>"
+  escaped: "<green>{player} ha escapado.</green>"
+  died: "<dark_red>{player} ha desaparecido…</dark_red>"
+  slender-left: "<gray>Slender ha abandonado la partida.</gray>"
+  win-survivors: "<green><bold>Habéis escapado.</bold></green>"
+  win-slender: "<dark_red><bold>Slender gana.</bold></dark_red>"
+  lose-coop: "<dark_red><bold>Nadie ha escapado.</bold></dark_red>"
+  time-up: "<dark_red>Se acabó el tiempo.</dark_red>"
+  result-escaped: "<green>{player}: escapó</green>"
+  result-dead: "<dark_red>{player}: desaparecido</dark_red>"
+  spectating: "<gray>Ahora eres espectador. Usa /slender leave para salir.</gray>"
+  build-start: "<gray>Generando <white>{map}</white>…</gray>"
+  build-progress: "<gray>Generando <white>{map}</white>: {percent}%</gray>"
+  build-done: "<green>Mapa <white>{map}</white> generado.</green>"
+  build-busy: "<red>Ya se está generando otro mapa.</red>"
+  build-game-running: "<red>No se puede regenerar {map} con una partida en curso.</red>"
+  reload-done: "<green>Configuración recargada.</green>"
+  list-header: "<gray>Mapas de Slender:</gray>"
+  list-line: "<gray>- <white>{map}</white>: {state} <dark_gray>({count}/{max}, {mode})</dark_gray></gray>"
+  stop-done: "<gray>Partida de {map} detenida.</gray>"
+  start-forced: "<gray>Inicio forzado en {map}.</gray>"
+  tp-done: "<gray>Teletransportado a {map}.</gray>"
+  bossbar-waiting: "<gray>Esperando jugadores <white>{count}/{max}</white></gray>"
+  bossbar-countdown: "<gray>Empieza en <white>{seconds}</white></gray>"
+  bossbar-playing: "<dark_red>Páginas {pages}/{total}</dark_red> <dark_gray>·</dark_gray> <gray>{time}</gray>"
+  bossbar-escape: "<dark_red><bold>¡HUYE!</bold></dark_red> <gray>{seconds}s</gray>"
+  actionbar-survivor: "<gray>Linterna</gray> {battery} <dark_gray>|</dark_gray> <gray>Aliento</gray> {stamina}"
+  actionbar-slender: "<dark_red>{state}</dark_red> <dark_gray>|</dark_gray> <gray>Más cercano: <white>{distance}</white></gray> <dark_gray>|</dark_gray> {cooldowns}"
+  static-glitch: "<dark_gray><obfuscated>{noise}</obfuscated></dark_gray>"
+  frozen: "TE MIRAN"
+  cooldown: "<red>Espera {seconds}s.</red>"
+  teleport-fail: "<red>No puedes ir ahí (te verían o está fuera del mapa).</red>"
+  no-target: "<red>No hay nadie a tiro.</red>"
+  fake-page: "<dark_gray><italic>La página se deshace entre tus dedos…</italic></dark_gray>"
+  battery-picked: "<gray>Pilas: linterna al {battery}%</gray>"
+  battery-dead: "<red>La linterna se ha quedado sin batería.</red>"
+  menu-title: "<dark_red>Slender</dark_red>"
+  mode-title: "<dark_red>Elige modo</dark_red>"
+  state-waiting: "<green>esperando</green>"
+  state-running: "<red>en partida</red>"
+  state-not-built: "<dark_gray>sin generar</dark_gray>"
+  mode-coop: "Cooperativo"
+  mode-asim: "Asimétrico"
+  item-flashlight: "<yellow>Linterna</yellow> <gray>(clic derecho)</gray>"
+  item-teleport: "<dark_purple>Teletransporte</dark_purple>"
+  item-whisper: "<dark_purple>Susurro</dark_purple>"
+  item-apparition: "<dark_purple>Aparición</dark_purple>"
+  item-blackout: "<dark_purple>Apagón</dark_purple>"
+  item-page: "<white>Página</white>"
+  item-battery: "<gold>Pilas</gold>"
+  skin-saved: "<green>Skin guardada: Slender ya lleva la skin que tienes puesta. Puedes volver a tu skin de siempre.</green>"
+  skin-missing: "<red>Tu perfil no trae una skin firmada. Si el servidor es offline (AuthMe), entra desde Bedrock con la skin puesta, espera un par de minutos a que se vea y repite /slender skin.</red>"
+  skin-fetching: "<gray>Pidiendo a Mojang la skin de <white>{name}</white>…</gray>"
+  skin-not-found: "<red>Mojang no devuelve una skin para <white>{name}</white>. ¿Es una cuenta de Java comprada y lleva la skin puesta?</red>"
+  hub-name: "Vestíbulo"
+  hub-missing: "<red>El vestíbulo no está preparado. Un admin debe usar <white>/slender build vestibulo</white> (o <white>/slender hub set</white>).</red>"
+  hub-tp-failed: "<red>No se pudo llevarte al vestíbulo (¿has iniciado sesión?).</red>"
+  hub-welcome: "<gray>Estación de Valdemora. Cruza las vías y entra en un arco para jugar, o usa la brújula. La puerta del final del inventario te devuelve a casa.</gray>"
+  hub-left: "<gray>Has vuelto de la estación.</gray>"
+  hub-busy: "<red>Hay jugadores en el vestíbulo; espera a que salgan para regenerarlo.</red>"
+  map-busy: "<red>Hay jugadores en <white>{map}</white>; espera a que acabe para editarlo.</red>"
+  map-incomplete: "<red>El mapa <white>{map}</white> aún está en obras (un admin puede ver qué falta con /slender map {id} check).</red>"
+  state-incomplete: "<gold>en obras</gold>"
+  item-hub-menu: "<gold>Elegir mapa</gold> <gray>(clic derecho)</gray>"
+  item-hub-exit: "<red>Salir</red> <gray>(clic derecho)</gray>"
+  editor-wrong-world: "<red>El editor solo funciona en el mundo <white>{world}</white>.</red>"
+  editor-usage: "<gray>Uso: <white>/slender map list | create <id> <nombre> | <id> spawn|page|battery|gate|exit|bounds|door|name|check|show|delete …</white> · <white>/slender hub set | exit pos1|pos2</white></gray>"
+  editor-bad-id: "<red>Id no válido: 2-20 minúsculas, números o _ (no vale 'all' ni 'vestibulo').</red>"
+  editor-exists: "<red>Ya existe un mapa <white>{map}</white>.</red>"
+  editor-created: "<green>Mapa <white>{map}</white> creado aquí (límites ±60).</green> <gray>Sigue con: spawn add, page add, exit pos1/pos2 y check.</gray>"
+  editor-spawn-added: "<green>Spawn añadido ({count}).</green>"
+  editor-spawns-cleared: "<gray>Spawns borrados.</gray>"
+  editor-page-added: "<green>Sitio de página <white>{label}</white> añadido ({count}).</green>"
+  editor-page-removed: "<gray>Sitio de página quitado ({count}).</gray>"
+  editor-page-face: "<red>Mira a la cara lateral de un bloque (una pared) a menos de 6 bloques.</red>"
+  editor-page-blocked: "<red>Delante de esa pared tiene que haber aire.</red>"
+  editor-battery-added: "<green>Sitio de pilas añadido ({count}).</green>"
+  editor-battery-removed: "<gray>Sitio de pilas quitado ({count}).</gray>"
+  editor-none-near: "<red>No hay ninguno cerca.</red>"
+  editor-gate-added: "<green>Bloque de la puerta final añadido ({count}); se cerrará con <white>{block}</white>.</green>"
+  editor-gate-cleared: "<gray>Puerta final borrada.</gray>"
+  editor-no-target: "<red>Mira a un bloque a menos de 6 bloques.</red>"
+  editor-pos1: "<gray>Primera esquina guardada. Ve a la otra y usa <white>pos2</white>.</gray>"
+  editor-need-pos1: "<red>Primero usa <white>pos1</white>.</red>"
+  editor-exit-set: "<green>Zona de salida guardada.</green>"
+  editor-bounds-set: "<green>Límites guardados.</green>"
+  editor-door-set: "<green>Puerta del vestíbulo para <white>{map}</white> guardada.</green>"
+  editor-name-set: "<green>Nombre cambiado a <white>{name}</white>.</green>"
+  editor-check-ok: "<green>{map} está listo para jugar.</green>"
+  editor-check-header: "<gold>A {map} le falta:</gold>"
+  check-no-spawns: "<gray>- al menos un spawn (spawn add)</gray>"
+  check-few-pages: "<gray>- sitios de página: {count}/{need} (page add)</gray>"
+  check-no-exit: "<gray>- la zona de salida (exit pos1 y pos2)</gray>"
+  check-spawn-outside: "<gray>- {count} spawn(s) fuera de los límites (bounds pos1/pos2 o spawn clear)</gray>"
+  check-page-outside: "<gray>- {count} sitio(s) de página fuera de los límites o demasiado bajos (bounds pos1/pos2 o page remove)</gray>"
+  check-exit-outside: "<gray>- la zona de salida no toca los límites del mapa (bounds o exit pos1/pos2)</gray>"
+  editor-show: "<gray>10 s de partículas: <green>spawns</green>, <white>páginas</white>, <gold>pilas</gold>, <red>puerta final</red>, <aqua>salida y puerta del vestíbulo</aqua>, límites.</gray>"
+  editor-delete-confirm: "<red>Esto borra el mapa {map}. Repite con <white>/slender map {map} delete confirm</white>.</red>"
+  editor-deleted: "<gray>Mapa {map} borrado (los bloques siguen ahí).</gray>"
+  hub-set: "<green>Spawn del vestíbulo guardado.</green>"
+  hub-exit-set: "<green>Zona de salida del vestíbulo guardada.</green>"

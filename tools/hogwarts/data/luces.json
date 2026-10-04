@@ -1,0 +1,18 @@
+{
+  "minecraft:lantern": {"to": "minecraft:air"},
+  "minecraft:soul_lantern": {"to": "minecraft:air"},
+  "minecraft:torch": {"to": "minecraft:air"},
+  "minecraft:wall_torch": {"to": "minecraft:air"},
+  "minecraft:soul_torch": {"to": "minecraft:air"},
+  "minecraft:soul_wall_torch": {"to": "minecraft:air"},
+  "minecraft:conduit": {"to": "minecraft:air"},
+  "minecraft:glowstone": {"to": "minecraft:honeycomb_block"},
+  "minecraft:sea_lantern": {"to": "minecraft:prismarine_bricks"},
+  "minecraft:end_rod": {"to": "minecraft:lightning_rod", "keep": ["facing"]},
+  "minecraft:jack_o_lantern": {"to": "minecraft:carved_pumpkin", "keep": ["facing"]},
+  "minecraft:shroomlight": {"to": "minecraft:nether_wart_block"},
+  "minecraft:beacon": {"to": "minecraft:glass"},
+  "minecraft:campfire": {"to": "minecraft:campfire", "keep": "all", "set": {"lit": "false"}},
+  "minecraft:soul_campfire": {"to": "minecraft:soul_campfire", "keep": "all", "set": {"lit": "false"}},
+  "minecraft:redstone_lamp": {"to": "minecraft:redstone_lamp", "keep": "all", "set": {"lit": "false"}}
+}

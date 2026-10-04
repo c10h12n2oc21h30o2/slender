@@ -1,0 +1,17 @@
+name: Slender
+version: 1.8.0
+main: dev.two.slender.SlenderPlugin
+api-version: '26.3'
+description: Minijuego de terror tipo Slenderman
+author: Two
+loadbefore: [Multiverse-Core]
+commands:
+  slender:
+    description: Minijuego Slender
+    usage: /slender [join <mapa> [coop|asim] | leave | list | map … | hub …]
+    permission: slender.play
+permissions:
+  slender.play:
+    default: true
+  slender.admin:
+    default: op

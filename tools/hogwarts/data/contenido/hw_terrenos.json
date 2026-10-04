@@ -1,0 +1,385 @@
+{
+ "spawns": [
+  [
+   -300,
+   48,
+   600,
+   0
+  ],
+  [
+   -301,
+   48,
+   601,
+   0
+  ],
+  [
+   -299,
+   47,
+   598,
+   0
+  ],
+  [
+   -302,
+   48,
+   602,
+   0
+  ]
+ ],
+ "pages": [
+  [
+   -206,
+   60,
+   436,
+   "EAST",
+   "Invernadero"
+  ],
+  [
+   -247,
+   88,
+   609,
+   "WEST",
+   "Muralla oeste"
+  ],
+  [
+   -157,
+   87,
+   451,
+   "NORTH",
+   "Pie de la lechucería"
+  ],
+  [
+   -187,
+   79,
+   496,
+   "WEST",
+   "Patio norte"
+  ],
+  [
+   -246,
+   70,
+   466,
+   "WEST",
+   "Muro del reloj"
+  ],
+  [
+   -245,
+   93,
+   565,
+   "WEST",
+   "Torre oeste"
+  ],
+  [
+   -204,
+   80,
+   474,
+   "WEST",
+   "Puerta del reloj"
+  ],
+  [
+   -250,
+   84,
+   580,
+   "NORTH",
+   "Contrafuerte oeste"
+  ],
+  [
+   -218,
+   60,
+   436,
+   "NORTH",
+   "Invernadero 2"
+  ],
+  [
+   -249,
+   88,
+   570,
+   "WEST",
+   "Balcón oeste"
+  ],
+  [
+   -200,
+   60,
+   430,
+   "SOUTH",
+   "Cobertizo del jardín"
+  ],
+  [
+   -34,
+   40,
+   561,
+   "EAST",
+   "Rocas del este"
+  ],
+  [
+   -111,
+   40,
+   676,
+   "EAST",
+   "Orilla sur"
+  ],
+  [
+   -75,
+   40,
+   607,
+   "SOUTH",
+   "Playa del sureste"
+  ]
+ ],
+ "batteries": [
+  [
+   -121,
+   59,
+   672
+  ],
+  [
+   -35,
+   30,
+   490
+  ],
+  [
+   -357,
+   30,
+   505
+  ],
+  [
+   -144,
+   30,
+   351
+  ],
+  [
+   -197,
+   92,
+   439
+  ],
+  [
+   -254,
+   30,
+   698
+  ],
+  [
+   -233,
+   30,
+   455
+  ],
+  [
+   -59,
+   30,
+   599
+  ],
+  [
+   -287,
+   30,
+   591
+  ],
+  [
+   -253,
+   83,
+   591
+  ]
+ ],
+ "gate": [
+  [
+   -104,
+   28,
+   505
+  ],
+  [
+   -104,
+   29,
+   505
+  ],
+  [
+   -104,
+   30,
+   505
+  ],
+  [
+   -104,
+   29,
+   504
+  ],
+  [
+   -104,
+   31,
+   505
+  ],
+  [
+   -104,
+   30,
+   504
+  ],
+  [
+   -104,
+   31,
+   504
+  ]
+ ],
+ "gate_block": "minecraft:iron_bars",
+ "exit": [
+  -107,
+  28,
+  504,
+  -104,
+  36,
+  505
+ ],
+ "board": null,
+ "notes": [
+  {
+   "pos": [
+    -252,
+    32,
+    699
+   ],
+   "facing": "SOUTH",
+   "lines": [
+    "Si lees esto:",
+    "no mires al",
+    "hombre sin",
+    "cara."
+   ],
+   "support": "minecraft:grass_block[snowy=false]"
+  },
+  {
+   "pos": [
+    -355,
+    31,
+    515
+   ],
+   "facing": "WEST",
+   "lines": [
+    "Voy al lago.",
+    "La barca sigue",
+    "allí. Ojalá",
+    "llegue. -A.F."
+   ],
+   "support": "minecraft:stone"
+  }
+ ],
+ "phrases": [
+  "EL LAGO ESTÁ QUIETO",
+  "LA BARCA ESPERA",
+  "NO MIRES AL HOMBRE SIN CARA",
+  "¡VUELVE AL CASTILLO!",
+  "LAS RANAS SE CALLAN",
+  "EL BOSQUE TE LLAMA",
+  "NO TIENE CARA",
+  "NIEBLA SOBRE EL AGUA",
+  "FILCH NUNCA LLEGÓ",
+  "TE ESPERA EN LA ORILLA"
+ ],
+ "sounds": [
+  [
+   -111,
+   40,
+   676,
+   60,
+   "BLOCK_WATER_AMBIENT",
+   0.5,
+   0.7,
+   0.08
+  ],
+  [
+   -75,
+   40,
+   607,
+   60,
+   "ENTITY_FROG_AMBIENT",
+   0.5,
+   0.6,
+   0.08
+  ],
+  [
+   -206,
+   60,
+   436,
+   40,
+   "BLOCK_GRASS_STEP",
+   0.5,
+   0.6,
+   0.05
+  ],
+  [
+   -157,
+   87,
+   451,
+   60,
+   "ENTITY_PARROT_FLY",
+   0.3,
+   0.5,
+   0.03
+  ],
+  [
+   -245,
+   93,
+   565,
+   60,
+   "AMBIENT_CAVE",
+   0.3,
+   0.7,
+   0.02
+  ]
+ ],
+ "lights": [
+  [
+   -60,
+   30,
+   599,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -240,
+   30,
+   713,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -301,
+   30,
+   446,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -253,
+   94,
+   553,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -329,
+   30,
+   593,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -56,
+   30,
+   450,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -144,
+   71,
+   663,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -160,
+   80,
+   415,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -145,
+   30,
+   351,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -228,
+   45,
+   519,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ]
+ ]
+}

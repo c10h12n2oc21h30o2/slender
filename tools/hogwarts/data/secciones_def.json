@@ -1,0 +1,358 @@
+{
+ "coords": "originales (mundo de Gabbel); sections.load_defs las pasa a coordenadas del schem",
+ "sections": [
+  {
+   "id": "hw_mazmorras",
+   "name": "Mazmorras",
+   "order": 1,
+   "icon": "CAULDRON",
+   "outdoor": false,
+   "boxes": [
+    {
+     "x": [
+      -280,
+      -60
+     ],
+     "y": [
+      20,
+      65
+     ],
+     "z": [
+      400,
+      660
+     ],
+     "snap": true
+    }
+   ],
+   "start": [
+    -118,
+    56,
+    455
+   ]
+  },
+  {
+   "id": "hw_comedor",
+   "name": "Gran Comedor",
+   "order": 2,
+   "icon": "CAKE",
+   "outdoor": false,
+   "boxes": [
+    {
+     "poly": [
+      [
+       -290,
+       400
+      ],
+      [
+       -161,
+       400
+      ],
+      [
+       -97.75,
+       515
+      ],
+      [
+       -60,
+       515
+      ],
+      [
+       -60,
+       528
+      ],
+      [
+       -290,
+       528
+      ]
+     ],
+     "y": [
+      66,
+      131
+     ],
+     "snap": true
+    },
+    {
+     "poly": [
+      [
+       -244,
+       466
+      ],
+      [
+       -232,
+       464
+      ],
+      [
+       -210,
+       470
+      ],
+      [
+       -210,
+       486
+      ],
+      [
+       -222,
+       500
+      ],
+      [
+       -232,
+       498
+      ],
+      [
+       -244,
+       488
+      ]
+     ],
+     "y": [
+      71,
+      90
+     ],
+     "force": true,
+     "nota": "patio del reloj (al aire libre)"
+    }
+   ],
+   "start": [
+    -168,
+    91,
+    497
+   ]
+  },
+  {
+   "id": "hw_ala_este",
+   "name": "Ala Este",
+   "order": 3,
+   "icon": "JUKEBOX",
+   "outdoor": false,
+   "boxes": [
+    {
+     "poly": [
+      [
+       -161,
+       400
+      ],
+      [
+       -60,
+       400
+      ],
+      [
+       -60,
+       515
+      ],
+      [
+       -97.75,
+       515
+      ]
+     ],
+     "y": [
+      66,
+      131
+     ],
+     "snap": true
+    }
+   ],
+   "start": [
+    -120,
+    76,
+    456
+   ]
+  },
+  {
+   "id": "hw_patio",
+   "name": "Patio de Transformaciones",
+   "order": 4,
+   "icon": "BOOKSHELF",
+   "outdoor": false,
+   "boxes": [
+    {
+     "x": [
+      -290,
+      -60
+     ],
+     "y": [
+      66,
+      105
+     ],
+     "z": [
+      528,
+      660
+     ],
+     "snap": true
+    },
+    {
+     "x": [
+      -242,
+      -183
+     ],
+     "y": [
+      85,
+      105
+     ],
+     "z": [
+      553,
+      612
+     ],
+     "force": true,
+     "nota": "patio de Transformaciones (al aire libre)"
+    }
+   ],
+   "start": [
+    -199,
+    91,
+    562
+   ]
+  },
+  {
+   "id": "hw_aulas",
+   "name": "Aulas altas",
+   "order": 5,
+   "icon": "BELL",
+   "outdoor": false,
+   "boxes": [
+    {
+     "x": [
+      -290,
+      -60
+     ],
+     "y": [
+      106,
+      131
+     ],
+     "z": [
+      528,
+      660
+     ],
+     "snap": true
+    }
+   ],
+   "start": [
+    -182,
+    112,
+    542
+   ]
+  },
+  {
+   "id": "hw_torres",
+   "name": "Torres",
+   "order": 6,
+   "icon": "SPYGLASS",
+   "outdoor": false,
+   "boxes": [
+    {
+     "x": [
+      -290,
+      -60
+     ],
+     "y": [
+      132,
+      240
+     ],
+     "z": [
+      400,
+      660
+     ],
+     "snap": true
+    }
+   ],
+   "start": [
+    -166,
+    140,
+    515
+   ]
+  },
+  {
+   "id": "hw_terrenos",
+   "name": "Terrenos",
+   "order": 7,
+   "icon": "OAK_BOAT",
+   "outdoor": true,
+   "boxes": [
+    {
+     "x": [
+      -383,
+      -1
+     ],
+     "y": [
+      30,
+      95
+     ],
+     "z": [
+      326,
+      738
+     ]
+    },
+    {
+     "x": [
+      -383,
+      -1
+     ],
+     "y": [
+      0,
+      29
+     ],
+     "z": [
+      326,
+      738
+     ],
+     "force": true,
+     "nota": "lago"
+    },
+    {
+     "x": [
+      -242,
+      -183
+     ],
+     "y": [
+      20,
+      110
+     ],
+     "z": [
+      553,
+      612
+     ],
+     "exclude": true
+    },
+    {
+     "poly": [
+      [
+       -244,
+       466
+      ],
+      [
+       -232,
+       464
+      ],
+      [
+       -210,
+       470
+      ],
+      [
+       -210,
+       486
+      ],
+      [
+       -222,
+       500
+      ],
+      [
+       -232,
+       498
+      ],
+      [
+       -244,
+       488
+      ]
+     ],
+     "y": [
+      20,
+      95
+     ],
+     "exclude": true
+    }
+   ],
+   "start": [
+    -300,
+    47,
+    600
+   ],
+   "rest": true
+  }
+ ]
+}

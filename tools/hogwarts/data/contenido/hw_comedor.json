@@ -1,0 +1,482 @@
+{
+ "spawns": [
+  [
+   -168,
+   91,
+   497,
+   0
+  ],
+  [
+   -167,
+   91,
+   496,
+   0
+  ],
+  [
+   -166,
+   91,
+   497,
+   0
+  ],
+  [
+   -169,
+   91,
+   496,
+   0
+  ]
+ ],
+ "pages": [
+  [
+   -173,
+   94,
+   478,
+   "SOUTH",
+   "Sala de Aparición"
+  ],
+  [
+   -246,
+   72,
+   466,
+   "EAST",
+   "Muro del patio del reloj"
+  ],
+  [
+   -178,
+   131,
+   505,
+   "NORTH",
+   "Aula de Aritmancia"
+  ],
+  [
+   -159,
+   75,
+   528,
+   "NORTH",
+   "Cocinas"
+  ],
+  [
+   -153,
+   120,
+   456,
+   "NORTH",
+   "Baños del ala norte"
+  ],
+  [
+   -161,
+   107,
+   527,
+   "WEST",
+   "Pasillo norte"
+  ],
+  [
+   -180,
+   68,
+   480,
+   "NORTH",
+   "Dormitorios del servicio"
+  ],
+  [
+   -212,
+   86,
+   503,
+   "EAST",
+   "Tablón de anuncios"
+  ],
+  [
+   -136,
+   76,
+   484,
+   "SOUTH",
+   "Almacén de yesqueros"
+  ],
+  [
+   -132,
+   96,
+   485,
+   "WEST",
+   "Galería de cuadros"
+  ],
+  [
+   -180,
+   114,
+   483,
+   "EAST",
+   "Almacén de heno"
+  ],
+  [
+   -182,
+   91,
+   524,
+   "NORTH",
+   "Sala de reuniones"
+  ],
+  [
+   -188,
+   120,
+   528,
+   "NORTH",
+   "Pasillo de la lechucería"
+  ],
+  [
+   -154,
+   98,
+   452,
+   "SOUTH",
+   "Cuarto de la limpieza"
+  ]
+ ],
+ "batteries": [
+  [
+   -150,
+   74,
+   509
+  ],
+  [
+   -182,
+   127,
+   460
+  ],
+  [
+   -248,
+   71,
+   471
+  ],
+  [
+   -188,
+   111,
+   527
+  ],
+  [
+   -183,
+   91,
+   454
+  ],
+  [
+   -136,
+   102,
+   486
+  ],
+  [
+   -205,
+   85,
+   506
+  ],
+  [
+   -185,
+   68,
+   478
+  ],
+  [
+   -211,
+   123,
+   494
+  ],
+  [
+   -163,
+   123,
+   500
+  ]
+ ],
+ "gate": [
+  [
+   -210,
+   71,
+   477
+  ],
+  [
+   -210,
+   72,
+   477
+  ],
+  [
+   -210,
+   71,
+   478
+  ],
+  [
+   -210,
+   73,
+   477
+  ],
+  [
+   -210,
+   72,
+   478
+  ],
+  [
+   -210,
+   71,
+   479
+  ],
+  [
+   -210,
+   73,
+   478
+  ],
+  [
+   -210,
+   72,
+   479
+  ],
+  [
+   -209,
+   71,
+   479
+  ],
+  [
+   -210,
+   73,
+   479
+  ],
+  [
+   -209,
+   72,
+   479
+  ],
+  [
+   -209,
+   73,
+   479
+  ]
+ ],
+ "gate_block": "minecraft:spruce_planks",
+ "exit": [
+  -210,
+  71,
+  477,
+  -206,
+  73,
+  479
+ ],
+ "board": {
+  "pos": [
+   -178,
+   91,
+   482
+  ],
+  "title": [
+   "HOGWARTS",
+   "GRAN COMEDOR"
+  ],
+  "places": [
+   [
+    "Aparición",
+    -173,
+    478
+   ],
+   [
+    "Patio reloj",
+    -246,
+    466
+   ],
+   [
+    "Aritmancia",
+    -178,
+    505
+   ],
+   [
+    "Cocinas",
+    -159,
+    528
+   ],
+   [
+    "Baños norte",
+    -153,
+    456
+   ],
+   [
+    "Pasillo norte",
+    -161,
+    527
+   ],
+   [
+    "Dormitorios",
+    -180,
+    480
+   ],
+   [
+    "Tablón",
+    -212,
+    503
+   ],
+   [
+    "Yesqueros",
+    -136,
+    484
+   ],
+   [
+    "Cuadros",
+    -132,
+    485
+   ],
+   [
+    "Almacén heno",
+    -180,
+    483
+   ],
+   [
+    "Reuniones",
+    -182,
+    524
+   ]
+  ]
+ },
+ "notes": [
+  {
+   "pos": [
+    -203,
+    83,
+    479
+   ],
+   "facing": "WEST",
+   "lines": [
+    "Mesas puestas",
+    "y nadie cena.",
+    "Las velas",
+    "flotan bajas."
+   ],
+   "support": "minecraft:stone_bricks"
+  },
+  {
+   "pos": [
+    -150,
+    130,
+    460
+   ],
+   "facing": "WEST",
+   "lines": [
+    "Los retratos",
+    "están vacíos.",
+    "Se han ido",
+    "todos. ¿Adónde?"
+   ],
+   "support": "minecraft:cobblestone"
+  }
+ ],
+ "phrases": [
+  "LA CENA SE ENFRÍA",
+  "NADIE SE SIENTA A LA MESA",
+  "LAS VELAS BAJAN",
+  "¡A LA CAMA, AHORA!",
+  "LOS RETRATOS SE HAN IDO",
+  "EL TECHO NO MUESTRA ESTRELLAS",
+  "ALGUIEN PASA LISTA",
+  "NO TIENE CARA",
+  "LAS COCINAS ESTÁN FRÍAS",
+  "TE ESTÁ MIRANDO"
+ ],
+ "sounds": [
+  [
+   -159,
+   75,
+   528,
+   25,
+   "BLOCK_FIRE_AMBIENT",
+   0.4,
+   0.8,
+   0.06
+  ],
+  [
+   -132,
+   96,
+   485,
+   40,
+   "BLOCK_WOODEN_DOOR_CLOSE",
+   0.4,
+   0.7,
+   0.03
+  ],
+  [
+   -182,
+   91,
+   524,
+   40,
+   "ITEM_ARMOR_EQUIP_CHAIN",
+   0.4,
+   0.6,
+   0.03
+  ],
+  [
+   -173,
+   94,
+   478,
+   30,
+   "BLOCK_CANDLE_EXTINGUISH",
+   0.5,
+   0.8,
+   0.04
+  ],
+  [
+   -246,
+   72,
+   466,
+   40,
+   "ENTITY_PARROT_FLY",
+   0.3,
+   0.6,
+   0.03
+  ]
+ ],
+ "lights": [
+  [
+   -196,
+   77,
+   482,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -150,
+   129,
+   460,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -183,
+   111,
+   527,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -133,
+   95,
+   485,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -182,
+   104,
+   451,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -254,
+   71,
+   486,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -159,
+   74,
+   527,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -207,
+   123,
+   485,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -155,
+   65,
+   483,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -162,
+   113,
+   488,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ]
+ ]
+}

@@ -1,0 +1,452 @@
+{
+ "spawns": [
+  [
+   -166,
+   139,
+   515,
+   0
+  ],
+  [
+   -165,
+   139,
+   516,
+   0
+  ],
+  [
+   -165,
+   139,
+   514,
+   0
+  ],
+  [
+   -166,
+   139,
+   513,
+   0
+  ]
+ ],
+ "pages": [
+  [
+   -155,
+   178,
+   501,
+   "SOUTH",
+   "Sala común de Gryffindor"
+  ],
+  [
+   -173,
+   131,
+   576,
+   "WEST",
+   "El Entremedio"
+  ],
+  [
+   -167,
+   223,
+   514,
+   "SOUTH",
+   "Sala de experimentos"
+  ],
+  [
+   -162,
+   134,
+   495,
+   "EAST",
+   "Pasillo del Entremedio"
+  ],
+  [
+   -160,
+   194,
+   563,
+   "NORTH",
+   "Sala de contemplación"
+  ],
+  [
+   -173,
+   155,
+   538,
+   "EAST",
+   "Baños de la torre"
+  ],
+  [
+   -185,
+   197,
+   517,
+   "EAST",
+   "Dormitorio de chicas"
+  ],
+  [
+   -152,
+   173,
+   553,
+   "WEST",
+   "Dormitorio de chicos"
+  ],
+  [
+   -184,
+   133,
+   532,
+   "WEST",
+   "Sala de utilería"
+  ],
+  [
+   -186,
+   176,
+   528,
+   "EAST",
+   "Rellano de la torre"
+  ],
+  [
+   -177,
+   151,
+   501,
+   "SOUTH",
+   "Atajo secreto"
+  ],
+  [
+   -150,
+   135,
+   549,
+   "SOUTH",
+   "Pasillo de los retratos"
+  ],
+  [
+   -149,
+   193,
+   518,
+   "WEST",
+   "Sala de trofeos"
+  ],
+  [
+   -154,
+   166,
+   522,
+   "SOUTH",
+   "Almacén de macetas"
+  ]
+ ],
+ "batteries": [
+  [
+   -157,
+   149,
+   518
+  ],
+  [
+   -165,
+   227,
+   498
+  ],
+  [
+   -158,
+   192,
+   562
+  ],
+  [
+   -176,
+   130,
+   577
+  ],
+  [
+   -177,
+   181,
+   503
+  ],
+  [
+   -169,
+   159,
+   569
+  ],
+  [
+   -189,
+   128,
+   506
+  ],
+  [
+   -156,
+   202,
+   517
+  ],
+  [
+   -184,
+   164,
+   530
+  ],
+  [
+   -162,
+   133,
+   541
+  ]
+ ],
+ "gate": [
+  [
+   -172,
+   144,
+   571
+  ],
+  [
+   -172,
+   145,
+   571
+  ],
+  [
+   -172,
+   146,
+   571
+  ],
+  [
+   -172,
+   145,
+   570
+  ],
+  [
+   -172,
+   146,
+   570
+  ],
+  [
+   -172,
+   145,
+   569
+  ],
+  [
+   -172,
+   146,
+   569
+  ],
+  [
+   -172,
+   147,
+   569
+  ]
+ ],
+ "gate_block": "minecraft:spruce_planks",
+ "exit": [
+  -177,
+  144,
+  570,
+  -171,
+  147,
+  575
+ ],
+ "board": {
+  "pos": [
+   -166,
+   139,
+   504
+  ],
+  "title": [
+   "HOGWARTS",
+   "TORRES"
+  ],
+  "places": [
+   [
+    "Gryffindor",
+    -155,
+    501
+   ],
+   [
+    "Entremedio",
+    -173,
+    576
+   ],
+   [
+    "Experimentos",
+    -167,
+    514
+   ],
+   [
+    "Entremedio",
+    -162,
+    495
+   ],
+   [
+    "Contemplar",
+    -160,
+    563
+   ],
+   [
+    "Baños torre",
+    -173,
+    538
+   ],
+   [
+    "Chicas",
+    -185,
+    517
+   ],
+   [
+    "Chicos",
+    -152,
+    553
+   ],
+   [
+    "Sala utilería",
+    -184,
+    532
+   ],
+   [
+    "Rellano torre",
+    -186,
+    528
+   ],
+   [
+    "Atajo secreto",
+    -177,
+    501
+   ],
+   [
+    "Retratos",
+    -150,
+    549
+   ]
+  ]
+ },
+ "notes": [
+  {
+   "pos": [
+    -159,
+    197,
+    511
+   ],
+   "facing": "EAST",
+   "lines": [
+    "Subo a la",
+    "torre. Desde",
+    "arriba se ve",
+    "todo. Y él a mí"
+   ],
+   "support": "minecraft:stone_bricks"
+  },
+  {
+   "pos": [
+    -176,
+    131,
+    578
+   ],
+   "facing": "NORTH",
+   "lines": [
+    "El despacho",
+    "del director",
+    "está cerrado.",
+    "Algo contesta."
+   ],
+   "support": "minecraft:stone_bricks"
+  }
+ ],
+ "phrases": [
+  "SUBE Y NO MIRES ABAJO",
+  "EL VIENTO SILBA EN LA TORRE",
+  "LAS LECHUZAS NO VUELVEN",
+  "¡NADIE EN LA TORRE!",
+  "EL DIRECTOR NO CONTESTA",
+  "LA ESCALERA NO TERMINA",
+  "NO TIENE CARA",
+  "DESDE ARRIBA SE VE TODO",
+  "ÉL TAMBIÉN TE VE",
+  "NO HAY ADÓNDE IR"
+ ],
+ "sounds": [
+  [
+   -155,
+   178,
+   501,
+   40,
+   "ENTITY_PARROT_FLY",
+   0.4,
+   0.5,
+   0.05
+  ],
+  [
+   -160,
+   194,
+   563,
+   40,
+   "ENTITY_PHANTOM_FLAP",
+   0.4,
+   0.6,
+   0.04
+  ],
+  [
+   -167,
+   223,
+   514,
+   30,
+   "ENTITY_BAT_TAKEOFF",
+   0.4,
+   0.6,
+   0.04
+  ],
+  [
+   -186,
+   176,
+   528,
+   50,
+   "WEATHER_RAIN",
+   0.2,
+   0.6,
+   0.05
+  ]
+ ],
+ "lights": [
+  [
+   -177,
+   159,
+   523,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -165,
+   225,
+   499,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -158,
+   194,
+   560,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -176,
+   130,
+   578,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -156,
+   127,
+   498,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -168,
+   192,
+   500,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -163,
+   153,
+   564,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -186,
+   133,
+   532,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -158,
+   146,
+   504,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -183,
+   183,
+   534,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ]
+ ]
+}

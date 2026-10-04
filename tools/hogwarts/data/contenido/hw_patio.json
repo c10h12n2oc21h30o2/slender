@@ -1,0 +1,512 @@
+{
+ "spawns": [
+  [
+   -199,
+   90,
+   562,
+   0
+  ],
+  [
+   -198,
+   90,
+   563,
+   0
+  ],
+  [
+   -198,
+   90,
+   561,
+   0
+  ],
+  [
+   -199,
+   90,
+   564,
+   0
+  ]
+ ],
+ "pages": [
+  [
+   -235,
+   93,
+   583,
+   "EAST",
+   "Aula de Filosofía"
+  ],
+  [
+   -134,
+   85,
+   552,
+   "SOUTH",
+   "Sala de los cromos"
+  ],
+  [
+   -163,
+   103,
+   623,
+   "NORTH",
+   "Baño de Myrtle"
+  ],
+  [
+   -189,
+   105,
+   539,
+   "SOUTH",
+   "Sortilegios Weasley"
+  ],
+  [
+   -208,
+   75,
+   539,
+   "SOUTH",
+   "Baños del sótano"
+  ],
+  [
+   -176,
+   76,
+   584,
+   "NORTH",
+   "Mirador"
+  ],
+  [
+   -151,
+   106,
+   568,
+   "NORTH",
+   "Gran Escalera"
+  ],
+  [
+   -202,
+   88,
+   616,
+   "NORTH",
+   "Archivos"
+  ],
+  [
+   -165,
+   75,
+   528,
+   "EAST",
+   "Comedor del servicio"
+  ],
+  [
+   -156,
+   80,
+   619,
+   "WEST",
+   "Práctica de duelo"
+  ],
+  [
+   -152,
+   99,
+   529,
+   "EAST",
+   "Pasillo del tercer piso"
+  ],
+  [
+   -199,
+   91,
+   565,
+   "NORTH",
+   "Aula de Transformación"
+  ],
+  [
+   -226,
+   102,
+   616,
+   "WEST",
+   "Aula de Estudios Místicos"
+  ],
+  [
+   -223,
+   105,
+   553,
+   "SOUTH",
+   "Club de poesía"
+  ]
+ ],
+ "batteries": [
+  [
+   -174,
+   79,
+   556
+  ],
+  [
+   -237,
+   102,
+   617
+  ],
+  [
+   -159,
+   96,
+   623
+  ],
+  [
+   -224,
+   104,
+   547
+  ],
+  [
+   -135,
+   104,
+   548
+  ],
+  [
+   -218,
+   82,
+   586
+  ],
+  [
+   -218,
+   74,
+   533
+  ],
+  [
+   -157,
+   72,
+   603
+  ],
+  [
+   -180,
+   103,
+   572
+  ],
+  [
+   -177,
+   99,
+   528
+  ]
+ ],
+ "gate": [
+  [
+   -133,
+   84,
+   553
+  ],
+  [
+   -133,
+   85,
+   553
+  ],
+  [
+   -133,
+   84,
+   554
+  ],
+  [
+   -133,
+   86,
+   553
+  ],
+  [
+   -133,
+   85,
+   554
+  ],
+  [
+   -133,
+   84,
+   555
+  ],
+  [
+   -133,
+   86,
+   554
+  ],
+  [
+   -133,
+   85,
+   555
+  ],
+  [
+   -133,
+   84,
+   556
+  ],
+  [
+   -133,
+   86,
+   555
+  ],
+  [
+   -133,
+   85,
+   556
+  ],
+  [
+   -133,
+   84,
+   557
+  ],
+  [
+   -133,
+   86,
+   556
+  ],
+  [
+   -133,
+   85,
+   557
+  ],
+  [
+   -133,
+   86,
+   557
+  ]
+ ],
+ "gate_block": "minecraft:iron_bars",
+ "exit": [
+  -134,
+  84,
+  550,
+  -128,
+  86,
+  560
+ ],
+ "board": {
+  "pos": [
+   -191,
+   89,
+   547
+  ],
+  "title": [
+   "PATIO DE",
+   "TRANSFORMACIÓN"
+  ],
+  "places": [
+   [
+    "Filosofía",
+    -235,
+    583
+   ],
+   [
+    "Sala cromos",
+    -134,
+    552
+   ],
+   [
+    "Baño Myrtle",
+    -163,
+    623
+   ],
+   [
+    "Weasley",
+    -189,
+    539
+   ],
+   [
+    "Baños sótano",
+    -208,
+    539
+   ],
+   [
+    "Mirador",
+    -176,
+    584
+   ],
+   [
+    "Gran Escalera",
+    -151,
+    568
+   ],
+   [
+    "Archivos",
+    -202,
+    616
+   ],
+   [
+    "Comedor serv.",
+    -165,
+    528
+   ],
+   [
+    "Duelo",
+    -156,
+    619
+   ],
+   [
+    "3.er piso",
+    -152,
+    529
+   ],
+   [
+    "Transform.",
+    -199,
+    565
+   ]
+  ]
+ },
+ "notes": [
+  {
+   "pos": [
+    -237,
+    86,
+    560
+   ],
+   "facing": "EAST",
+   "lines": [
+    "La Señora",
+    "Norris no",
+    "vuelve. Nunca",
+    "tarda tanto."
+   ],
+   "support": "minecraft:black_concrete_powder"
+  },
+  {
+   "pos": [
+    -135,
+    105,
+    549
+   ],
+   "facing": "WEST",
+   "lines": [
+    "Pisadas largas",
+    "en el patio.",
+    "Peeves dice:",
+    "\"no tiene cara\""
+   ],
+   "support": "minecraft:stone"
+  },
+  {
+   "pos": [
+    -167,
+    80,
+    622
+   ],
+   "facing": "NORTH",
+   "lines": [
+    "Biblioteca:",
+    "libros abiertos",
+    "por la misma",
+    "página."
+   ],
+   "support": "minecraft:stone_bricks"
+  }
+ ],
+ "phrases": [
+  "NORRIS NO VUELVE",
+  "PISADAS EN EL PATIO",
+  "LA BIBLIOTECA ESTÁ ABIERTA",
+  "¡PROHIBIDO CORRER!",
+  "LOS LIBROS SUSURRAN",
+  "LA SECCIÓN PROHIBIDA ESPERA",
+  "NO TIENE CARA",
+  "LA FUENTE ESTÁ SECA",
+  "ALGUIEN SUBE LA ESCALERA",
+  "TE SIGUE"
+ ],
+ "sounds": [
+  [
+   -199,
+   91,
+   565,
+   50,
+   "ITEM_BOOK_PAGE_TURN",
+   0.4,
+   0.7,
+   0.05
+  ],
+  [
+   -151,
+   106,
+   568,
+   40,
+   "BLOCK_WOODEN_DOOR_OPEN",
+   0.4,
+   0.7,
+   0.03
+  ],
+  [
+   -202,
+   88,
+   616,
+   30,
+   "ENTITY_ALLAY_AMBIENT_WITHOUT_ITEM",
+   0.3,
+   0.5,
+   0.03
+  ],
+  [
+   -176,
+   76,
+   584,
+   40,
+   "BLOCK_GRASS_STEP",
+   0.5,
+   0.6,
+   0.05
+  ],
+  [
+   -163,
+   103,
+   623,
+   25,
+   "BLOCK_WATER_AMBIENT",
+   0.4,
+   0.7,
+   0.06
+  ]
+ ],
+ "lights": [
+  [
+   -155,
+   84,
+   583,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -245,
+   101,
+   609,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -220,
+   75,
+   533,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -183,
+   104,
+   535,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -186,
+   97,
+   627,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -162,
+   74,
+   528,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -207,
+   90,
+   576,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -181,
+   61,
+   583,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -228,
+   83,
+   622,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -222,
+   103,
+   547,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ]
+ ]
+}
