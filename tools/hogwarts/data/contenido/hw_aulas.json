@@ -1,0 +1,512 @@
+{
+ "spawns": [
+  [
+   -182,
+   111,
+   542,
+   0
+  ],
+  [
+   -180,
+   111,
+   542,
+   0
+  ],
+  [
+   -182,
+   111,
+   544,
+   0
+  ],
+  [
+   -181,
+   111,
+   543,
+   0
+  ]
+ ],
+ "pages": [
+  [
+   -167,
+   119,
+   567,
+   "SOUTH",
+   "Objetos confiscados"
+  ],
+  [
+   -244,
+   110,
+   610,
+   "EAST",
+   "Armario de Quirrell"
+  ],
+  [
+   -228,
+   109,
+   544,
+   "SOUTH",
+   "Sala de duelos"
+  ],
+  [
+   -178,
+   122,
+   629,
+   "EAST",
+   "Sala de las almohadas"
+  ],
+  [
+   -234,
+   130,
+   579,
+   "WEST",
+   "Enfermería"
+  ],
+  [
+   -156,
+   130,
+   528,
+   "EAST",
+   "Aula 16C"
+  ],
+  [
+   -184,
+   112,
+   528,
+   "SOUTH",
+   "Historia de la Magia"
+  ],
+  [
+   -172,
+   105,
+   601,
+   "EAST",
+   "Habitación de invitados"
+  ],
+  [
+   -232,
+   130,
+   619,
+   "NORTH",
+   "Sala de programación"
+  ],
+  [
+   -148,
+   121,
+   603,
+   "SOUTH",
+   "Galería de criaturas"
+  ],
+  [
+   -202,
+   121,
+   554,
+   "NORTH",
+   "Club de cromos"
+  ],
+  [
+   -207,
+   118,
+   611,
+   "SOUTH",
+   "Almacén de cálices"
+  ],
+  [
+   -150,
+   112,
+   540,
+   "WEST",
+   "Aseos"
+  ],
+  [
+   -243,
+   111,
+   575,
+   "NORTH",
+   "Aula de castigo 5C"
+  ]
+ ],
+ "batteries": [
+  [
+   -153,
+   110,
+   550
+  ],
+  [
+   -234,
+   129,
+   618
+  ],
+  [
+   -238,
+   109,
+   543
+  ],
+  [
+   -168,
+   107,
+   626
+  ],
+  [
+   -184,
+   129,
+   586
+  ],
+  [
+   -224,
+   101,
+   631
+  ],
+  [
+   -178,
+   128,
+   531
+  ],
+  [
+   -226,
+   111,
+   588
+  ],
+  [
+   -157,
+   128,
+   621
+  ],
+  [
+   -196,
+   109,
+   554
+  ]
+ ],
+ "gate": [
+  [
+   -243,
+   103,
+   585
+  ],
+  [
+   -243,
+   104,
+   585
+  ],
+  [
+   -242,
+   104,
+   585
+  ],
+  [
+   -243,
+   105,
+   585
+  ],
+  [
+   -242,
+   105,
+   585
+  ],
+  [
+   -241,
+   105,
+   585
+  ],
+  [
+   -242,
+   106,
+   585
+  ],
+  [
+   -241,
+   106,
+   585
+  ],
+  [
+   -240,
+   106,
+   585
+  ],
+  [
+   -241,
+   107,
+   585
+  ],
+  [
+   -240,
+   106,
+   586
+  ],
+  [
+   -241,
+   108,
+   585
+  ],
+  [
+   -241,
+   107,
+   584
+  ],
+  [
+   -241,
+   108,
+   584
+  ],
+  [
+   -241,
+   107,
+   583
+  ],
+  [
+   -241,
+   109,
+   584
+  ],
+  [
+   -241,
+   108,
+   583
+  ],
+  [
+   -241,
+   107,
+   582
+  ],
+  [
+   -241,
+   109,
+   583
+  ],
+  [
+   -241,
+   108,
+   582
+  ]
+ ],
+ "gate_block": "minecraft:mossy_cobblestone",
+ "exit": [
+  -240,
+  106,
+  585,
+  -240,
+  108,
+  586
+ ],
+ "board": {
+  "pos": [
+   -176,
+   110,
+   545
+  ],
+  "title": [
+   "HOGWARTS",
+   "AULAS ALTAS"
+  ],
+  "places": [
+   [
+    "Confiscado",
+    -167,
+    567
+   ],
+   [
+    "Quirrell",
+    -244,
+    610
+   ],
+   [
+    "Sala duelos",
+    -228,
+    544
+   ],
+   [
+    "Almohadas",
+    -178,
+    629
+   ],
+   [
+    "Enfermería",
+    -234,
+    579
+   ],
+   [
+    "Aula 16C",
+    -156,
+    528
+   ],
+   [
+    "Historia",
+    -184,
+    528
+   ],
+   [
+    "Invitados",
+    -172,
+    601
+   ],
+   [
+    "Programación",
+    -232,
+    619
+   ],
+   [
+    "Criaturas",
+    -148,
+    603
+   ],
+   [
+    "Club cromos",
+    -202,
+    554
+   ],
+   [
+    "Cálices",
+    -207,
+    611
+   ]
+  ]
+ },
+ "notes": [
+  {
+   "pos": [
+    -238,
+    124,
+    612
+   ],
+   "facing": "EAST",
+   "lines": [
+    "Las campanas",
+    "suenan a las",
+    "dos y trece.",
+    "No hay nadie."
+   ],
+   "support": "minecraft:stone_bricks"
+  },
+  {
+   "pos": [
+    -135,
+    106,
+    547
+   ],
+   "facing": "WEST",
+   "lines": [
+    "Enfermería:",
+    "camas hechas,",
+    "sábanas aún",
+    "calientes."
+   ],
+   "support": "minecraft:stone_bricks"
+  }
+ ],
+ "phrases": [
+  "LAS CAMPANAS SUENAN SOLAS",
+  "LAS DOS Y TRECE",
+  "LA ENFERMERÍA ESTÁ VACÍA",
+  "¡SILENCIO EN CLASE!",
+  "LAS CAMAS ESTÁN CALIENTES",
+  "EL ENCERADO SE BORRA SOLO",
+  "NO TIENE CARA",
+  "NADIE PASA LISTA",
+  "LA PUERTA SE CIERRA SOLA",
+  "YA ESTÁ AQUÍ"
+ ],
+ "sounds": [
+  [
+   -234,
+   130,
+   579,
+   30,
+   "BLOCK_BELL_USE",
+   0.4,
+   0.5,
+   0.02
+  ],
+  [
+   -202,
+   121,
+   554,
+   40,
+   "BLOCK_BELL_RESONATE",
+   0.3,
+   0.6,
+   0.02
+  ],
+  [
+   -184,
+   112,
+   528,
+   40,
+   "BLOCK_WOODEN_DOOR_CLOSE",
+   0.4,
+   0.7,
+   0.03
+  ],
+  [
+   -148,
+   121,
+   603,
+   30,
+   "ENTITY_PLAYER_BREATH",
+   0.3,
+   0.6,
+   0.04
+  ]
+ ],
+ "lights": [
+  [
+   -230,
+   111,
+   592,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -151,
+   129,
+   528,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -157,
+   128,
+   622,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -153,
+   104,
+   574,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -210,
+   128,
+   546,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -185,
+   104,
+   626,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -240,
+   109,
+   545,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -182,
+   111,
+   528,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -178,
+   124,
+   580,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -234,
+   129,
+   618,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ]
+ ]
+}

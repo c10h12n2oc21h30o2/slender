@@ -1,0 +1,442 @@
+{
+ "spawns": [
+  [
+   -120,
+   75,
+   456,
+   0
+  ],
+  [
+   -118,
+   75,
+   456,
+   0
+  ],
+  [
+   -120,
+   75,
+   458,
+   0
+  ],
+  [
+   -120,
+   75,
+   454,
+   0
+  ]
+ ],
+ "pages": [
+  [
+   -111,
+   89,
+   477,
+   "EAST",
+   "Despensa de tartas"
+  ],
+  [
+   -139,
+   109,
+   436,
+   "SOUTH",
+   "Estudios Muggles"
+  ],
+  [
+   -136,
+   85,
+   435,
+   "EAST",
+   "Sala de los retratos"
+  ],
+  [
+   -120,
+   70,
+   461,
+   "WEST",
+   "Aula de música"
+  ],
+  [
+   -119,
+   107,
+   470,
+   "SOUTH",
+   "Despacho de Burbage"
+  ],
+  [
+   -93,
+   100,
+   492,
+   "WEST",
+   "Aula de castigo"
+  ],
+  [
+   -120,
+   99,
+   445,
+   "WEST",
+   "Museo muggle"
+  ],
+  [
+   -115,
+   83,
+   451,
+   "SOUTH",
+   "Biblioteca de música"
+  ],
+  [
+   -92,
+   84,
+   491,
+   "NORTH",
+   "Baños del puente"
+  ],
+  [
+   -106,
+   77,
+   472,
+   "NORTH",
+   "Aseos"
+  ],
+  [
+   -131,
+   91,
+   456,
+   "EAST",
+   "Pasillo de los anuncios"
+  ],
+  [
+   -134,
+   76,
+   450,
+   "NORTH",
+   "Aula 11"
+  ],
+  [
+   -127,
+   94,
+   430,
+   "SOUTH",
+   "Aula de Lockhart"
+  ],
+  [
+   -111,
+   102,
+   489,
+   "NORTH",
+   "Baño de chicos"
+  ]
+ ],
+ "batteries": [
+  [
+   -115,
+   75,
+   479
+  ],
+  [
+   -139,
+   108,
+   437
+  ],
+  [
+   -113,
+   102,
+   485
+  ],
+  [
+   -131,
+   83,
+   433
+  ],
+  [
+   -114,
+   92,
+   457
+  ],
+  [
+   -92,
+   85,
+   488
+  ],
+  [
+   -114,
+   107,
+   456
+  ],
+  [
+   -124,
+   65,
+   460
+  ],
+  [
+   -124,
+   97,
+   434
+  ],
+  [
+   -117,
+   76,
+   449
+  ]
+ ],
+ "gate": [
+  [
+   -106,
+   84,
+   494
+  ],
+  [
+   -105,
+   84,
+   494
+  ],
+  [
+   -106,
+   85,
+   494
+  ],
+  [
+   -105,
+   85,
+   494
+  ],
+  [
+   -106,
+   86,
+   494
+  ],
+  [
+   -105,
+   86,
+   494
+  ]
+ ],
+ "gate_block": "minecraft:spruce_planks",
+ "exit": [
+  -108,
+  82,
+  493,
+  -101,
+  88,
+  499
+ ],
+ "board": {
+  "pos": [
+   -112,
+   75,
+   470
+  ],
+  "title": [
+   "HOGWARTS",
+   "ALA ESTE"
+  ],
+  "places": [
+   [
+    "Tartas",
+    -111,
+    477
+   ],
+   [
+    "Muggles",
+    -139,
+    436
+   ],
+   [
+    "Sala retratos",
+    -136,
+    435
+   ],
+   [
+    "Aula música",
+    -120,
+    461
+   ],
+   [
+    "Burbage",
+    -119,
+    470
+   ],
+   [
+    "Aula castigo",
+    -93,
+    492
+   ],
+   [
+    "Museo muggle",
+    -120,
+    445
+   ],
+   [
+    "Partituras",
+    -115,
+    451
+   ],
+   [
+    "Baños puente",
+    -92,
+    491
+   ],
+   [
+    "Aseos",
+    -106,
+    472
+   ],
+   [
+    "Anuncios",
+    -131,
+    456
+   ],
+   [
+    "Aula 11",
+    -134,
+    450
+   ]
+  ]
+ },
+ "notes": [
+  {
+   "pos": [
+    -135,
+    76,
+    435
+   ],
+   "facing": "EAST",
+   "lines": [
+    "La sala del",
+    "ruido está en",
+    "silencio.",
+    "Eso es peor."
+   ],
+   "support": "minecraft:stone"
+  },
+  {
+   "pos": [
+    -94,
+    100,
+    492
+   ],
+   "facing": "NORTH",
+   "lines": [
+    "El gramófono",
+    "suena solo.",
+    "No tiene",
+    "disco."
+   ],
+   "support": "minecraft:stone_bricks"
+  }
+ ],
+ "phrases": [
+  "LA MÚSICA NO PARA",
+  "EL GRAMÓFONO NO TIENE DISCO",
+  "SILENCIO EN LA SALA DEL RUIDO",
+  "¡FUERA DE AQUÍ!",
+  "LOS DUENDECILLOS SE ESCONDEN",
+  "LOCKHART NO SONRÍE",
+  "NO TIENE CARA",
+  "ALGUIEN AFINA EL PIANO",
+  "EL PUENTE CRUJE",
+  "TE HA OÍDO"
+ ],
+ "sounds": [
+  [
+   -120,
+   70,
+   461,
+   25,
+   "BLOCK_NOTE_BLOCK_HARP",
+   0.4,
+   0.5,
+   0.06
+  ],
+  [
+   -120,
+   99,
+   445,
+   25,
+   "BLOCK_NOTE_BLOCK_CHIME",
+   0.3,
+   0.6,
+   0.05
+  ],
+  [
+   -127,
+   94,
+   430,
+   30,
+   "ENTITY_VEX_AMBIENT",
+   0.3,
+   0.6,
+   0.04
+  ],
+  [
+   -92,
+   84,
+   491,
+   30,
+   "BLOCK_WOOD_STEP",
+   0.5,
+   0.6,
+   0.05
+  ]
+ ],
+ "lights": [
+  [
+   -125,
+   82,
+   451,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -94,
+   99,
+   492,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -140,
+   108,
+   438,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -102,
+   76,
+   482,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -123,
+   99,
+   468,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -123,
+   65,
+   461,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -122,
+   97,
+   440,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -105,
+   89,
+   472,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -127,
+   75,
+   431,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -109,
+   75,
+   460,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ]
+ ]
+}

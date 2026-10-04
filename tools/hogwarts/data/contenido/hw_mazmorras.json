@@ -1,0 +1,395 @@
+{
+ "spawns": [
+  [
+   -118,
+   55,
+   455,
+   0
+  ],
+  [
+   -116,
+   55,
+   455,
+   0
+  ],
+  [
+   -119,
+   55,
+   456,
+   0
+  ],
+  [
+   -117,
+   55,
+   454,
+   0
+  ]
+ ],
+ "pages": [
+  [
+   -115,
+   30,
+   469,
+   "EAST",
+   "Túneles del lago"
+  ],
+  [
+   -187,
+   42,
+   614,
+   "NORTH",
+   "Pasillo sur"
+  ],
+  [
+   -201,
+   59,
+   510,
+   "NORTH",
+   "Aula de Magia de raíces"
+  ],
+  [
+   -126,
+   62,
+   461,
+   "EAST",
+   "Baños"
+  ],
+  [
+   -164,
+   56,
+   561,
+   "WEST",
+   "Despacho de Necrófagos"
+  ],
+  [
+   -208,
+   37,
+   556,
+   "NORTH",
+   "Mazmorra 3"
+  ],
+  [
+   -170,
+   41,
+   523,
+   "NORTH",
+   "Escalera de las mazmorras"
+  ],
+  [
+   -105,
+   51,
+   428,
+   "SOUTH",
+   "Pasadizo estrecho"
+  ],
+  [
+   -153,
+   35,
+   484,
+   "EAST",
+   "Escalera norte"
+  ],
+  [
+   -161,
+   50,
+   595,
+   "SOUTH",
+   "Almacén de yesqueros"
+  ],
+  [
+   -115,
+   46,
+   461,
+   "WEST",
+   "Dormitorio de Slytherin"
+  ],
+  [
+   -191,
+   49,
+   544,
+   "NORTH",
+   "Objetos perdidos"
+  ],
+  [
+   -184,
+   43,
+   581,
+   "SOUTH",
+   "Estudios de Necrófagos"
+  ],
+  [
+   -89,
+   56,
+   450,
+   "NORTH",
+   "Almacén de pociones"
+  ]
+ ],
+ "batteries": [
+  [
+   -180,
+   58,
+   559
+  ],
+  [
+   -90,
+   31,
+   437
+  ],
+  [
+   -150,
+   24,
+   505
+  ],
+  [
+   -153,
+   63,
+   480
+  ],
+  [
+   -190,
+   41,
+   613
+  ],
+  [
+   -212,
+   51,
+   509
+  ],
+  [
+   -123,
+   56,
+   426
+  ],
+  [
+   -210,
+   36,
+   554
+  ],
+  [
+   -146,
+   47,
+   588
+  ],
+  [
+   -124,
+   40,
+   467
+  ]
+ ],
+ "gate": [
+  [
+   -126,
+   26,
+   503
+  ],
+  [
+   -126,
+   27,
+   503
+  ],
+  [
+   -126,
+   28,
+   503
+  ],
+  [
+   -126,
+   29,
+   503
+  ],
+  [
+   -126,
+   30,
+   503
+  ],
+  [
+   -126,
+   31,
+   503
+  ]
+ ],
+ "gate_block": "minecraft:iron_bars",
+ "exit": [
+  -127,
+  24,
+  498,
+  -121,
+  35,
+  508
+ ],
+ "board": null,
+ "notes": [
+  {
+   "pos": [
+    -149,
+    50,
+    484
+   ],
+   "facing": "WEST",
+   "lines": [
+    "Ronda de las 2.",
+    "Mazmorras.",
+    "Ni un alumno",
+    "en su cama."
+   ],
+   "support": "minecraft:stone"
+  },
+  {
+   "pos": [
+    -190,
+    42,
+    613
+   ],
+   "facing": "NORTH",
+   "lines": [
+    "Las antorchas",
+    "se apagan",
+    "cuando paso.",
+    "¿Señora Norris?"
+   ],
+   "support": "minecraft:cobblestone"
+  },
+  {
+   "pos": [
+    -215,
+    48,
+    534
+   ],
+   "facing": "EAST",
+   "lines": [
+    "Algo muy alto",
+    "me mira desde",
+    "el fondo del",
+    "pasillo."
+   ],
+   "support": "minecraft:stone_bricks"
+  }
+ ],
+ "phrases": [
+  "¡ALUMNOS FUERA DE LA CAMA!",
+  "LAS MAZMORRAS NO TIENEN SALIDA",
+  "HUELE A POCIÓN QUEMADA",
+  "ALGO GOTEA EN LA OSCURIDAD",
+  "NORRIS, ¿DÓNDE ESTÁS?",
+  "NO TIENE CARA",
+  "LAS CADENAS SE MUEVEN",
+  "BAJO EL LAGO HAY ALGO",
+  "NADIE BAJA AQUÍ DE NOCHE",
+  "TE HA VISTO"
+ ],
+ "sounds": [
+  [
+   -115,
+   30,
+   469,
+   40,
+   "BLOCK_POINTED_DRIPSTONE_DRIP_WATER",
+   0.6,
+   0.8,
+   0.1
+  ],
+  [
+   -115,
+   46,
+   461,
+   30,
+   "BLOCK_CHAIN_PLACE",
+   0.4,
+   0.6,
+   0.04
+  ],
+  [
+   -208,
+   37,
+   556,
+   40,
+   "AMBIENT_CAVE",
+   0.5,
+   0.8,
+   0.03
+  ],
+  [
+   -89,
+   56,
+   450,
+   25,
+   "BLOCK_BREWING_STAND_BREW",
+   0.4,
+   0.7,
+   0.05
+  ],
+  [
+   -184,
+   43,
+   581,
+   30,
+   "ENTITY_BAT_AMBIENT",
+   0.3,
+   0.7,
+   0.04
+  ]
+ ],
+ "lights": [
+  [
+   -154,
+   31,
+   519,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -96,
+   56,
+   429,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -190,
+   41,
+   613,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -203,
+   64,
+   502,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -96,
+   28,
+   473,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -162,
+   60,
+   558,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -211,
+   37,
+   549,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -150,
+   54,
+   483,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -108,
+   34,
+   431,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ],
+  [
+   -149,
+   47,
+   591,
+   "minecraft:candle[candles=4,lit=true,waterlogged=false]"
+  ]
+ ]
+}
