@@ -133,8 +133,8 @@
   ],
   [
    -165,
-   225,
-   499
+   227,
+   498
   ],
   [
    -158,
@@ -144,7 +144,7 @@
   [
    -176,
    130,
-   578
+   577
   ],
   [
    -177,
@@ -425,9 +425,9 @@
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -150,
+   -163,
    153,
-   568,
+   564,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
@@ -437,9 +437,9 @@
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -148,
-   175,
-   519,
+   -158,
+   146,
+   504,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [

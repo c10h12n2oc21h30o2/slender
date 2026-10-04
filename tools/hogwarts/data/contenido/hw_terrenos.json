@@ -132,19 +132,19 @@
    672
   ],
   [
-   -382,
-   4,
-   327
+   -35,
+   30,
+   490
   ],
   [
-   -2,
-   4,
-   328
+   -357,
+   30,
+   505
   ],
   [
-   -382,
-   4,
-   737
+   -144,
+   30,
+   351
   ],
   [
    -197,
@@ -152,24 +152,24 @@
    439
   ],
   [
-   -315,
-   14,
-   532
+   -254,
+   30,
+   698
   ],
   [
-   -2,
-   4,
-   538
+   -233,
+   30,
+   455
   ],
   [
-   -192,
-   4,
-   360
+   -59,
+   30,
+   599
   ],
   [
-   -2,
-   4,
-   737
+   -287,
+   30,
+   591
   ],
   [
    -253,
@@ -227,33 +227,33 @@
  "notes": [
   {
    "pos": [
-    -23,
-    15,
-    495
+    -252,
+    32,
+    699
    ],
-   "facing": "EAST",
+   "facing": "SOUTH",
    "lines": [
     "Si lees esto:",
     "no mires al",
     "hombre sin",
     "cara."
    ],
-   "support": "minecraft:dirt"
+   "support": "minecraft:grass_block[snowy=false]"
   },
   {
    "pos": [
-    -382,
-    5,
-    527
+    -355,
+    31,
+    515
    ],
-   "facing": "SOUTH",
+   "facing": "WEST",
    "lines": [
     "Voy al lago.",
     "La barca sigue",
     "allí. Ojalá",
     "llegue. -A.F."
    ],
-   "support": "minecraft:dirt"
+   "support": "minecraft:stone"
   }
  ],
  "phrases": [
@@ -322,21 +322,21 @@
  ],
  "lights": [
   [
-   -45,
-   4,
-   518,
+   -60,
+   30,
+   599,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -382,
-   4,
-   737,
+   -240,
+   30,
+   713,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -382,
-   4,
-   327,
+   -301,
+   30,
+   446,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
@@ -346,21 +346,21 @@
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -142,
-   4,
-   737,
+   -329,
+   30,
+   593,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -159,
-   4,
-   327,
+   -56,
+   30,
+   450,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -369,
-   9,
-   532,
+   -144,
+   71,
+   663,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
@@ -370,15 +370,15 @@
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -2,
-   4,
-   362,
+   -145,
+   30,
+   351,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -259,
-   28,
-   641,
+   -228,
+   45,
+   519,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ]
  ]

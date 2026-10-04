@@ -157,8 +157,8 @@
    586
   ],
   [
-   -220,
-   75,
+   -218,
+   74,
    533
   ],
   [
@@ -497,14 +497,14 @@
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -135,
-   100,
-   549,
+   -228,
+   83,
+   622,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -225,
-   104,
+   -222,
+   103,
    547,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ]

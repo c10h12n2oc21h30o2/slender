@@ -1,6 +1,8 @@
 package dev.two.slender.map.builders.hogwarts;
 
 import dev.two.slender.map.MapBuilder;
+import dev.two.slender.map.SoftCache;
+import dev.two.slender.map.SpotRules;
 import dev.two.slender.map.schem.Schematic;
 import dev.two.slender.map.schem.SchematicExtras;
 import dev.two.slender.map.schem.SchematicReader;
@@ -10,27 +12,29 @@ import java.util.List;
 public final class HogwartsMaps {
     public static final List<String> IDS = List.of("hw_mazmorras", "hw_comedor", "hw_ala_este", "hw_patio", "hw_aulas",
             "hw_torres", "hw_terrenos");
-    private static Schematic schematic;
-    private static SchematicExtras extras;
+    /** ~160 MB una vez leído: se guarda mientras haya memoria (las 7 secciones se construyen seguidas) y luego se suelta. */
+    private static final SoftCache<Schematic> SCHEMATIC = new SoftCache<>(() -> SchematicReader.resource("maps/hogwarts.schem"));
+    private static final SoftCache<SchematicExtras> EXTRAS = new SoftCache<>(() -> SchematicExtras.resource("maps/hogwarts/extra.json.gz"));
 
     private HogwartsMaps() {
     }
 
+    /** Los 7 mapas; registra también dónde puede aparecer Slender en cada uno. */
     public static List<MapBuilder> all() {
-        return HogwartsSections.resource().stream().<MapBuilder>map(HogwartsBuilder::new).toList();
+        List<MapBuilder> out = new java.util.ArrayList<>();
+        for (HogwartsSections.Section s : HogwartsSections.resource()) {
+            HogwartsBuilder b = new HogwartsBuilder(s);
+            SpotRules.register(s.id(), b::slenderCanStand);
+            out.add(b);
+        }
+        return List.copyOf(out);
     }
 
-    static synchronized Schematic schematic() {
-        if (schematic == null) {
-            schematic = SchematicReader.resource("maps/hogwarts.schem");
-        }
-        return schematic;
+    static Schematic schematic() {
+        return SCHEMATIC.get();
     }
 
-    static synchronized SchematicExtras extras() {
-        if (extras == null) {
-            extras = SchematicExtras.resource("maps/hogwarts/extra.json.gz");
-        }
-        return extras;
+    static SchematicExtras extras() {
+        return EXTRAS.get();
     }
 }

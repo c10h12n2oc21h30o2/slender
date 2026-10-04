@@ -164,15 +164,8 @@ def seal_cells(reg: np.ndarray, st: np.ndarray, pas: np.ndarray, keep: set) -> l
 
 
 def rubble(cells, rng: random.Random) -> list[tuple[int, int, int, str]]:
-    cellset = set(cells)
-    out = []
-    for x, y, z in cells:
-        top = (x, y + 1, z) not in cellset
-        if top and rng.random() < 0.35:
-            out.append((x, y, z, 'minecraft:cobweb'))
-        else:
-            out.append((x, y, z, rng.choice(RUBBLE)))
-    return out
+    """Derrumbe de bloques enteros. Sin telarañas: no tienen colisión y un sello de 1 de alto se cruzaría."""
+    return [(x, y, z, rng.choice(RUBBLE)) for x, y, z in cells]
 
 
 class Context:
@@ -183,6 +176,20 @@ class Context:
         self.pas = walk.passable(vol)
         self.st = walk.standable(vol, self.pas)
         self.roof = walk.roofed(vol)
+
+    def with_blocks(self, blocks) -> 'Context':
+        """Contexto de una copia del volumen con bloques puestos (x, y, z, estado): p. ej. las velas de una sección,
+        que dan suelo nuevo y tienen que entrar en el cálculo de derrumbes. El techo (roof) se comparte."""
+        if not blocks:
+            return self
+        c = Context.__new__(Context)
+        c.vol = Volume(self.vol.data.copy(), self.vol.palette)
+        for x, y, z, st in blocks:
+            c.vol.set(x, y, z, st)
+        c.pas = walk.passable(c.vol)
+        c.st = walk.standable(c.vol, c.pas)
+        c.roof = self.roof
+        return c
 
     def start_cell(self, d: SectionDef, mask: np.ndarray, spawns=None):
         if spawns:

@@ -17,7 +17,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public final class MenuGui {
-    private static final int[] MAP_SLOTS = new int[]{10, 11, 12, 13, 14, 15, 16};
+    /** 6 filas: caben 28 mapas (4 filas de 7 sin tocar los bordes); con Hogwarts ya son 11 de serie. */
+    static final int SIZE = 54;
+    static final int[] MAP_SLOTS = new int[]{10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43};
     private final SlenderPlugin plugin;
 
     public MenuGui(SlenderPlugin var1) {
@@ -27,7 +30,7 @@ public final class MenuGui {
     public void openMaps(Player var1) {
         Msg var2 = this.plugin.msg();
         MenuHolder var3 = new MenuHolder(MenuHolder.Type.MAPS, (String)null);
-        Inventory var4 = Bukkit.createInventory(var3, 27, (Component)var2.get("menu-title"));
+        Inventory var4 = Bukkit.createInventory(var3, SIZE, (Component)var2.get("menu-title"));
         var3.setInventory(var4);
         List var5 = this.plugin.catalog();
 

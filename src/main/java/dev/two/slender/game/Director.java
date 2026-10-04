@@ -6,6 +6,7 @@ import dev.two.slender.logic.IsolationTracker;
 import dev.two.slender.logic.TargetSelector;
 import dev.two.slender.logic.Vec3;
 import dev.two.slender.map.ArenaMap;
+import dev.two.slender.map.SpotRules;
 import dev.two.slender.map.Zone;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -152,7 +153,8 @@ public final class Director {
 
                         Vec3 var13 = (Vec3)var12.next();
                         var14 = SlenderBody.ground(new Location(var6, var13.x(), var13.y(), var13.z()), 6, 8);
-                    } while(var14 == null);
+                        // fuera del suelo al que llegan los jugadores (tras un derrumbe, dentro de roca) no sirve de nada
+                    } while(var14 == null || !SpotRules.allows(this.map.id(), var14.getBlockX(), var14.getBlockY(), var14.getBlockZ()));
 
                     var15 = DirectorMath.levelRank(var10, var14.getBlockY());
                 } while(var15 < 0);

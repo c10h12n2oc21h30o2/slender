@@ -1,3 +1,4 @@
+import random
 import json, os
 import numpy as np
 from conftest import needs_world, REGION
@@ -143,3 +144,20 @@ def test_rest_section_is_box_minus_other_sections():
     reg = sections.region(rest, roof, pas, others=indoor)
     assert reg[1, 1, 1]          # bajo el alero, pero no es de ninguna sección: es de Terrenos
     assert not reg[1, 1, 0]      # de otra sección
+
+
+def test_rubble_never_passable():
+    """Un derrumbe tiene que tener colisión en todas sus celdas (la telaraña no: se cruza)."""
+    cells = [(0, 0, 0), (1, 0, 0), (1, 1, 0), (2, 5, 0)] + [(5, y, 5) for y in range(3)]
+    for seed in range(30):
+        for x, y, z, st in sections.rubble(cells, random.Random(seed)):
+            assert not walk.is_passable(st), (seed, (x, y, z), st)
+
+def test_candle_does_not_block_corridor():
+    """Una vela se pisa como una losa: en un pasillo de 1 de ancho no corta el paso."""
+    v = room(9, 5, 3)
+    v.set(4, 1, 1, 'minecraft:candle[candles=4,lit=true,waterlogged=false]')
+    pas = walk.passable(v)
+    st = walk.standable(v, pas)
+    r = walk.flood(v, st, [(1, 1, 1)])
+    assert r[1, 1, 7]

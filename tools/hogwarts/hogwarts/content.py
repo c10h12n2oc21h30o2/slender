@@ -41,10 +41,44 @@ def load_content(sid: str):
         return json.load(f)
 
 
+def encode_cells(mask: np.ndarray) -> str:
+    """Celdas de una máscara (Y, Z, X) como índices x + z*W + y*W*L ordenados, en diferencias varint y base64."""
+    import base64
+    H, L, W = mask.shape
+    ys, zs, xs = np.nonzero(mask)
+    idx = np.sort(xs.astype(np.int64) + zs * W + ys * W * L)
+    out = bytearray()
+    prev = 0
+    for v in idx.tolist():
+        d = v - prev
+        prev = v
+        while d >= 0x80:
+            out.append((d & 0x7F) | 0x80)
+            d >>= 7
+        out.append(d)
+    return base64.b64encode(bytes(out)).decode('ascii')
+
+
+def decode_cells(text: str) -> list[int]:
+    import base64
+    out, cur, shift, acc = [], 0, 0, 0
+    for b in base64.b64decode(text):
+        acc |= (b & 0x7F) << shift
+        if b & 0x80:
+            shift += 7
+            continue
+        cur += acc
+        out.append(cur)
+        acc, shift = 0, 0
+    return out
+
+
 def compile_section(d: sections.SectionDef, c: dict, ctx: sections.Context, others) -> dict:
     gate = [tuple(conv(g)) for g in c['gate']]
     spawns = [conv(s) for s in c['spawns']]
-    res = ctx.check(d, spawns=spawns, keep=frozenset(gate), others=others if d.rest else None)
+    # las velas de la sección son suelo nuevo: los derrumbes se calculan con ellas puestas
+    sctx = ctx.with_blocks([(*conv(l[:3])[:3], l[3]) for l in c['lights']])
+    res = sctx.check(d, spawns=spawns, keep=frozenset(gate), others=others if d.rest else None)
     CHECKS[d.id] = res
     mask = res['reached_mask'] & res['region']
     ys, zs, xs = np.nonzero(mask)
@@ -75,6 +109,8 @@ def compile_section(d: sections.SectionDef, c: dict, ctx: sections.Context, othe
         'lightBlocks': [[pos(conv(l[:3])), l[3]] for l in c['lights']],
         'sounds': [f'{pos(conv(s[:3]))}|{s[3]}|{s[4]}|{s[5]}|{s[6]}|{s[7]}' for s in c['sounds']],
         'phrases': c['phrases'],
+        # pies alcanzables y secos (Director: Slender no aparece tras un derrumbe ni dentro de roca vaciada)
+        'floor': encode_cells(res['reached_mask'] & res['region'] & ~wet_mask(sctx.vol)),
     }
 
 
@@ -126,6 +162,25 @@ NON_FULL = ('_slab', '_stairs', '_pane', 'iron_bars', '_fence', '_wall', '_door'
             'lightning_rod', 'scaffolding', 'cobweb', 'candle', 'cake', 'grindstone', 'composter', 'glass',
             'water', 'shulker', 'barrel', 'bookshelf', 'loom', 'blast_furnace', 'command', 'piston', 'observer',
             'dispenser', 'dropper', 'note_block', 'jukebox', 'crafting', 'furnace', 'smoker', 'beehive', 'enchanting')
+
+
+WET = ('minecraft:water', 'minecraft:bubble_column', 'minecraft:kelp', 'minecraft:kelp_plant', 'minecraft:seagrass',
+       'minecraft:tall_seagrass')
+
+
+def wet_mask(vol: Volume) -> np.ndarray:
+    """Celdas con agua (o bloques anegados): ahí no van pilas, velas ni notas."""
+    return vol.mask(lambda st: st.split('[')[0] in WET or 'waterlogged=true' in st)
+
+
+def dry_feet(vol: Volume, ctx: sections.Context, reached: np.ndarray) -> np.ndarray:
+    """(x, y, z) alcanzables, de aire (no pisan un cartel ni una planta), con suelo debajo y sin agua en los pies
+    ni en la cabeza."""
+    wet = wet_mask(vol)
+    air = vol.mask(lambda st: st.split('[')[0] in ('minecraft:air', 'minecraft:cave_air'))
+    ys, zs, xs = np.nonzero(reached)
+    ok = ~ctx.pas[ys - 1, zs, xs] & air[ys, zs, xs] & ~wet[np.minimum(ys + 1, wet.shape[0] - 1), zs, xs]
+    return np.c_[xs[ok], ys[ok], zs[ok]]
 
 
 def wall_candidates(vol: Volume, ctx: sections.Context, reached: np.ndarray):
@@ -186,10 +241,7 @@ def propose(sid: str, vol: Volume, ctx: sections.Context, seed: int = 7) -> dict
         pages.append([x - OX, y - OY, z - OZ, f, lab[:40]])
         if len(pages) == 14:
             break
-    ys, zs, xs = np.nonzero(reached)
-    feet = np.c_[xs, ys, zs]
-    solid_below = ~ctx.pas[ys - 1, zs, xs]
-    feet = feet[solid_below]
+    feet = dry_feet(vol, ctx, reached)
     bat = [feet[i] for i in _fps(feet.astype(float) * [1, 2, 1], 10, rng, 5)]
     lig = [feet[i] for i in _fps(feet.astype(float) * [1, 2, 1], 10, random.Random(seed + 1), 5)]
     sx, sy, sz = res['starts'][0]
@@ -201,6 +253,9 @@ def propose(sid: str, vol: Volume, ctx: sections.Context, seed: int = 7) -> dict
         if len(spawns) == 4:
             break
     notes = []
+    wet = wet_mask(vol)
+    cands = [(x, y, z, f) for x, y, z, f in cands
+             if not wet[y, z + FACES[f][1], x + FACES[f][0]] and not wet[y - 1, z + FACES[f][1], x + FACES[f][0]]]
     for i in _fps(np.array([[x, y * 2, z] for x, y, z, _ in cands], float), 3, random.Random(seed + 2), 6):
         x, y, z, f = cands[i]
         dx, dz = FACES[f]

@@ -45,10 +45,25 @@ public final class HogwartsSections {
     public record Section(String id, String name, int order, String icon, int[] bounds, int fallY, List<Loc> spawns,
                           List<PageSpot> pages, List<BlockPos> batteries, List<BlockPos> gate, String gateBlock,
                           BlockPos exitMin, BlockPos exitMax, List<Seal> seal, Board board, List<NoteData> notes,
-                          List<LightBlock> lightBlocks, Ambience ambience, int story) {
+                          List<LightBlock> lightBlocks, Ambience ambience, int story, int[] floor) {
+        /** ¿Es (x, y, z) del schem suelo alcanzable? (o la celda de encima, por las losas). Sin datos: sí. */
+        public boolean isFloor(int x, int y, int z, int width, int length) {
+            if (this.floor.length == 0) {
+                return true;
+            }
+            if (x < 0 || z < 0 || y < 1 || x >= width || z >= length) {
+                return false;
+            }
+            int i = x + z * width + y * width * length;
+            return java.util.Arrays.binarySearch(this.floor, i) >= 0
+                    || java.util.Arrays.binarySearch(this.floor, i - width * length) >= 0;
+        }
     }
 
     private static List<Section> cache;
+    /** Ancho (x) y largo (z) del schematic, para los índices de 'floor'. */
+    public static final int WIDTH = 383;
+    public static final int LENGTH = 413;
 
     public static synchronized List<Section> resource() {
         if (cache == null) {
@@ -115,7 +130,30 @@ public final class HogwartsSections {
                 o.get("icon").getAsString(), bounds, o.get("fallY").getAsInt(), spawns, pages, batteries, gate,
                 o.get("gateBlock").getAsString(), BlockPos.parse(ex.get(0).getAsString()), BlockPos.parse(ex.get(1).getAsString()),
                 List.copyOf(seal), board, List.copyOf(notes), List.copyOf(lightBlocks), amb,
-                o.has("story") ? o.get("story").getAsInt() : o.get("order").getAsInt());
+                o.has("story") ? o.get("story").getAsInt() : o.get("order").getAsInt(),
+                o.has("floor") ? decodeCells(o.get("floor").getAsString()) : new int[0]);
+    }
+
+    /** Índices ordenados en diferencias varint y base64 (content.encode_cells de tools/hogwarts). */
+    static int[] decodeCells(String text) {
+        byte[] b = java.util.Base64.getDecoder().decode(text);
+        int[] out = new int[b.length];
+        int n = 0;
+        int cur = 0;
+        int acc = 0;
+        int shift = 0;
+        for (byte x : b) {
+            acc |= (x & 0x7F) << shift;
+            if ((x & 0x80) != 0) {
+                shift += 7;
+                continue;
+            }
+            cur += acc;
+            out[n++] = cur;
+            acc = 0;
+            shift = 0;
+        }
+        return java.util.Arrays.copyOf(out, n);
     }
 
     private static List<String> strings(JsonObject o, String key) {

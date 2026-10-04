@@ -28,7 +28,7 @@ en total** (el progreso sale en el chat): hazlo sin nadie jugando. Una sola secc
 (o el id que sea). Después, `/slender build vestibulo` sin nadie en la estación, para que salga el andén 9¾.
 
 - **El castillo de Hogwarts de Gabbel**, partido en 7 mapas. Cada uno es una parte del castillo con sus 8 páginas;
-  el resto queda cerrado con derrumbes (piedra, adoquín y telarañas) que no se pueden cruzar.
+  el resto queda cerrado con derrumbes de piedra y adoquín que no se pueden cruzar.
 
   | Puerta | id | Sección | Qué hay |
   |---|---|---|---|

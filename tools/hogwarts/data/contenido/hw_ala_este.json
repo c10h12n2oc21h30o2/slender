@@ -379,15 +379,15 @@
  ],
  "lights": [
   [
-   -125,
+   -129,
    82,
-   451,
+   452,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
-   -94,
-   99,
-   492,
+   -101,
+   97,
+   486,
    "minecraft:candle[candles=4,lit=true,waterlogged=false]"
   ],
   [
