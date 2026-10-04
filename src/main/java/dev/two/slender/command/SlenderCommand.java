@@ -1,5 +1,7 @@
 package dev.two.slender.command;
 
+import dev.two.slender.map.MapBuilder;
+
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import dev.two.slender.SlenderPlugin;
@@ -229,15 +231,7 @@ public final class SlenderCommand implements CommandExecutor, TabCompleter {
             var3.send(var1, "build-busy");
         } else {
             String var4 = var2[1].toLowerCase(Locale.ROOT);
-            ArrayList var5 = new ArrayList();
-            if (var4.equals("all")) {
-                this.plugin.builds().builders().forEach((var1x) -> {
-                    var5.add(var1x.id());
-                });
-                var5.add("vestibulo");
-            } else {
-                var5.add(var4);
-            }
+            List<String> var5 = expandBuildTargets(var4, this.plugin.builds().builders().stream().map(MapBuilder::id).toList());
 
             Iterator var6 = var5.iterator();
 
@@ -335,6 +329,7 @@ public final class SlenderCommand implements CommandExecutor, TabCompleter {
                 });
                 var5.add("vestibulo");
                 var5.add("all");
+                var5.add("hogwarts");
             } else if (var4.length == 2 && List.of("join", "start", "stop", "tp").contains(var6)) {
                 var5.addAll(this.plugin.catalog());
             } else if (var4.length == 3 && var6.equals("join")) {
@@ -348,5 +343,19 @@ public final class SlenderCommand implements CommandExecutor, TabCompleter {
         return var5.stream().filter((var1x) -> {
             return var1x.startsWith(var7);
         }).toList();
+    }
+
+    /** Qué mapas construye `/slender build <arg>`: "all" = todos más la estación; "hogwarts" = sus 7 secciones. */
+    public static List<String> expandBuildTargets(String arg, List<String> allIds) {
+        List<String> out = new ArrayList<>();
+        if (arg.equals("all")) {
+            out.addAll(allIds);
+            out.add("vestibulo");
+        } else if (arg.equals("hogwarts")) {
+            out.addAll(dev.two.slender.map.builders.hogwarts.HogwartsMaps.IDS);
+        } else {
+            out.add(arg);
+        }
+        return out;
     }
 }

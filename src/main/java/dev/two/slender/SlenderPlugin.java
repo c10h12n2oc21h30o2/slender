@@ -82,7 +82,7 @@ public final class SlenderPlugin extends JavaPlugin {
         this.items = new Items(this, this.msg);
         this.maps.clear();
         this.maps.putAll(this.mapStore.loadAll());
-        this.builds = new BuildManager(this, this.cfg, this.msg, this.mapStore, this.maps, List.of(new ForestBuilder(), new AsylumBuilder(), new CornfieldBuilder(), new InstitutoBuilder()));
+        this.builds = new BuildManager(this, this.cfg, this.msg, this.mapStore, this.maps, java.util.stream.Stream.concat(java.util.stream.Stream.<MapBuilder>of(new ForestBuilder(), new AsylumBuilder(), new CornfieldBuilder(), new InstitutoBuilder()), dev.two.slender.map.builders.hogwarts.HogwartsMaps.all().stream()).toList());
         this.hub = new HubManager(this, this.mapStore);
         this.games = new GameManager(this, this.cfg, this.msg, this.items, this.hub, this.maps, () -> {
             return Bukkit.getWorld(this.cfg.world);
