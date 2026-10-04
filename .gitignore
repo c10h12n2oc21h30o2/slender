@@ -1,0 +1,9 @@
+libs/
+build/
+tools/hogwarts/input/
+tools/hogwarts/build/
+servidor/
+.superpowers/
+__pycache__/
+*.pyc
+.pytest_cache/
