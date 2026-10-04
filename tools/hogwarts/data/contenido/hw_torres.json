@@ -3,7 +3,7 @@
   [
    -166,
    139,
-   515,
+   511,
    0
   ],
   [
@@ -77,9 +77,9 @@
   ],
   [
    -152,
-   173,
-   553,
-   "WEST",
+   171,
+   554,
+   "NORTH",
    "Dormitorio de chicos"
   ],
   [
@@ -92,7 +92,7 @@
   [
    -186,
    176,
-   528,
+   527,
    "EAST",
    "Rellano de la torre"
   ],
@@ -104,16 +104,16 @@
    "Atajo secreto"
   ],
   [
-   -150,
-   135,
-   549,
+   -152,
+   136,
+   551,
    "SOUTH",
    "Pasillo de los retratos"
   ],
   [
-   -149,
-   193,
-   518,
+   -150,
+   194,
+   513,
    "WEST",
    "Sala de trofeos"
   ],

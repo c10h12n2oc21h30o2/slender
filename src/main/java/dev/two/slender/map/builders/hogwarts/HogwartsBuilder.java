@@ -82,8 +82,10 @@ public final class HogwartsBuilder implements MapBuilder {
         for (HogwartsSections.LightBlock l : this.s.lightBlocks()) {
             out.add(new Placement(l.pos(), l.state()));
         }
-        for (BlockPos g : this.s.gate()) {
-            out.add(new Placement(g, this.s.gateBlock()));
+        for (int i = 0; i < this.s.gate().size(); i++) {
+            // las rejas que estaban en agua van anegadas (si no, secan el túnel)
+            String st = this.s.gateWet().contains(i) ? this.s.gateBlock() + "[waterlogged=true]" : this.s.gateBlock();
+            out.add(new Placement(this.s.gate().get(i), st));
         }
         return out;
     }

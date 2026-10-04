@@ -632,7 +632,9 @@ public final class Game {
 
         while(var1.hasNext()) {
             BlockPos var2 = (BlockPos)var1.next();
-            this.world.getBlockAt(var2.x(), var2.y(), var2.z()).setType(Material.AIR, false);
+            org.bukkit.block.Block cell = this.world.getBlockAt(var2.x(), var2.y(), var2.z());
+            boolean waterlogged = cell.getBlockData() instanceof org.bukkit.block.data.Waterlogged w && w.isWaterlogged();
+            cell.setType(GateWater.opened(waterlogged), false);
         }
 
         this.broadcast("escape-start", "seconds", String.valueOf(this.escapeTotal));
@@ -856,7 +858,14 @@ public final class Game {
 
         while(var6.hasNext()) {
             BlockPos var4 = (BlockPos)var6.next();
-            this.world.getBlockAt(var4.x(), var4.y(), var4.z()).setBlockData(var5, false);
+            org.bukkit.block.Block cell = this.world.getBlockAt(var4.x(), var4.y(), var4.z());
+            BlockData closed = var5.clone();
+            if (closed instanceof org.bukkit.block.data.Waterlogged w) {
+                w.setWaterlogged(GateWater.wet(cell.getType(),
+                        cell.getBlockData() instanceof org.bukkit.block.data.Levelled l ? l.getLevel() : 0,
+                        cell.getBlockData() instanceof org.bukkit.block.data.Waterlogged c && c.isWaterlogged()));
+            }
+            cell.setBlockData(closed, false);
         }
 
         this.ambience.reset();

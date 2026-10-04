@@ -24,7 +24,9 @@ class HogwartsBuilderTest {
         for (HogwartsSections.Section s : HogwartsSections.resource()) {
             List<HogwartsBuilder.Placement> ps = new HogwartsBuilder(s).placements();
             for (BlockPos g : s.gate()) {
-                assertTrue(ps.contains(new HogwartsBuilder.Placement(g, s.gateBlock())), s.id() + " verja abierta en " + g);
+                boolean closed = ps.contains(new HogwartsBuilder.Placement(g, s.gateBlock()))
+                        || ps.contains(new HogwartsBuilder.Placement(g, s.gateBlock() + "[waterlogged=true]"));
+                assertTrue(closed, s.id() + " verja abierta en " + g);
             }
             // la verja va después de los derrumbes y las velas: nada la pisa
             int lastGate = -1;
@@ -68,5 +70,39 @@ class HogwartsBuilderTest {
         }
         Loc sp = m.spawns().get(0);
         assertEquals(ox + s.spawns().get(0).x(), sp.x(), 1e-9);
+    }
+
+    /** Las rejas en agua (Mazmorras, Terrenos) van anegadas: si no, secan el túnel y al abrir queda una bolsa de aire. */
+    @Test
+    void wetGateCellsAreWaterlogged() {
+        int wet = 0;
+        for (HogwartsSections.Section s : HogwartsSections.resource()) {
+            List<HogwartsBuilder.Placement> ps = new HogwartsBuilder(s).placements();
+            for (int i = 0; i < s.gate().size(); i++) {
+                String want = s.gateWet().contains(i) ? s.gateBlock() + "[waterlogged=true]" : s.gateBlock();
+                assertTrue(ps.contains(new HogwartsBuilder.Placement(s.gate().get(i), want)), s.id() + " " + i);
+            }
+            wet += s.gateWet().size();
+        }
+        assertEquals(7, wet);
+    }
+
+    /** Un secciones.json roto no tumba el plugin entero: se avisa y se sigue sin Hogwarts. */
+    @Test
+    void brokenResourceOnlyDropsHogwarts() {
+        java.util.List<String> logged = new java.util.ArrayList<>();
+        java.util.logging.Logger log = java.util.logging.Logger.getAnonymousLogger();
+        log.setUseParentHandlers(false);
+        log.addHandler(new java.util.logging.Handler() {
+            @Override public void publish(java.util.logging.LogRecord r) { logged.add(r.getMessage()); }
+            @Override public void flush() { }
+            @Override public void close() { }
+        });
+        List<dev.two.slender.map.MapBuilder> out = HogwartsMaps.safely(() -> {
+            throw new IllegalStateException("json roto");
+        }, log);
+        assertTrue(out.isEmpty());
+        assertTrue(logged.stream().anyMatch(m -> m.contains("json roto")), logged.toString());
+        assertEquals(7, HogwartsMaps.safely(HogwartsMaps::all, log).size());
     }
 }

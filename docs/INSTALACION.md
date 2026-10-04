@@ -1,8 +1,8 @@
-# Instalar Slender (v1.8.0)
+# Instalar Slender (v1.8.1)
 
 1. Copia `Slender.jar` a la carpeta `plugins/` del servidor (desde tu PC):
    `scp C:\Users\kivi2\IdeaProjects\slender\Slender.jar USUARIO@IP:RUTA_DEL_SERVIDOR/plugins/`
-2. Reinicia el servidor (no uses /reload). `/version Slender` debe decir **1.8.0**.
+2. Reinicia el servidor (no uses /reload). `/version Slender` debe decir **1.8.1**.
 3. No hace falta importar `slender` en Multiverse: el plugin crea y carga el mundo él solo en cada arranque.
    (Si aun así lo quieres en Multiverse: `/mv import slender normal --generator Slender --skip-folder-check`,
    pero entonces Multiverse puede forzar modo supervivencia en ese mundo.)
@@ -18,13 +18,29 @@
      o https://mineskin.org pegando *value* y *signature* en `slender.skin` del config.
    Sin skin, Slender es un Enderman.
 6. Genera el vestíbulo y los mapas (uno detrás de otro): `/slender build all`
-   (solo el vestíbulo: `/slender build vestibulo`). Con las 7 secciones de Hogwarts, `all` tarda unos 25 min.
+   (solo el vestíbulo: `/slender build vestibulo`). Con las 7 secciones de Hogwarts, `all` tarda unos 25–35 min.
+
+## Novedades 1.8.1: andén 9¾ y Expreso nuevos
+
+Para tenerlo: cambia el jar, reinicia y usa `/slender build vestibulo` (andén y Expreso nuevos) y
+`/slender build hogwarts` (páginas, spawns y verjas recolocados).
+
+- **Andén 9¾ a la altura del andén 1:** ya no hay que bajar al patio; el andén llega hasta el muro de ladrillo.
+- **Expreso de Hogwarts nuevo:** vagones granates con las ventanas encendidas, asientos y faroles dentro, techo
+  negro curvo y una locomotora con caldera, chimenea que echa humo y cúpula de cobre. Farolas, bancos y baúles
+  en el andén.
+- **Frases de las páginas sin repetir:** en una partida no sale dos veces la misma, y cada sección tiene las suyas.
+- **Arreglos:**
+  - ninguna página quita media puerta, una escalera o un estandarte, ni cuelga de una maceta;
+  - las rejas de salida bajo el agua van anegadas y al abrirse dejan agua;
+  - ningún spawn cae en una puerta;
+  - si el fichero de Hogwarts fallara, el resto de mapas sigue funcionando.
 
 ## Novedades 1.8: Hogwarts
 
 Para tenerlo: cambia el jar, reinicia y usa `/slender build hogwarts`, que construye las 7 secciones una detrás de
-otra (los otros mapas no se tocan). Cada sección es una copia entera del castillo, así que tarda **unos 15–20 min
-en total** (el progreso sale en el chat): hazlo sin nadie jugando. Una sola sección: `/slender build hw_patio`
+otra (los otros mapas no se tocan). Cada sección es una copia entera del castillo, así que tarda **unos 15 min
+la primera vez y unos 25 al reconstruir** (el progreso sale en el chat): hazlo sin nadie jugando. Una sola sección: `/slender build hw_patio`
 (o el id que sea). Después, `/slender build vestibulo` sin nadie en la estación, para que salga el andén 9¾.
 
 - **El castillo de Hogwarts de Gabbel**, partido en 7 mapas. Cada uno es una parte del castillo con sus 8 páginas;
@@ -49,9 +65,9 @@ en total** (el progreso sale en el chat): hazlo sin nadie jugando. Una sola secc
 - **Ambiente:** casi todo a oscuras (solo queda encendida 1 de cada 10 luces) y luces que parpadean. Goteo y
   cadenas en las mazmorras, eco en el Gran Comedor, el gramófono del Ala Este, campanas, lechuzas, viento, agua…
 - **Historia:** las notas son el diario de **Argus Filch**, el conserje, que hacía la ronda de noche y no volvió.
-  Su cartel de DESAPARECIDO está en la sala de espera de la estación, al lado del de Xosé.
-- **El andén 9¾:** en el patio de la estación, al norte del andén 1, hay un hueco en la valla frente a un muro de
-  ladrillo con el cartel **9¾**. Cruza el muro por el centro:
+  Su cartel de DESAPARECIDO está en la sala de espera de la estación, en la pared de enfrente del de Xosé.
+- **El andén 9¾:** el andén 1 sigue hacia el norte hasta un muro; entre los carteles ANDÉN 9 y ANDÉN 10 hay un tramo
+  de ladrillo con el cartel **9¾**. Cruza el muro por el centro, sin cambiar de altura:
   - desde **Java** se ve un muro entero y se atraviesa;
   - desde **Bedrock** se ve un hueco en el muro (Bedrock no dibuja esos ladrillos), pero se cruza igual.
 
