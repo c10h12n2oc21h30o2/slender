@@ -30,10 +30,12 @@ public final class HubBuilder {
         tracks(var0);
         station(var0);
         Zone var2 = exitRoom(var0);
-        Map var3 = arches(var0);
+        Map<String, Zone> var3 = arches(var0);
         wagon(var0);
         yard(var0);
-        return new Hub(var1, var0.loc(0.0, 2.0, 3.0, 0.0F), var2, var3);
+        LinkedHashMap<String, Zone> doors = new LinkedHashMap<>(var3);
+        doors.putAll(Anden934.build(var0));
+        return new Hub(var1, var0.loc(0.0, 2.0, 3.0, 0.0F), var2, doors);
     }
 
     private static void stone(Builder var0, int var1, int var2, int var3, int var4, int var5, int var6) {
@@ -232,6 +234,7 @@ public final class HubBuilder {
         var0.sign(-7, 3, -14, "west", DyeColor.RED, "NO MIRES", "AL HOMBRE", "SIN CARA", "");
         var0.sign(-7, 3, -9, "west", DyeColor.WHITE, "ÚLTIMO TREN", "02:13", "", "no esperes");
         var0.sign(-7, 3, -5, "west", DyeColor.WHITE, "DESAPARECIDO", "Xosé Lamas", "conserje del", "instituto");
+        var0.sign(-23, 3, -5, "east", DyeColor.WHITE, "DESAPARECIDO", "Argus Filch", "conserje de", "Hogwarts");
         var0.set(-20, 6, -8, (String)"lantern[hanging=true]");
         var0.set(-10, 6, -14, (String)"lantern[hanging=true]");
         var0.set(-15, 6, -16, (String)"soul_lantern[hanging=true]");

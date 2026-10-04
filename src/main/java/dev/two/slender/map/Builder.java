@@ -64,6 +64,20 @@ public final class Builder {
         }
     }
 
+    /** Bloque de adorno sin colisión (BlockDisplay) en (x, y, z), con una etiqueta de scoreboard. Bedrock no lo ve. */
+    public void display(int x, int y, int z, String blockState, String tag) {
+        org.bukkit.block.data.BlockData d = this.data(blockState);
+        int ax = this.ox + x;
+        int ay = this.oy + y;
+        int az = this.oz + z;
+        this.q.add(BlockQueue.worldJob(w -> safely("bloque decorativo", () -> w.spawn(new org.bukkit.Location(w, ax, ay, az),
+                org.bukkit.entity.BlockDisplay.class, e -> {
+                    e.setBlock(d);
+                    e.addScoreboardTag(tag);
+                    e.setPersistent(true);
+                }))), 1L);
+    }
+
     private static void safely(String what, Runnable r) {
         try {
             r.run();
