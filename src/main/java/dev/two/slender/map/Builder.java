@@ -47,8 +47,12 @@ public final class Builder {
 
     public BlockData data(String var1) {
         String var2 = var1.contains(":") ? var1 : "minecraft:" + var1;
-        return (BlockData)this.byString.computeIfAbsent(var2, Bukkit::createBlockData);
+        return (BlockData)this.byString.computeIfAbsent(var2, s -> SafeBlockData.resolve(s, Bukkit::createBlockData,
+                Material.STONE.createBlockData(), WARNED, msg -> LOG.warning(msg)));
     }
+
+    private static final java.util.Set<String> WARNED = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger("Slender");
 
     public BlockData data(Material var1) {
         return (BlockData)this.byMaterial.computeIfAbsent(var1, Material::createBlockData);

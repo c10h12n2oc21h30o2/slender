@@ -58,7 +58,8 @@ public final class BuildManager {
 
     public BlockPos originOf(String var1) {
         int var2 = (new ArrayList(this.builders.keySet())).indexOf(var1);
-        return new BlockPos(Math.max(0, var2) * 2000, 64, 0);
+        MapBuilder b = this.builders.get(var1);
+        return b != null ? b.origin(Math.max(0, var2)) : new BlockPos(Math.max(0, var2) * 2000, 64, 0);
     }
 
     public void build(String var1, World var2, CommandSender var3, Runnable var4) {
@@ -69,7 +70,8 @@ public final class BuildManager {
             int var9 = var5.radius();
             BlockQueue var10 = new BlockQueue();
             Builder var11 = new Builder(var10, var6.x(), var6.y(), var6.z(), new Random(var7));
-            var11.clear(-var9, -12, -var9, var9, 60, var9);
+            Zone box = var5.clearBox();
+            var11.clear(box.min().x(), box.min().y(), box.min().z(), box.max().x(), box.max().y(), box.max().z());
             ArenaMap var12 = var5.build(var11, var2.getName(), var7);
             this.run(var5.displayName(), var6, var9, var10, var2, var3, () -> {
                 this.store.save(var12);
