@@ -1,61 +1,74 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map;
 
-import java.util.function.Function;
-import java.util.Map;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-record Ambience(List<SoundZone> sounds, List<MapLight> lights, List<String> phrases) {
-    public static final Ambience NONE;
-    
-    public Ambience(final List<SoundZone> sounds, final List<MapLight> lights, final List<String> phrases) {
-        final List<Object> copy = (List<Object>)List.copyOf((Collection<? extends SoundZone>)sounds);
-        final List<Object> copy2 = (List<Object>)List.copyOf((Collection<? extends MapLight>)lights);
-        final List<Object> copy3 = (List<Object>)List.copyOf((Collection<? extends String>)phrases);
-        this.sounds = (List<SoundZone>)copy;
-        this.lights = (List<MapLight>)copy2;
-        this.phrases = (List<String>)copy3;
+public record Ambience(List<SoundZone> sounds, List<MapLight> lights, List<String> phrases) {
+    public static final Ambience NONE = new Ambience(List.of(), List.of(), List.of());
+
+    public Ambience(List<SoundZone> sounds, List<MapLight> lights, List<String> phrases) {
+        sounds = List.copyOf(sounds);
+        lights = List.copyOf(lights);
+        phrases = List.copyOf(phrases);
+        this.sounds = sounds;
+        this.lights = lights;
+        this.phrases = phrases;
     }
-    
-    public Ambience offset(final int n, final int n2, final int n3) {
-        return new Ambience(this.sounds.stream().map(soundZone -> soundZone.offset(n4, n5, n6)).toList(), this.lights.stream().map(mapLight -> mapLight.offset(n7, n8, n9)).toList(), this.phrases);
+
+    public Ambience offset(int var1, int var2, int var3) {
+        return new Ambience(this.sounds.stream().map((var3x) -> {
+            return var3x.offset(var1, var2, var3);
+        }).toList(), this.lights.stream().map((var3x) -> {
+            return var3x.offset(var1, var2, var3);
+        }).toList(), this.phrases);
     }
-    
-    public List<String> phrasesOr(final List<String> list) {
-        return this.phrases.isEmpty() ? list : this.phrases;
+
+    public List<String> phrasesOr(List<String> var1) {
+        return this.phrases.isEmpty() ? var1 : this.phrases;
     }
-    
-    public void writeTo(final Map<String, Object> map) {
+
+    public void writeTo(Map<String, Object> var1) {
         if (!this.sounds.isEmpty()) {
-            map.put("sounds", this.sounds.stream().map((Function<? super Object, ?>)SoundZone::serialize).toList());
+            var1.put("sounds", this.sounds.stream().map(SoundZone::serialize).toList());
         }
+
         if (!this.lights.isEmpty()) {
-            map.put("lights", this.lights.stream().map((Function<? super Object, ?>)MapLight::serialize).toList());
+            var1.put("lights", this.lights.stream().map(MapLight::serialize).toList());
         }
+
         if (!this.phrases.isEmpty()) {
-            map.put("phrases", this.phrases);
+            var1.put("phrases", this.phrases);
         }
+
     }
-    
-    public static Ambience readFrom(final Map<String, ?> map) {
-        final List<String> strings = strings(map.get("sounds"));
-        final List<String> strings2 = strings(map.get("lights"));
-        final List<String> strings3 = strings(map.get("phrases"));
-        if (strings.isEmpty() && strings2.isEmpty() && strings3.isEmpty()) {
-            return Ambience.NONE;
+
+    public static Ambience readFrom(Map<String, ?> var0) {
+        List<String> var1 = strings(var0.get("sounds"));
+        List<String> var2 = strings(var0.get("lights"));
+        List<String> var3 = strings(var0.get("phrases"));
+        return var1.isEmpty() && var2.isEmpty() && var3.isEmpty() ? NONE : new Ambience(var1.stream().map(SoundZone::parse).toList(), var2.stream().map(MapLight::parse).toList(), var3);
+    }
+
+    private static List<String> strings(Object var0) {
+        List var10000;
+        if (var0 instanceof List var1) {
+            var10000 = var1.stream().map(Object::toString).toList();
+        } else {
+            var10000 = List.of();
         }
-        return new Ambience(strings.stream().map(SoundZone::parse).toList(), strings2.stream().map(MapLight::parse).toList(), strings3);
+
+        return var10000;
     }
-    
-    private static List<String> strings(final Object o) {
-        return (o instanceof List) ? ((List)o).stream().map(Object::toString).toList() : List.of();
+
+    public List<SoundZone> sounds() {
+        return this.sounds;
     }
-    
-    static {
-        NONE = new Ambience(List.of(), List.of(), List.of());
+
+    public List<MapLight> lights() {
+        return this.lights;
+    }
+
+    public List<String> phrases() {
+        return this.phrases;
     }
 }

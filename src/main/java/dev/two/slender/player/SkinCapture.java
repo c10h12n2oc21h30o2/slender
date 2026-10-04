@@ -1,19 +1,16 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.player;
 
-import java.util.Optional;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import java.util.Collection;
+import java.util.Optional;
 
-public final class SkinCapture
-{
+public final class SkinCapture {
     private SkinCapture() {
     }
-    
-    public static Optional<ProfileProperty> signedTextures(final Collection<ProfileProperty> collection) {
-        return collection.stream().filter(profileProperty -> "textures".equals(profileProperty.getName()) && profileProperty.isSigned()).findFirst();
+
+    public static Optional<ProfileProperty> signedTextures(Collection<ProfileProperty> var0) {
+        return var0.stream().filter((var0x) -> {
+            return "textures".equals(var0x.getName()) && var0x.isSigned();
+        }).findFirst();
     }
 }

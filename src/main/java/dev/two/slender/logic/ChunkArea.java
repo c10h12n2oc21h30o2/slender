@@ -1,24 +1,21 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.logic;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ChunkArea
-{
+public final class ChunkArea {
     private ChunkArea() {
     }
-    
-    public static List<int[]> chunks(final int n, final int n2, final int n3, final int n4) {
-        final ArrayList list = new ArrayList();
-        for (int i = Math.min(n, n3) >> 4; i <= Math.max(n, n3) >> 4; ++i) {
-            for (int j = Math.min(n2, n4) >> 4; j <= Math.max(n2, n4) >> 4; ++j) {
-                list.add(new int[] { i, j });
+
+    public static List<int[]> chunks(int var0, int var1, int var2, int var3) {
+        ArrayList var4 = new ArrayList();
+
+        for(int var5 = Math.min(var0, var2) >> 4; var5 <= Math.max(var0, var2) >> 4; ++var5) {
+            for(int var6 = Math.min(var1, var3) >> 4; var6 <= Math.max(var1, var3) >> 4; ++var6) {
+                var4.add(new int[]{var5, var6});
             }
         }
-        return list;
+
+        return var4;
     }
 }

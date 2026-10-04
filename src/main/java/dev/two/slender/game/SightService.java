@@ -1,71 +1,77 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.game;
 
-import java.util.Iterator;
-import java.util.Collection;
+import dev.two.slender.config.SlenderConfig;
 import dev.two.slender.logic.SightMath;
+import dev.two.slender.logic.Vec3;
+import java.util.Collection;
+import java.util.Iterator;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.bukkit.FluidCollisionMode;
-import dev.two.slender.logic.Vec3;
-import org.bukkit.Location;
-import dev.two.slender.config.SlenderConfig;
 
-public final class SightService
-{
+public final class SightService {
     private final SlenderConfig cfg;
-    
-    public SightService(final SlenderConfig cfg) {
-        this.cfg = cfg;
+
+    public SightService(SlenderConfig var1) {
+        this.cfg = var1;
     }
-    
-    public static Vec3 vec(final Location location) {
-        return new Vec3(location.getX(), location.getY(), location.getZ());
+
+    public static Vec3 vec(Location var0) {
+        return new Vec3(var0.getX(), var0.getY(), var0.getZ());
     }
-    
-    public static Vec3 dir(final Location location) {
-        return Vec3.fromYawPitch(location.getYaw(), location.getPitch());
+
+    public static Vec3 dir(Location var0) {
+        return Vec3.fromYawPitch(var0.getYaw(), var0.getPitch());
     }
-    
-    public boolean lineOfSight(final Location location, final Location location2) {
-        if (location.getWorld() != location2.getWorld()) {
+
+    public boolean lineOfSight(Location var1, Location var2) {
+        if (var1.getWorld() != var2.getWorld()) {
             return false;
-        }
-        final Vector subtract = location2.toVector().subtract(location.toVector());
-        final double length = subtract.length();
-        return length < 0.05 || location.getWorld().rayTraceBlocks(location, subtract.normalize(), length, FluidCollisionMode.NEVER, true) == null;
-    }
-    
-    public boolean looksAt(final Player player, final double n, final double n2, final Location... array) {
-        final Location eyeLocation = player.getEyeLocation();
-        final Vec3 vec = vec(eyeLocation);
-        final Vec3 dir = dir(eyeLocation);
-        for (final Location location : array) {
-            if (location != null) {
-                if (location.getWorld() == eyeLocation.getWorld()) {
-                    if (SightMath.inCone(vec, dir, vec(location), n, n2) && this.lineOfSight(eyeLocation, location)) {
-                        return true;
-                    }
-                }
+        } else {
+            Vector var3 = var2.toVector().subtract(var1.toVector());
+            double var4 = var3.length();
+            if (var4 < 0.05) {
+                return true;
+            } else {
+                return var1.getWorld().rayTraceBlocks(var1, var3.normalize(), var4, FluidCollisionMode.NEVER, true) == null;
             }
         }
-        return false;
     }
-    
-    public boolean observedByAny(final Collection<Player> collection, final Location... array) {
-        final Iterator<Player> iterator = collection.iterator();
-        while (iterator.hasNext()) {
-            if (this.looksAt(iterator.next(), this.cfg.observeHalfAngle, this.cfg.observeMaxDistance, array)) {
+
+    public boolean looksAt(Player var1, double var2, double var4, Location... var6) {
+        Location var7 = var1.getEyeLocation();
+        Vec3 var8 = vec(var7);
+        Vec3 var9 = dir(var7);
+        Location[] var10 = var6;
+        int var11 = var6.length;
+
+        for(int var12 = 0; var12 < var11; ++var12) {
+            Location var13 = var10[var12];
+            if (var13 != null && var13.getWorld() == var7.getWorld() && SightMath.inCone(var8, var9, vec(var13), var2, var4) && this.lineOfSight(var7, var13)) {
                 return true;
             }
         }
+
         return false;
     }
-    
-    public boolean staticLook(final Player player, final Location... array) {
-        return this.looksAt(player, this.cfg.staticLookHalfAngle, this.cfg.staticLookMaxDistance, array);
+
+    public boolean observedByAny(Collection<Player> var1, Location... var2) {
+        Iterator var3 = var1.iterator();
+
+        Player var4;
+        do {
+            if (!var3.hasNext()) {
+                return false;
+            }
+
+            var4 = (Player)var3.next();
+        } while(!this.looksAt(var4, this.cfg.observeHalfAngle, this.cfg.observeMaxDistance, var2));
+
+        return true;
+    }
+
+    public boolean staticLook(Player var1, Location... var2) {
+        return this.looksAt(var1, this.cfg.staticLookHalfAngle, this.cfg.staticLookMaxDistance, var2);
     }
 }

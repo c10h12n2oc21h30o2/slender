@@ -1,45 +1,54 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.config;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-public final class ConfigMigration
-{
+public final class ConfigMigration {
     public static final int VERSION = 3;
-    
+
     private ConfigMigration() {
     }
-    
-    public static boolean migrate(final ConfigurationSection configurationSection) {
-        final int int1 = configurationSection.getInt("config-version", 1);
-        if (int1 >= 3) {
+
+    public static boolean migrate(ConfigurationSection var0) {
+        int var1 = var0.getInt("config-version", 1);
+        if (var1 >= 3) {
             return false;
+        } else {
+            if (var1 < 2) {
+                if (was(var0, "flashlight.battery-drain-per-second", 0.6667)) {
+                    var0.set("flashlight.battery-drain-per-second", 0.2);
+                }
+
+                if (was(var0, "flashlight.battery-charge", 35.0)) {
+                    var0.set("flashlight.battery-charge", 40);
+                }
+            }
+
+            if (var1 < 3) {
+                if (!var0.contains("vestibulo.niebla", true)) {
+                    var0.set("vestibulo.niebla", 2);
+                }
+
+                if (!var0.contains("vestibulo.bruma", true)) {
+                    var0.set("vestibulo.bruma", true);
+                }
+            }
+
+            var0.set("config-version", 3);
+            return true;
         }
-        if (int1 < 2) {
-            if (was(configurationSection, "flashlight.battery-drain-per-second", 0.6667)) {
-                configurationSection.set("flashlight.battery-drain-per-second", (Object)0.2);
-            }
-            if (was(configurationSection, "flashlight.battery-charge", 35.0)) {
-                configurationSection.set("flashlight.battery-charge", (Object)40);
-            }
-        }
-        if (int1 < 3) {
-            if (!configurationSection.contains("vestibulo.niebla", true)) {
-                configurationSection.set("vestibulo.niebla", (Object)2);
-            }
-            if (!configurationSection.contains("vestibulo.bruma", true)) {
-                configurationSection.set("vestibulo.bruma", (Object)true);
-            }
-        }
-        configurationSection.set("config-version", (Object)3);
-        return true;
     }
-    
-    private static boolean was(final ConfigurationSection configurationSection, final String s, final double n) {
-        final Object value = configurationSection.get(s, (Object)null);
-        return value instanceof Number && Math.abs(((Number)value).doubleValue() - n) < 0.001;
+
+    private static boolean was(ConfigurationSection var0, String var1, double var2) {
+        Object var5 = var0.get(var1, (Object)null);
+        boolean var10000;
+        if (var5 instanceof Number var4) {
+            if (Math.abs(var4.doubleValue() - var2) < 0.001) {
+                var10000 = true;
+                return var10000;
+            }
+        }
+
+        var10000 = false;
+        return var10000;
     }
 }

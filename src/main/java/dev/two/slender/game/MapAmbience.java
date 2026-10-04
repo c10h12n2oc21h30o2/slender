@@ -1,111 +1,121 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.game;
 
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Lightable;
-import org.bukkit.Material;
+import dev.two.slender.map.Ambience;
+import dev.two.slender.map.BlockPos;
 import dev.two.slender.map.MapLight;
-import java.util.Iterator;
-import org.bukkit.SoundCategory;
-import org.bukkit.Location;
 import dev.two.slender.map.SoundZone;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import org.bukkit.entity.Player;
-import java.util.List;
-import java.util.HashMap;
-import dev.two.slender.map.BlockPos;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
-import java.util.Map;
-import dev.two.slender.map.Ambience;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Lightable;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-final class MapAmbience
-{
+final class MapAmbience {
     private final Plugin plugin;
     private final World world;
     private final Ambience amb;
-    private final Map<String, Sound> sounds;
-    private final Map<BlockPos, Boolean> lit;
-    
-    MapAmbience(final Plugin plugin, final World world, final Ambience amb) {
-        this.sounds = new HashMap<String, Sound>();
-        this.lit = new HashMap<BlockPos, Boolean>();
-        this.plugin = plugin;
-        this.world = world;
-        this.amb = amb;
+    private final Map<String, Sound> sounds = new HashMap();
+    private final Map<BlockPos, Boolean> lit = new HashMap();
+
+    MapAmbience(Plugin var1, World var2, Ambience var3) {
+        this.plugin = var1;
+        this.world = var2;
+        this.amb = var3;
     }
-    
-    void second(final List<Player> list, final Random obj) {
-        if (this.amb.sounds().isEmpty()) {
-            return;
-        }
-        for (final Player player : list) {
-            final Location location = player.getLocation();
-            final List<SoundZone> sounds = this.amb.sounds();
-            final double x = location.getX();
-            final double z = location.getZ();
-            Objects.requireNonNull(obj);
-            for (final SoundZone soundZone : SoundZone.due(sounds, x, z, obj::nextDouble)) {
-                final Sound sound = this.sound(soundZone.sound());
-                if (sound == null) {
-                    continue;
+
+    void second(List<Player> var1, Random var2) {
+        if (!this.amb.sounds().isEmpty()) {
+            Iterator var3 = var1.iterator();
+
+            while(var3.hasNext()) {
+                Player var4 = (Player)var3.next();
+                Location var5 = var4.getLocation();
+                List var10000 = this.amb.sounds();
+                double var10001 = var5.getX();
+                double var10002 = var5.getZ();
+                Objects.requireNonNull(var2);
+                Iterator var6 = SoundZone.due(var10000, var10001, var10002, var2::nextDouble).iterator();
+
+                while(var6.hasNext()) {
+                    SoundZone var7 = (SoundZone)var6.next();
+                    Sound var8 = this.sound(var7.sound());
+                    if (var8 != null) {
+                        Location var9 = var7.radius() <= 10 ? new Location(this.world, (double)var7.center().x() + 0.5, (double)var7.center().y() + 0.5, (double)var7.center().z() + 0.5) : Atmosphere.around(var4, var2, 4.0 + var2.nextDouble() * 6.0);
+                        var4.playSound(var9, var8, SoundCategory.AMBIENT, var7.volume(), var7.pitch());
+                    }
                 }
-                player.playSound((soundZone.radius() <= 10) ? new Location(this.world, soundZone.center().x() + 0.5, soundZone.center().y() + 0.5, soundZone.center().z() + 0.5) : Atmosphere.around(player, obj, 4.0 + obj.nextDouble() * 6.0), sound, SoundCategory.AMBIENT, soundZone.volume(), soundZone.pitch());
             }
+
         }
     }
-    
-    void lights(final long n, final Random random) {
-        for (final MapLight mapLight : this.amb.lights()) {
-            final boolean lit = mapLight.litAt(n, random.nextDouble());
-            if (!Boolean.valueOf(lit).equals(this.lit.get(mapLight.pos())) && this.apply(mapLight.pos(), lit)) {
-                this.lit.put(mapLight.pos(), lit);
+
+    void lights(long var1, Random var3) {
+        Iterator var4 = this.amb.lights().iterator();
+
+        while(var4.hasNext()) {
+            MapLight var5 = (MapLight)var4.next();
+            boolean var6 = var5.litAt(var1, var3.nextDouble());
+            if (!Boolean.valueOf(var6).equals(this.lit.get(var5.pos())) && this.apply(var5.pos(), var6)) {
+                this.lit.put(var5.pos(), var6);
             }
         }
+
     }
-    
+
     void reset() {
-        final Iterator<BlockPos> iterator = this.lit.keySet().iterator();
-        while (iterator.hasNext()) {
-            this.apply(iterator.next(), true);
+        Iterator var1 = this.lit.keySet().iterator();
+
+        while(var1.hasNext()) {
+            BlockPos var2 = (BlockPos)var1.next();
+            this.apply(var2, true);
         }
+
         this.lit.clear();
     }
-    
-    private boolean apply(final BlockPos blockPos, final boolean lit) {
-        final Block block = this.world.getBlockAt(blockPos.x(), blockPos.y(), blockPos.z());
-        if (block.getType() != Material.REDSTONE_LAMP) {
+
+    private boolean apply(BlockPos var1, boolean var2) {
+        Block var3 = this.world.getBlockAt(var1.x(), var1.y(), var1.z());
+        if (var3.getType() != Material.REDSTONE_LAMP) {
             return false;
-        }
-        final Lightable lightable = (Lightable)block.getBlockData();
-        if (lightable.isLit() != lit) {
-            lightable.setLit(lit);
-            block.setBlockData((BlockData)lightable, false);
-        }
-        return true;
-    }
-    
-    private Sound sound(final String name) {
-        if (this.sounds.containsKey(name)) {
-            return this.sounds.get(name);
-        }
-        Sound sound = null;
-        try {
-            final Object value = Sound.class.getField(name).get(null);
-            if (value instanceof final Sound sound2) {
-                sound = sound2;
+        } else {
+            Lightable var4 = (Lightable)var3.getBlockData();
+            if (var4.isLit() != var2) {
+                var4.setLit(var2);
+                var3.setBlockData(var4, false);
             }
+
+            return true;
         }
-        catch (final ReflectiveOperationException ex) {
-            this.plugin.getLogger().warning("Sonido desconocido en el mapa: " + name);
+    }
+
+    private Sound sound(String var1) {
+        if (this.sounds.containsKey(var1)) {
+            return (Sound)this.sounds.get(var1);
+        } else {
+            Sound var2 = null;
+
+            try {
+                Object var4 = Sound.class.getField(var1).get((Object)null);
+                if (var4 instanceof Sound) {
+                    Sound var3 = (Sound)var4;
+                    var2 = var3;
+                }
+            } catch (ReflectiveOperationException var5) {
+                this.plugin.getLogger().warning("Sonido desconocido en el mapa: " + var1);
+            }
+
+            this.sounds.put(var1, var2);
+            return var2;
         }
-        this.sounds.put(name, sound);
-        return sound;
     }
 }

@@ -1,41 +1,36 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.game;
 
-import dev.two.slender.logic.Vec3;
-import dev.two.slender.logic.SightMath;
-import java.util.Iterator;
-import org.bukkit.util.RayTraceResult;
-import org.bukkit.block.BlockFace;
-import org.bukkit.command.CommandSender;
-import java.util.Random;
-import net.kyori.adventure.text.Component;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.SoundCategory;
-import org.bukkit.Sound;
-import org.bukkit.attribute.Attribute;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import java.util.Collection;
-import org.bukkit.Location;
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.Map;
-import org.bukkit.entity.Player;
-import java.util.function.BiConsumer;
-import dev.two.slender.map.ArenaMap;
 import dev.two.slender.config.Msg;
 import dev.two.slender.config.SlenderConfig;
+import dev.two.slender.logic.SightMath;
+import dev.two.slender.logic.Vec3;
+import dev.two.slender.map.ArenaMap;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+import java.util.function.BiConsumer;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.RayTraceResult;
 
-public final class SlenderPlayerController
-{
+public final class SlenderPlayerController {
     private static final String GRAB = "grab";
-    private static final String[][] LABELS;
+    private static final String[][] LABELS = new String[][]{{"teleport", "TP"}, {"whisper", "SUS"}, {"apparition", "APA"}, {"blackout", "APG"}, {"grab", "AGR"}};
     private final Plugin plugin;
     private final SlenderConfig cfg;
     private final Msg msg;
@@ -46,251 +41,277 @@ public final class SlenderPlayerController
     private final ScareScheduler scares;
     private final ArenaMap map;
     private final BiConsumer<Player, String> killer;
-    private final Map<String, Long> readyAt;
+    private final Map<String, Long> readyAt = new HashMap();
     private final Concealment concealment;
     private UUID slender;
     private boolean frozen;
-    
-    public SlenderPlayerController(final Plugin plugin, final SlenderConfig cfg, final Msg msg, final Items items, final SightService sight, final SlenderBody body, final Flashlights flashlights, final ScareScheduler scares, final ArenaMap map, final BiConsumer<Player, String> killer) {
-        this.readyAt = new HashMap<String, Long>();
-        this.plugin = plugin;
-        this.cfg = cfg;
-        this.msg = msg;
-        this.items = items;
-        this.sight = sight;
-        this.body = body;
-        this.flashlights = flashlights;
-        this.scares = scares;
-        this.map = map;
-        this.killer = killer;
-        this.concealment = new Concealment(plugin);
+
+    public SlenderPlayerController(Plugin var1, SlenderConfig var2, Msg var3, Items var4, SightService var5, SlenderBody var6, Flashlights var7, ScareScheduler var8, ArenaMap var9, BiConsumer<Player, String> var10) {
+        this.plugin = var1;
+        this.cfg = var2;
+        this.msg = var3;
+        this.items = var4;
+        this.sight = var5;
+        this.body = var6;
+        this.flashlights = var7;
+        this.scares = var8;
+        this.map = var9;
+        this.killer = var10;
+        this.concealment = new Concealment(var1);
     }
-    
-    public void setup(final Player player, final Location location, final Collection<Player> collection) {
-        this.slender = player.getUniqueId();
-        player.teleport(location);
-        this.concealment.hide(player, collection);
-        this.body.spawn(location, true);
-        this.body.hideFrom(player);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, -1, 0, false, false, false));
-        player.getInventory().setItem(0, this.items.make("teleport"));
-        player.getInventory().setItem(1, this.items.make("whisper"));
-        player.getInventory().setItem(2, this.items.make("apparition"));
-        player.getInventory().setItem(3, this.items.make("blackout"));
-        player.setWalkSpeed(0.22f);
+
+    public void setup(Player var1, Location var2, Collection<Player> var3) {
+        this.slender = var1.getUniqueId();
+        var1.teleport(var2);
+        this.concealment.hide(var1, var3);
+        this.body.spawn(var2, true);
+        this.body.hideFrom(var1);
+        var1.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, -1, 0, false, false, false));
+        var1.getInventory().setItem(0, this.items.make("teleport"));
+        var1.getInventory().setItem(1, this.items.make("whisper"));
+        var1.getInventory().setItem(2, this.items.make("apparition"));
+        var1.getInventory().setItem(3, this.items.make("blackout"));
+        var1.setWalkSpeed(0.22F);
     }
-    
-    public boolean isSlender(final UUID uuid) {
-        return uuid.equals(this.slender);
+
+    public boolean isSlender(UUID var1) {
+        return var1.equals(this.slender);
     }
-    
-    public void revealTo(final Player player) {
-        final Player player2 = (this.slender == null) ? null : Bukkit.getPlayer(this.slender);
-        if (player2 != null) {
-            this.concealment.revealTo(player, player2);
+
+    public void revealTo(Player var1) {
+        Player var2 = this.slender == null ? null : Bukkit.getPlayer(this.slender);
+        if (var2 != null) {
+            this.concealment.revealTo(var1, var2);
         }
+
     }
-    
+
     public UUID slender() {
         return this.slender;
     }
-    
-    public void tick(final Player player, final List<Player> list, final int n, final long n2) {
-        final Location location = player.getLocation();
-        location.setPitch(0.0f);
-        this.body.moveTo(location, null);
-        final boolean observedByAny = this.sight.observedByAny(list, this.body.center(), this.body.head());
-        if (observedByAny != this.frozen) {
-            this.frozen = observedByAny;
-            player.setWalkSpeed(observedByAny ? 0.0f : 0.22f);
-            final AttributeInstance attribute = player.getAttribute(Attribute.JUMP_STRENGTH);
-            if (attribute != null) {
-                attribute.setBaseValue(observedByAny ? 0.0 : 0.42);
+
+    public void tick(Player var1, List<Player> var2, int var3, long var4) {
+        Location var6 = var1.getLocation();
+        var6.setPitch(0.0F);
+        this.body.moveTo(var6, (Location)null);
+        boolean var7 = this.sight.observedByAny(var2, this.body.center(), this.body.head());
+        if (var7 != this.frozen) {
+            this.frozen = var7;
+            var1.setWalkSpeed(var7 ? 0.0F : 0.22F);
+            AttributeInstance var8 = var1.getAttribute(Attribute.JUMP_STRENGTH);
+            if (var8 != null) {
+                var8.setBaseValue(var7 ? 0.0 : 0.42);
             }
-            if (observedByAny) {
-                player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 0.4f, 1.6f);
+
+            if (var7) {
+                var1.playSound(var1.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 0.4F, 1.6F);
             }
         }
-        if (n2 % 20L == 0L) {
-            player.sendActionBar(this.actionBar(player, list, n2));
+
+        if (var4 % 20L == 0L) {
+            var1.sendActionBar((Component)this.actionBar(var1, var2, var4));
         }
+
     }
-    
-    private Component actionBar(final Player player, final List<Player> list, final long n) {
-        final Player nearest = this.nearest(player, list, Double.MAX_VALUE);
-        final String s = (nearest == null) ? "-" : (Math.round(nearest.getLocation().distance(player.getLocation())) + " m");
-        final StringBuilder sb = new StringBuilder();
-        final String[][] labels = SlenderPlayerController.LABELS;
-        for (int length = labels.length, i = 0; i < length; ++i) {
-            final String[] array = labels[i];
-            final long n2 = this.readyAt.getOrDefault(array[0], 0L) - n;
-            sb.append((n2 > 0L) ? ("<red>" + array[1] + " " + (n2 + 19L) / 20L + "s</red> ") : ("<green>" + array[1] + "</green> "));
+
+    private Component actionBar(Player var1, List<Player> var2, long var3) {
+        Player var5 = this.nearest(var1, var2, Double.MAX_VALUE);
+        String var6 = var5 == null ? "-" : Math.round(var5.getLocation().distance(var1.getLocation())) + " m";
+        StringBuilder var7 = new StringBuilder();
+        String[][] var8 = LABELS;
+        int var9 = var8.length;
+
+        for(int var10 = 0; var10 < var9; ++var10) {
+            String[] var11 = var8[var10];
+            long var12 = (Long)this.readyAt.getOrDefault(var11[0], 0L) - var3;
+            var7.append(var12 > 0L ? "<red>" + var11[1] + " " + (var12 + 19L) / 20L + "s</red> " : "<green>" + var11[1] + "</green> ");
         }
-        return this.msg.get("actionbar-slender", "state", this.frozen ? this.msg.raw("frozen") : "", "distance", s, "cooldowns", sb.toString().trim());
+
+        return this.msg.get("actionbar-slender", "state", this.frozen ? this.msg.raw("frozen") : "", "distance", var6, "cooldowns", var7.toString().trim());
     }
-    
-    private double cooldownSeconds(final String s) {
-        return switch (s) {
-            case "teleport" -> this.cfg.asimTeleportCooldown;
-            case "whisper" -> this.cfg.asimWhisperCooldown;
-            case "apparition" -> this.cfg.asimApparitionCooldown;
-            case "blackout" -> this.cfg.asimBlackoutCooldown;
-            default -> this.cfg.asimGrabCooldown;
-        };
+
+    private double cooldownSeconds(String var1) {
+        double var10000;
+        switch (var1) {
+            case "teleport" -> var10000 = this.cfg.asimTeleportCooldown;
+            case "whisper" -> var10000 = this.cfg.asimWhisperCooldown;
+            case "apparition" -> var10000 = this.cfg.asimApparitionCooldown;
+            case "blackout" -> var10000 = this.cfg.asimBlackoutCooldown;
+            default -> var10000 = this.cfg.asimGrabCooldown;
+        }
+
+        return var10000;
     }
-    
-    private void spend(final String s, final int n, final long n2) {
-        this.readyAt.put(s, n2 + Math.round(this.cooldownSeconds(s) * Math.max(0.3, 1.0 - this.cfg.asimCooldownReductionPerPage * n) * 20.0));
+
+    private void spend(String var1, int var2, long var3) {
+        double var5 = Math.max(0.3, 1.0 - this.cfg.asimCooldownReductionPerPage * (double)var2);
+        this.readyAt.put(var1, var3 + Math.round(this.cooldownSeconds(var1) * var5 * 20.0));
     }
-    
-    public void use(final Player player, final String key, final List<Player> list, final int n, final long n2, final Random random) {
+
+    public void use(Player var1, String var2, List<Player> var3, int var4, long var5, Random var7) {
         if (this.frozen) {
-            player.sendActionBar(this.msg.parse("<dark_red>" + this.msg.raw("frozen") + "</dark_red>"));
-            return;
-        }
-        final long n3 = this.readyAt.getOrDefault(key, 0L) - n2;
-        if (n3 > 0L) {
-            player.sendActionBar(this.msg.get("cooldown", "seconds", String.valueOf((n3 + 19L) / 20L)));
-            return;
-        }
-        if (switch (key) {
-            case "teleport" -> this.teleport(player, list);
-            case "whisper" -> this.whisper(player, list, random);
-            case "apparition" -> this.apparition(player, list, n2, random);
-            case "blackout" -> this.blackout(player, list, n2);
-            default -> false;
-        }) {
-            this.spend(key, n, n2);
-        }
-    }
-    
-    private boolean teleport(final Player player, final List<Player> list) {
-        final RayTraceResult rayTraceBlocks = player.rayTraceBlocks(this.cfg.asimTeleportRange);
-        if (rayTraceBlocks == null || rayTraceBlocks.getHitBlock() == null) {
-            this.msg.send((CommandSender)player, "teleport-fail", new String[0]);
-            return false;
-        }
-        final BlockFace hitBlockFace = rayTraceBlocks.getHitBlockFace();
-        final Location ground = SlenderBody.ground(rayTraceBlocks.getHitBlock().getRelative((hitBlockFace == null) ? BlockFace.UP : hitBlockFace).getLocation().add(0.5, 0.0, 0.5), 2, 4);
-        if (ground == null || !this.map.inRoam(ground.getX(), ground.getZ())) {
-            this.msg.send((CommandSender)player, "teleport-fail", new String[0]);
-            return false;
-        }
-        final double height = this.body.height();
-        if (this.sight.observedByAny(list, ground.clone().add(0.0, height * 0.55, 0.0), ground.clone().add(0.0, height * 0.9, 0.0))) {
-            this.msg.send((CommandSender)player, "teleport-fail", new String[0]);
-            return false;
-        }
-        ground.setYaw(player.getLocation().getYaw());
-        player.teleport(ground);
-        this.body.moveTo(ground, null);
-        return true;
-    }
-    
-    private Player nearest(final Player player, final List<Player> list, final double n) {
-        Player player2 = null;
-        double n2 = n;
-        for (final Player player3 : list) {
-            if (player3.getWorld() != player.getWorld()) {
-                continue;
-            }
-            final double distance = player3.getLocation().distance(player.getLocation());
-            if (distance > n2) {
-                continue;
-            }
-            n2 = distance;
-            player2 = player3;
-        }
-        return player2;
-    }
-    
-    private boolean whisper(final Player player, final List<Player> list, final Random random) {
-        final Player nearest = this.nearest(player, list, this.cfg.asimWhisperRange);
-        if (nearest == null) {
-            this.msg.send((CommandSender)player, "no-target", new String[0]);
-            return false;
-        }
-        this.scares.whisper(nearest, random);
-        this.scares.footsteps(nearest, random);
-        return true;
-    }
-    
-    private boolean apparition(final Player player, final List<Player> list, final long n, final Random random) {
-        final Location eyeLocation = player.getEyeLocation();
-        final Vec3 vec = SightService.vec(eyeLocation);
-        final Vec3 dir = SightService.dir(eyeLocation);
-        Player nearest = null;
-        double n2 = 15.0;
-        for (final Player player2 : list) {
-            if (player2.getWorld() == player.getWorld()) {
-                if (player2.getLocation().distance(player.getLocation()) > 40.0) {
-                    continue;
+            var1.sendActionBar((Component)this.msg.parse("<dark_red>" + this.msg.raw("frozen") + "</dark_red>"));
+        } else {
+            long var8 = (Long)this.readyAt.getOrDefault(var2, 0L) - var5;
+            if (var8 > 0L) {
+                var1.sendActionBar((Component)this.msg.get("cooldown", "seconds", String.valueOf((var8 + 19L) / 20L)));
+            } else {
+                boolean var10000;
+                switch (var2) {
+                    case "teleport" -> var10000 = this.teleport(var1, var3);
+                    case "whisper" -> var10000 = this.whisper(var1, var3, var7);
+                    case "apparition" -> var10000 = this.apparition(var1, var3, var5, var7);
+                    case "blackout" -> var10000 = this.blackout(var1, var3, var5);
+                    default -> var10000 = false;
                 }
-                final double angleBetweenDeg = SightMath.angleBetweenDeg(dir, SightService.vec(player2.getEyeLocation()).sub(vec));
-                if (angleBetweenDeg >= n2) {
-                    continue;
+
+                boolean var10 = var10000;
+                if (var10) {
+                    this.spend(var2, var4, var5);
                 }
-                n2 = angleBetweenDeg;
-                nearest = player2;
+
             }
         }
-        if (nearest == null) {
-            nearest = this.nearest(player, list, 40.0);
-        }
-        if (nearest == null || !this.scares.apparition(nearest, n, random)) {
-            this.msg.send((CommandSender)player, "no-target", new String[0]);
-            return false;
-        }
-        return true;
     }
-    
-    private boolean blackout(final Player player, final List<Player> list, final long n) {
-        boolean b = false;
-        for (final Player player2 : list) {
-            if (player2.getWorld() == player.getWorld()) {
-                if (player2.getLocation().distance(player.getLocation()) > this.cfg.asimBlackoutRadius) {
-                    continue;
+
+    private boolean teleport(Player var1, List<Player> var2) {
+        RayTraceResult var3 = var1.rayTraceBlocks(this.cfg.asimTeleportRange);
+        if (var3 != null && var3.getHitBlock() != null) {
+            BlockFace var4 = var3.getHitBlockFace();
+            Block var5 = var3.getHitBlock().getRelative(var4 == null ? BlockFace.UP : var4);
+            Location var6 = SlenderBody.ground(var5.getLocation().add(0.5, 0.0, 0.5), 2, 4);
+            if (var6 != null && this.map.inRoam(var6.getX(), var6.getZ())) {
+                double var7 = this.body.height();
+                if (this.sight.observedByAny(var2, var6.clone().add(0.0, var7 * 0.55, 0.0), var6.clone().add(0.0, var7 * 0.9, 0.0))) {
+                    this.msg.send(var1, "teleport-fail");
+                    return false;
+                } else {
+                    var6.setYaw(var1.getLocation().getYaw());
+                    var1.teleport(var6);
+                    this.body.moveTo(var6, (Location)null);
+                    return true;
                 }
-                this.flashlights.disable(player2.getUniqueId(), n + this.cfg.asimBlackoutTicks);
-                player2.playSound(player2.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.HOSTILE, 0.8f, 0.6f);
-                b = true;
+            } else {
+                this.msg.send(var1, "teleport-fail");
+                return false;
             }
-        }
-        if (!b) {
-            this.msg.send((CommandSender)player, "no-target", new String[0]);
-        }
-        return b;
-    }
-    
-    public boolean tryGrab(final Player player, final Player player2, final int n, final long n2) {
-        if (this.frozen || this.readyAt.getOrDefault("grab", 0L) > n2) {
+        } else {
+            this.msg.send(var1, "teleport-fail");
             return false;
         }
-        if (player.getWorld() != player2.getWorld() || player.getLocation().distance(player2.getLocation()) > this.cfg.asimGrabDistance) {
+    }
+
+    private Player nearest(Player var1, List<Player> var2, double var3) {
+        Player var5 = null;
+        double var6 = var3;
+        Iterator var8 = var2.iterator();
+
+        while(var8.hasNext()) {
+            Player var9 = (Player)var8.next();
+            if (var9.getWorld() == var1.getWorld()) {
+                double var10 = var9.getLocation().distance(var1.getLocation());
+                if (var10 <= var6) {
+                    var6 = var10;
+                    var5 = var9;
+                }
+            }
+        }
+
+        return var5;
+    }
+
+    private boolean whisper(Player var1, List<Player> var2, Random var3) {
+        Player var4 = this.nearest(var1, var2, this.cfg.asimWhisperRange);
+        if (var4 == null) {
+            this.msg.send(var1, "no-target");
+            return false;
+        } else {
+            this.scares.whisper(var4, var3);
+            this.scares.footsteps(var4, var3);
+            return true;
+        }
+    }
+
+    private boolean apparition(Player var1, List<Player> var2, long var3, Random var5) {
+        Location var6 = var1.getEyeLocation();
+        Vec3 var7 = SightService.vec(var6);
+        Vec3 var8 = SightService.dir(var6);
+        Player var9 = null;
+        double var10 = 15.0;
+        Iterator var12 = var2.iterator();
+
+        while(var12.hasNext()) {
+            Player var13 = (Player)var12.next();
+            if (var13.getWorld() == var1.getWorld() && !(var13.getLocation().distance(var1.getLocation()) > 40.0)) {
+                double var14 = SightMath.angleBetweenDeg(var8, SightService.vec(var13.getEyeLocation()).sub(var7));
+                if (var14 < var10) {
+                    var10 = var14;
+                    var9 = var13;
+                }
+            }
+        }
+
+        if (var9 == null) {
+            var9 = this.nearest(var1, var2, 40.0);
+        }
+
+        if (var9 != null && this.scares.apparition(var9, var3, var5)) {
+            return true;
+        } else {
+            this.msg.send(var1, "no-target");
             return false;
         }
-        this.spend("grab", n, n2);
-        this.killer.accept(player2, "grabbed");
-        return true;
     }
-    
-    public void cleanup(final Player player, final Collection<Player> collection) {
-        if (player != null) {
-            this.concealment.reveal(player);
-            player.setWalkSpeed(0.2f);
-            final AttributeInstance attribute = player.getAttribute(Attribute.JUMP_STRENGTH);
-            if (attribute != null) {
-                attribute.setBaseValue(0.42);
+
+    private boolean blackout(Player var1, List<Player> var2, long var3) {
+        boolean var5 = false;
+        Iterator var6 = var2.iterator();
+
+        while(var6.hasNext()) {
+            Player var7 = (Player)var6.next();
+            if (var7.getWorld() == var1.getWorld() && !(var7.getLocation().distance(var1.getLocation()) > this.cfg.asimBlackoutRadius)) {
+                this.flashlights.disable(var7.getUniqueId(), var3 + (long)this.cfg.asimBlackoutTicks);
+                var7.playSound(var7.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.HOSTILE, 0.8F, 0.6F);
+                var5 = true;
             }
-            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
         }
+
+        if (!var5) {
+            this.msg.send(var1, "no-target");
+        }
+
+        return var5;
+    }
+
+    public boolean tryGrab(Player var1, Player var2, int var3, long var4) {
+        if (!this.frozen && (Long)this.readyAt.getOrDefault("grab", 0L) <= var4) {
+            if (var1.getWorld() == var2.getWorld() && !(var1.getLocation().distance(var2.getLocation()) > this.cfg.asimGrabDistance)) {
+                this.spend("grab", var3, var4);
+                this.killer.accept(var2, "grabbed");
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public void cleanup(Player var1, Collection<Player> var2) {
+        if (var1 != null) {
+            this.concealment.reveal(var1);
+            var1.setWalkSpeed(0.2F);
+            AttributeInstance var3 = var1.getAttribute(Attribute.JUMP_STRENGTH);
+            if (var3 != null) {
+                var3.setBaseValue(0.42);
+            }
+
+            var1.removePotionEffect(PotionEffectType.NIGHT_VISION);
+        }
+
         this.body.remove();
         this.slender = null;
         this.frozen = false;
         this.readyAt.clear();
-    }
-    
-    static {
-        LABELS = new String[][] { { "teleport", "TP" }, { "whisper", "SUS" }, { "apparition", "APA" }, { "blackout", "APG" }, { "grab", "AGR" } };
     }
 }

@@ -1,274 +1,254 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map;
 
-import org.bukkit.block.BlockState;
-import org.bukkit.block.sign.SignSide;
-import net.kyori.adventure.text.Component;
-import org.bukkit.block.sign.Side;
-import org.bukkit.block.Sign;
-import org.bukkit.DyeColor;
-import java.util.List;
-import org.bukkit.block.data.type.Leaves;
-import org.bukkit.Location;
-import java.util.Random;
-import org.bukkit.TreeType;
 import dev.two.slender.map.schem.Schematic;
-import org.bukkit.block.Block;
-import java.util.Iterator;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Entity;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.World;
-import org.bukkit.block.data.BlockData;
 import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import net.kyori.adventure.text.Component;
+import org.bukkit.DyeColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.TreeType;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Leaves;
+import org.bukkit.block.sign.Side;
+import org.bukkit.block.sign.SignSide;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.util.BoundingBox;
 
-public final class BlockQueue
-{
+public final class BlockQueue {
     private static final int CHUNK = 4096;
-    private final ArrayDeque<Job> jobs;
+    private final ArrayDeque<Job> jobs = new ArrayDeque();
     private Placement current;
     private long total;
     private long done;
-    
-    public BlockQueue() {
-        this.jobs = new ArrayDeque<Job>();
-    }
-    
-    public void set(final int n, final int n2, final int n3, final BlockData blockData) {
+
+    public void set(int var1, int var2, int var3, BlockData var4) {
         if (this.current == null || this.current.size == 4096) {
             this.current = new Placement();
             this.jobs.add(this.current);
         }
-        this.current.add(n, n2, n3, blockData);
+
+        this.current.add(var1, var2, var3, var4);
         ++this.total;
     }
-    
-    public void add(final Job e, final long n) {
+
+    public void add(Job var1, long var2) {
         this.current = null;
-        this.jobs.add(e);
-        this.total += n;
+        this.jobs.add(var1);
+        this.total += var2;
     }
-    
-    public boolean tick(final World world, final int n, final long n2) {
-        final Budget budget = new Budget(System.nanoTime() + n2, n);
-        while (!this.jobs.isEmpty() && !budget.spent()) {
-            if (this.jobs.peek().run(world, budget)) {
+
+    public boolean tick(World var1, int var2, long var3) {
+        Budget var5 = new Budget(System.nanoTime() + var3, var2);
+
+        while(!this.jobs.isEmpty() && !var5.spent()) {
+            Job var6 = (Job)this.jobs.peek();
+            if (var6.run(var1, var5)) {
                 this.jobs.poll();
             }
         }
-        this.done += budget.used;
+
+        this.done += (long)var5.used;
         return this.jobs.isEmpty();
     }
-    
+
     public double progress() {
-        return (this.total == 0L) ? 1.0 : Math.min(1.0, this.done / (double)this.total);
+        return this.total == 0L ? 1.0 : Math.min(1.0, (double)this.done / (double)this.total);
     }
-    
-    public static Job clearJob(final int n, final int n2, final int n3, final int n4, final int n5, final int n6) {
+
+    public static Job clearJob(final int var0, final int var1, final int var2, final int var3, final int var4, final int var5) {
         return new Job() {
-            int x = n;
-            int y = n2;
-            int z = n3;
+            int x = var0;
+            int y = var1;
+            int z = var2;
             boolean entitiesCleared;
             int checks;
-            
-            @Override
-            public boolean run(final World world, final Budget budget) {
+
+            public boolean run(World var1x, Budget var2x) {
                 if (!this.entitiesCleared) {
-                    for (final Entity entity : world.getNearbyEntities(new BoundingBox((double)n, (double)n2, (double)n3, (double)(n4 + 1), (double)(n5 + 1), (double)(n6 + 1)))) {
-                        if (!(entity instanceof Player)) {
-                            entity.remove();
+                    Iterator var3x = var1x.getNearbyEntities(new BoundingBox((double)var0, (double)var1, (double)var2, (double)(var3 + 1), (double)(var4 + 1), (double)(var5 + 1))).iterator();
+
+                    while(var3x.hasNext()) {
+                        Entity var4x = (Entity)var3x.next();
+                        if (!(var4x instanceof Player)) {
+                            var4x.remove();
                         }
                     }
+
                     this.entitiesCleared = true;
                 }
-                while (!budget.spent()) {
-                    final Block block = world.getBlockAt(this.x, this.y, this.z);
-                    if (!block.getType().isAir()) {
-                        block.setType(Material.AIR, false);
-                        budget.use(1);
+
+                while(!var2x.spent()) {
+                    Block var5x = var1x.getBlockAt(this.x, this.y, this.z);
+                    if (!var5x.getType().isAir()) {
+                        var5x.setType(Material.AIR, false);
+                        var2x.use(1);
                     }
+
                     if (++this.checks % 64 == 0) {
-                        budget.use(1);
+                        var2x.use(1);
                     }
-                    if (++this.y > n5) {
-                        this.y = n2;
-                        if (++this.z <= n6) {
-                            continue;
+
+                    if (++this.y > var4) {
+                        this.y = var1;
+                        if (++this.z > var5) {
+                            this.z = var2;
+                            if (++this.x > var3) {
+                                return true;
+                            }
                         }
-                        this.z = n3;
-                        if (++this.x > n4) {
-                            return true;
-                        }
-                        continue;
                     }
                 }
+
                 return false;
             }
         };
     }
-    
-    public static Job schematicJob(final Schematic schematic, final BlockData[] array, final int n, final int n2, final int n3) {
+
+    public static Job schematicJob(final Schematic var0, final BlockData[] var1, final int var2, final int var3, final int var4) {
         return new Job() {
             int i;
             int skipped;
-            final int w = schematic.width();
-            final int layer = schematic.width() * schematic.length();
-            final int n = schematic.size();
-            
-            @Override
-            public boolean run(final World world, final Budget budget) {
-                while (this.i < this.n && !budget.spent()) {
-                    final BlockData blockData = array[schematic.paletteAt(this.i)];
-                    if (blockData != null) {
-                        final int n = this.i / this.layer;
-                        final int n2 = this.i - n * this.layer;
-                        final int n3 = n2 / this.w;
-                        world.getBlockAt(n + (n2 - n3 * this.w), n2 + n, n3 + n3).setBlockData(blockData, false);
-                        budget.use(1);
+            final int w = var0.width();
+            final int layer = var0.width() * var0.length();
+            final int n = var0.size();
+
+            public boolean run(World var1x, Budget var2x) {
+                for(; this.i < this.n && !var2x.spent(); ++this.i) {
+                    BlockData var3x = var1[var0.paletteAt(this.i)];
+                    if (var3x != null) {
+                        int var4x = this.i / this.layer;
+                        int var5 = this.i - var4x * this.layer;
+                        int var6 = var5 / this.w;
+                        int var7 = var5 - var6 * this.w;
+                        var1x.getBlockAt(var2 + var7, var3 + var4x, var4 + var6).setBlockData(var3x, false);
+                        var2x.use(1);
+                    } else if (++this.skipped % 512 == 0) {
+                        var2x.use(1);
                     }
-                    else if (++this.skipped % 512 == 0) {
-                        budget.use(1);
-                    }
-                    ++this.i;
                 }
+
                 return this.i >= this.n;
             }
         };
     }
-    
-    public static Job treeJob(final int n, final int n2, final int n3, final TreeType treeType, final long n4) {
-        return (world2, budget2) -> {
-            budget2.use(60);
-            final Random random = new Random(seed);
-            if (world2.generateTree(new Location(world2, (double)n5, (double)n6, (double)n7), random, treeType2)) {
+
+    public static Job treeJob(int var0, int var1, int var2, TreeType var3, long var4) {
+        return (var6, var7) -> {
+            var7.use(60);
+            Random var8 = new Random(var4);
+            if (var6.generateTree(new Location(var6, (double)var0, (double)var1, (double)var2), var8, var3)) {
                 return true;
-            }
-            else {
-                final int n8 = 6 + random.nextInt(4);
-                Material.SPRUCE_LOG.createBlockData();
-                Material.SPRUCE_LEAVES.createBlockData(blockData3 -> ((Leaves)blockData3).setPersistent(true));
-                int i = 0;
-                while (i < n8) {
-                    final BlockData blockData;
-                    world2.getBlockAt(n5, n6 + i, n7).setBlockData(blockData, false);
-                    ++i;
+            } else {
+                int var9 = 6 + var8.nextInt(4);
+                BlockData var10 = Material.SPRUCE_LOG.createBlockData();
+                BlockData var11 = Material.SPRUCE_LEAVES.createBlockData((var0x) -> {
+                    ((Leaves)var0x).setPersistent(true);
+                });
+
+                int var12;
+                for(var12 = 0; var12 < var9; ++var12) {
+                    var6.getBlockAt(var0, var1 + var12, var2).setBlockData(var10, false);
                 }
-                int j = 0;
-                final BlockData blockData2;
-                while (j <= n8) {
-                    Math.max(0, (n8 - j) / 2);
-                    int k = 0;
-                    final int n9;
-                    while (k <= n9) {
-                        int l = 0;
-                        while (l <= n9) {
-                            if ((k != 0 || l != 0) && Math.abs(k) + Math.abs(l) <= n9 + 1) {
-                                world2.getBlockAt(n5 + k, n6 + j, n7 + l);
-                                final Block block;
-                                if (block.getType().isAir()) {
-                                    block.setBlockData(blockData2, false);
+
+                for(var12 = 3; var12 <= var9; ++var12) {
+                    int var13 = Math.max(0, (var9 - var12) / 2);
+
+                    for(int var14 = -var13; var14 <= var13; ++var14) {
+                        for(int var15 = -var13; var15 <= var13; ++var15) {
+                            if ((var14 != 0 || var15 != 0) && Math.abs(var14) + Math.abs(var15) <= var13 + 1) {
+                                Block var16 = var6.getBlockAt(var0 + var14, var1 + var12, var2 + var15);
+                                if (var16.getType().isAir()) {
+                                    var16.setBlockData(var11, false);
                                 }
                             }
-                            ++l;
                         }
-                        ++k;
                     }
-                    ++j;
                 }
-                world2.getBlockAt(n5, n6 + n8, n7).setBlockData(blockData2, false);
+
+                var6.getBlockAt(var0, var1 + var9, var2).setBlockData(var11, false);
                 return true;
             }
         };
     }
-    
-    public static Job signJob(final int n, final int n2, final int n3, final BlockData blockData, final List<String> list, final DyeColor dyeColor) {
-        return (world2, budget2) -> {
-            budget2.use(1);
-            world2.getBlockAt(n4, n5, n6);
-            final Block block;
-            block.setBlockData(blockData2, false);
-            block.getState();
-            final Sign sign;
-            if (sign instanceof Sign) {
-                final Sign sign2 = sign;
-                sign2.getSide(Side.FRONT);
-                int n7 = 0;
-                final SignSide signSide;
-                while (n7 < 4 && n7 < list2.size()) {
-                    signSide.line(n7, (Component)Component.text((String)list2.get(n7)));
-                    ++n7;
+
+    public static Job signJob(int var0, int var1, int var2, BlockData var3, List<String> var4, DyeColor var5) {
+        return (var6, var7) -> {
+            var7.use(1);
+            Block var8 = var6.getBlockAt(var0, var1, var2);
+            var8.setBlockData(var3, false);
+            BlockState var10 = var8.getState();
+            if (var10 instanceof Sign var9) {
+                SignSide var12 = var9.getSide(Side.FRONT);
+
+                for(int var11 = 0; var11 < 4 && var11 < var4.size(); ++var11) {
+                    var12.line(var11, Component.text((String)var4.get(var11)));
                 }
-                signSide.setColor(color);
-                signSide.setGlowingText(true);
-                sign2.setWaxed(true);
-                sign2.update(true, false);
+
+                var12.setColor(var5);
+                var12.setGlowingText(true);
+                var9.setWaxed(true);
+                var9.update(true, false);
             }
+
             return true;
         };
     }
-    
-    public static final class Budget
-    {
+
+    private static final class Placement implements Job {
+        final int[] xs = new int[4096];
+        final int[] ys = new int[4096];
+        final int[] zs = new int[4096];
+        final BlockData[] data = new BlockData[4096];
+        int size;
+        int idx;
+
+        void add(int var1, int var2, int var3, BlockData var4) {
+            this.xs[this.size] = var1;
+            this.ys[this.size] = var2;
+            this.zs[this.size] = var3;
+            this.data[this.size] = var4;
+            ++this.size;
+        }
+
+        public boolean run(World var1, Budget var2) {
+            while(this.idx < this.size && !var2.spent()) {
+                var1.getBlockAt(this.xs[this.idx], this.ys[this.idx], this.zs[this.idx]).setBlockData(this.data[this.idx], false);
+                ++this.idx;
+                var2.use(1);
+            }
+
+            return this.idx >= this.size;
+        }
+    }
+
+    public static final class Budget {
         private final long deadline;
         private final int maxBlocks;
         private int used;
-        
-        Budget(final long deadline, final int maxBlocks) {
-            this.deadline = deadline;
-            this.maxBlocks = maxBlocks;
+
+        Budget(long var1, int var3) {
+            this.deadline = var1;
+            this.maxBlocks = var3;
         }
-        
-        public void use(final int n) {
-            this.used += n;
+
+        public void use(int var1) {
+            this.used += var1;
         }
-        
+
         public boolean spent() {
             return this.used >= this.maxBlocks || System.nanoTime() >= this.deadline;
         }
     }
-    
-    private static final class Placement implements Job
-    {
-        final int[] xs;
-        final int[] ys;
-        final int[] zs;
-        final BlockData[] data;
-        int size;
-        int idx;
-        
-        private Placement() {
-            this.xs = new int[4096];
-            this.ys = new int[4096];
-            this.zs = new int[4096];
-            this.data = new BlockData[4096];
-        }
-        
-        void add(final int n, final int n2, final int n3, final BlockData blockData) {
-            this.xs[this.size] = n;
-            this.ys[this.size] = n2;
-            this.zs[this.size] = n3;
-            this.data[this.size] = blockData;
-            ++this.size;
-        }
-        
-        @Override
-        public boolean run(final World world, final Budget budget) {
-            while (this.idx < this.size && !budget.spent()) {
-                world.getBlockAt(this.xs[this.idx], this.ys[this.idx], this.zs[this.idx]).setBlockData(this.data[this.idx], false);
-                ++this.idx;
-                budget.use(1);
-            }
-            return this.idx >= this.size;
-        }
-    }
-    
-    public interface Job
-    {
-        boolean run(final World p0, final Budget p1);
+
+    public interface Job {
+        boolean run(World var1, Budget var2);
     }
 }

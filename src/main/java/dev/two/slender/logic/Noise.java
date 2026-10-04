@@ -1,54 +1,55 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.logic;
 
-public final class Noise
-{
+public final class Noise {
     private final long seed;
-    
-    public Noise(final long seed) {
-        this.seed = seed;
+
+    public Noise(long var1) {
+        this.seed = var1;
     }
-    
-    private double lattice(final int n, final int n2) {
-        final long n3 = this.seed ^ n * -7046029254386353131L ^ n2 * -4417276706812531889L;
-        final long n4 = (n3 ^ n3 >>> 33) * -49064778989728563L;
-        final long n5 = (n4 ^ n4 >>> 33) * -4265267296055464877L;
-        return ((n5 ^ n5 >>> 33) >>> 11) * 1.1102230246251565E-16 * 2.0 - 1.0;
+
+    private double lattice(int var1, int var2) {
+        long var3 = this.seed ^ (long)var1 * -7046029254386353131L ^ (long)var2 * -4417276706812531889L;
+        var3 ^= var3 >>> 33;
+        var3 *= -49064778989728563L;
+        var3 ^= var3 >>> 33;
+        var3 *= -4265267296055464877L;
+        var3 ^= var3 >>> 33;
+        return (double)(var3 >>> 11) * 1.1102230246251565E-16 * 2.0 - 1.0;
     }
-    
-    private static double smooth(final double n) {
-        return n * n * (3.0 - 2.0 * n);
+
+    private static double smooth(double var0) {
+        return var0 * var0 * (3.0 - 2.0 * var0);
     }
-    
-    public double value(final double n, final double n2, final double n3) {
-        final double a = n / n3;
-        final double a2 = n2 / n3;
-        final int n4 = (int)Math.floor(a);
-        final int n5 = (int)Math.floor(a2);
-        final double smooth = smooth(a - n4);
-        final double smooth2 = smooth(a2 - n5);
-        final double lattice = this.lattice(n4, n5);
-        final double lattice2 = this.lattice(n4 + 1, n5);
-        final double lattice3 = this.lattice(n4, n5 + 1);
-        final double lattice4 = this.lattice(n4 + 1, n5 + 1);
-        final double n6 = lattice + (lattice2 - lattice) * smooth;
-        return n6 + (lattice3 + (lattice4 - lattice3) * smooth - n6) * smooth2;
+
+    public double value(double var1, double var3, double var5) {
+        double var7 = var1 / var5;
+        double var9 = var3 / var5;
+        int var11 = (int)Math.floor(var7);
+        int var12 = (int)Math.floor(var9);
+        double var13 = smooth(var7 - (double)var11);
+        double var15 = smooth(var9 - (double)var12);
+        double var17 = this.lattice(var11, var12);
+        double var19 = this.lattice(var11 + 1, var12);
+        double var21 = this.lattice(var11, var12 + 1);
+        double var23 = this.lattice(var11 + 1, var12 + 1);
+        double var25 = var17 + (var19 - var17) * var13;
+        double var27 = var21 + (var23 - var21) * var13;
+        return var25 + (var27 - var25) * var15;
     }
-    
-    public double fractal(final double n, final double n2, final double n3, final int n4) {
-        double n5 = 0.0;
-        double n6 = 1.0;
-        double n7 = 0.0;
-        double n8 = n3;
-        for (int i = 0; i < n4; ++i) {
-            n5 += this.value(n + i * 1013.0, n2 - i * 719.0, n8) * n6;
-            n7 += n6;
-            n6 *= 0.5;
-            n8 /= 2.0;
+
+    public double fractal(double var1, double var3, double var5, int var7) {
+        double var8 = 0.0;
+        double var10 = 1.0;
+        double var12 = 0.0;
+        double var14 = var5;
+
+        for(int var16 = 0; var16 < var7; ++var16) {
+            var8 += this.value(var1 + (double)var16 * 1013.0, var3 - (double)var16 * 719.0, var14) * var10;
+            var12 += var10;
+            var10 *= 0.5;
+            var14 /= 2.0;
         }
-        return n5 / n7;
+
+        return var8 / var12;
     }
 }

@@ -1,102 +1,109 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.listener;
 
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.EventPriority;
-import org.bukkit.block.Block;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.Keyed;
-import org.bukkit.Tag;
-import org.bukkit.Material;
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-import org.bukkit.World;
 import dev.two.slender.SlenderPlugin;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.Tag;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.Event.Result;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
-public final class ProtectionListener implements Listener
-{
+public final class ProtectionListener implements Listener {
     private final SlenderPlugin plugin;
-    
-    public ProtectionListener(final SlenderPlugin plugin) {
-        this.plugin = plugin;
+
+    public ProtectionListener(SlenderPlugin var1) {
+        this.plugin = var1;
     }
-    
-    private boolean guarded(final World world) {
-        return world.getName().equals(this.plugin.cfg().world);
+
+    private boolean guarded(World var1) {
+        return var1.getName().equals(this.plugin.cfg().world);
     }
-    
-    private boolean bypass(final Player player) {
-        return player.hasPermission("slender.admin") && player.getGameMode() == GameMode.CREATIVE;
+
+    private boolean bypass(Player var1) {
+        return var1.hasPermission("slender.admin") && var1.getGameMode() == GameMode.CREATIVE;
     }
-    
-    public static boolean isOpenable(final Material material) {
-        return (Tag.DOORS.isTagged((Keyed)material) && material != Material.IRON_DOOR) || (Tag.TRAPDOORS.isTagged((Keyed)material) && material != Material.IRON_TRAPDOOR);
+
+    public static boolean isOpenable(Material var0) {
+        return Tag.DOORS.isTagged(var0) && var0 != Material.IRON_DOOR || Tag.TRAPDOORS.isTagged(var0) && var0 != Material.IRON_TRAPDOOR;
     }
-    
-    @EventHandler(ignoreCancelled = true)
-    public void onBreak(final BlockBreakEvent blockBreakEvent) {
-        if (this.guarded(blockBreakEvent.getBlock().getWorld()) && !this.bypass(blockBreakEvent.getPlayer())) {
-            blockBreakEvent.setCancelled(true);
+
+    @EventHandler(
+        ignoreCancelled = true
+    )
+    public void onBreak(BlockBreakEvent var1) {
+        if (this.guarded(var1.getBlock().getWorld()) && !this.bypass(var1.getPlayer())) {
+            var1.setCancelled(true);
         }
+
     }
-    
-    @EventHandler(ignoreCancelled = true)
-    public void onPlace(final BlockPlaceEvent blockPlaceEvent) {
-        if (this.guarded(blockPlaceEvent.getBlock().getWorld()) && !this.bypass(blockPlaceEvent.getPlayer())) {
-            blockPlaceEvent.setCancelled(true);
+
+    @EventHandler(
+        ignoreCancelled = true
+    )
+    public void onPlace(BlockPlaceEvent var1) {
+        if (this.guarded(var1.getBlock().getWorld()) && !this.bypass(var1.getPlayer())) {
+            var1.setCancelled(true);
         }
+
     }
-    
-    @EventHandler(ignoreCancelled = true)
-    public void onBucket(final PlayerBucketEmptyEvent playerBucketEmptyEvent) {
-        if (this.guarded(playerBucketEmptyEvent.getBlock().getWorld()) && !this.bypass(playerBucketEmptyEvent.getPlayer())) {
-            playerBucketEmptyEvent.setCancelled(true);
+
+    @EventHandler(
+        ignoreCancelled = true
+    )
+    public void onBucket(PlayerBucketEmptyEvent var1) {
+        if (this.guarded(var1.getBlock().getWorld()) && !this.bypass(var1.getPlayer())) {
+            var1.setCancelled(true);
         }
+
     }
-    
-    @EventHandler(ignoreCancelled = true)
-    public void onBucketFill(final PlayerBucketFillEvent playerBucketFillEvent) {
-        if (this.guarded(playerBucketFillEvent.getBlock().getWorld()) && !this.bypass(playerBucketFillEvent.getPlayer())) {
-            playerBucketFillEvent.setCancelled(true);
+
+    @EventHandler(
+        ignoreCancelled = true
+    )
+    public void onBucketFill(PlayerBucketFillEvent var1) {
+        if (this.guarded(var1.getBlock().getWorld()) && !this.bypass(var1.getPlayer())) {
+            var1.setCancelled(true);
         }
+
     }
-    
-    @EventHandler(priority = EventPriority.LOW)
-    public void onInteract(final PlayerInteractEvent playerInteractEvent) {
-        if (!this.guarded(playerInteractEvent.getPlayer().getWorld()) || this.bypass(playerInteractEvent.getPlayer())) {
-            return;
-        }
-        final Block clickedBlock = playerInteractEvent.getClickedBlock();
-        if (clickedBlock == null) {
-            return;
-        }
-        if (playerInteractEvent.getAction() == Action.PHYSICAL) {
-            if (clickedBlock.getType() == Material.FARMLAND) {
-                playerInteractEvent.setCancelled(true);
+
+    @EventHandler(
+        priority = EventPriority.LOW
+    )
+    public void onInteract(PlayerInteractEvent var1) {
+        if (this.guarded(var1.getPlayer().getWorld()) && !this.bypass(var1.getPlayer())) {
+            Block var2 = var1.getClickedBlock();
+            if (var2 != null) {
+                if (var1.getAction() == Action.PHYSICAL) {
+                    if (var2.getType() == Material.FARMLAND) {
+                        var1.setCancelled(true);
+                    }
+
+                } else if (var1.getAction() != Action.RIGHT_CLICK_BLOCK || !isOpenable(var2.getType())) {
+                    var1.setUseInteractedBlock(Result.DENY);
+                }
             }
-            return;
         }
-        if (playerInteractEvent.getAction() == Action.RIGHT_CLICK_BLOCK && isOpenable(clickedBlock.getType())) {
-            return;
-        }
-        playerInteractEvent.setUseInteractedBlock(Event.Result.DENY);
     }
-    
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityChange(final EntityChangeBlockEvent entityChangeBlockEvent) {
-        if (this.guarded(entityChangeBlockEvent.getBlock().getWorld())) {
-            entityChangeBlockEvent.setCancelled(true);
+
+    @EventHandler(
+        ignoreCancelled = true
+    )
+    public void onEntityChange(EntityChangeBlockEvent var1) {
+        if (this.guarded(var1.getBlock().getWorld())) {
+            var1.setCancelled(true);
         }
+
     }
 }

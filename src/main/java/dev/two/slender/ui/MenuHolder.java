@@ -1,42 +1,36 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.ui;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-public final class MenuHolder implements InventoryHolder
-{
+public final class MenuHolder implements InventoryHolder {
     private final Type type;
     private final String mapId;
     private Inventory inventory;
-    
-    public MenuHolder(final Type type, final String mapId) {
-        this.type = type;
-        this.mapId = mapId;
+
+    public MenuHolder(Type var1, String var2) {
+        this.type = var1;
+        this.mapId = var2;
     }
-    
+
     public Type type() {
         return this.type;
     }
-    
+
     public String mapId() {
         return this.mapId;
     }
-    
-    void setInventory(final Inventory inventory) {
-        this.inventory = inventory;
+
+    void setInventory(Inventory var1) {
+        this.inventory = var1;
     }
-    
+
     public Inventory getInventory() {
         return this.inventory;
     }
-    
-    public enum Type
-    {
-        MAPS, 
+
+    public static enum Type {
+        MAPS,
         MODES;
     }
 }

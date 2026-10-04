@@ -1,44 +1,44 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map.gen;
 
 import dev.two.slender.logic.Heightmap;
-import java.util.Collection;
 import java.util.List;
 
-record Post(int x, int z, String facing, List<String> targets) {
-    public Post(final int x, final int z, final String facing, final List<String> targets) {
-        final List<Object> copy = (List<Object>)List.copyOf((Collection<? extends String>)targets);
+public record Post(int x, int z, String facing, List<String> targets) {
+    public Post(int x, int z, String facing, List<String> targets) {
+        targets = List.copyOf(targets);
         this.x = x;
         this.z = z;
         this.facing = facing;
-        this.targets = (List<String>)copy;
+        this.targets = targets;
     }
-    
-    public int base(final Heightmap heightmap) {
-        int n = 0;
-        int n2 = 0;
-        final String facing = this.facing;
-        switch (facing) {
-            case "NORTH": {
-                n2 = -1;
-                break;
-            }
-            case "SOUTH": {
-                n2 = 1;
-                break;
-            }
-            case "EAST": {
-                n = 1;
-                break;
-            }
-            default: {
-                n = -1;
-                break;
-            }
+
+    public int base(Heightmap var1) {
+        byte var2 = 0;
+        byte var3 = 0;
+        switch (this.facing) {
+            case "NORTH" -> var3 = -1;
+            case "SOUTH" -> var3 = 1;
+            case "EAST" -> var2 = 1;
+            default -> var2 = -1;
         }
-        return Math.max(heightmap.at(this.x, this.z), Math.max(heightmap.at(this.x + n, this.z + n2), heightmap.at(this.x + 2 * n, this.z + 2 * n2)) - 1);
+
+        int var6 = Math.max(var1.at(this.x + var2, this.z + var3), var1.at(this.x + 2 * var2, this.z + 2 * var3));
+        return Math.max(var1.at(this.x, this.z), var6 - 1);
+    }
+
+    public int x() {
+        return this.x;
+    }
+
+    public int z() {
+        return this.z;
+    }
+
+    public String facing() {
+        return this.facing;
+    }
+
+    public List<String> targets() {
+        return this.targets;
     }
 }

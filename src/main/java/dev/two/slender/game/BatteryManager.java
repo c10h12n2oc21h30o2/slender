@@ -1,62 +1,63 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.game;
 
-import java.util.Iterator;
-import org.bukkit.util.Vector;
-import org.bukkit.Location;
 import dev.two.slender.map.BlockPos;
-import java.util.List;
-import org.bukkit.World;
 import java.util.HashMap;
-import org.bukkit.entity.Item;
-import java.util.UUID;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Item;
+import org.bukkit.util.Vector;
 
-public final class BatteryManager
-{
+public final class BatteryManager {
     public static final String TAG = "slender_battery";
     private final Items items;
-    private final Map<UUID, Item> spawned;
-    
-    public BatteryManager(final Items items) {
-        this.spawned = new HashMap<UUID, Item>();
-        this.items = items;
+    private final Map<UUID, Item> spawned = new HashMap();
+
+    public BatteryManager(Items var1) {
+        this.items = var1;
     }
-    
-    public void spawn(final World world, final List<BlockPos> list) {
-        for (final BlockPos blockPos : list) {
-            final Item dropItem = world.dropItem(new Location(world, blockPos.x() + 0.5, blockPos.y() + 0.2, blockPos.z() + 0.5), this.items.make("battery"), item -> {
-                item.setUnlimitedLifetime((boolean)(1 != 0));
-                item.setCanMobPickup((boolean)(0 != 0));
-                item.setPickupDelay(0);
-                item.setWillAge((boolean)(0 != 0));
-                item.setPersistent((boolean)(0 != 0));
-                item.setVelocity(new Vector());
-                item.getScoreboardTags().add("slender_battery");
-                return;
+
+    public void spawn(World var1, List<BlockPos> var2) {
+        Iterator var3 = var2.iterator();
+
+        while(var3.hasNext()) {
+            BlockPos var4 = (BlockPos)var3.next();
+            Item var5 = var1.dropItem(new Location(var1, (double)var4.x() + 0.5, (double)var4.y() + 0.2, (double)var4.z() + 0.5), this.items.make("battery"), (var0) -> {
+                var0.setUnlimitedLifetime(true);
+                var0.setCanMobPickup(false);
+                var0.setPickupDelay(0);
+                var0.setWillAge(false);
+                var0.setPersistent(false);
+                var0.setVelocity(new Vector());
+                var0.getScoreboardTags().add("slender_battery");
             });
-            this.spawned.put(dropItem.getUniqueId(), dropItem);
+            this.spawned.put(var5.getUniqueId(), var5);
         }
+
     }
-    
-    public boolean isBattery(final Item item) {
-        return this.spawned.containsKey(item.getUniqueId());
+
+    public boolean isBattery(Item var1) {
+        return this.spawned.containsKey(var1.getUniqueId());
     }
-    
-    public void remove(final Item item) {
-        this.spawned.remove(item.getUniqueId());
-        item.remove();
+
+    public void remove(Item var1) {
+        this.spawned.remove(var1.getUniqueId());
+        var1.remove();
     }
-    
+
     public void clear() {
-        for (final Item item : this.spawned.values()) {
-            if (item.isValid()) {
-                item.remove();
+        Iterator var1 = this.spawned.values().iterator();
+
+        while(var1.hasNext()) {
+            Item var2 = (Item)var1.next();
+            if (var2.isValid()) {
+                var2.remove();
             }
         }
+
         this.spawned.clear();
     }
 }

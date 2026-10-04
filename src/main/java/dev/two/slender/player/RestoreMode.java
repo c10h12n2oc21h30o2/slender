@@ -1,17 +1,12 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.player;
 
 import java.util.Arrays;
 
-public enum RestoreMode
-{
-    FULL, 
+public enum RestoreMode {
+    FULL,
     STATE_ONLY;
-    
-    public static RestoreMode after(final Object[] a, final Object[] a2) {
-        return (a == null || Arrays.equals(a, a2)) ? RestoreMode.FULL : RestoreMode.STATE_ONLY;
+
+    public static RestoreMode after(Object[] var0, Object[] var1) {
+        return var0 != null && !Arrays.equals(var0, var1) ? STATE_ONLY : FULL;
     }
 }

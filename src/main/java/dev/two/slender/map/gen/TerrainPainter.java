@@ -1,60 +1,61 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map.gen;
 
-import org.bukkit.Material;
 import dev.two.slender.logic.Heightmap;
 import dev.two.slender.map.Builder;
+import org.bukkit.Material;
 
-public final class TerrainPainter
-{
-    private static final int[][] DIRS;
-    
+public final class TerrainPainter {
+    private static final int[][] DIRS = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
     private TerrainPainter() {
     }
-    
-    public static void paint(final Builder builder, final Heightmap heightmap, final Surface surface) {
-        final int radius = heightmap.radius();
-        final int waterLevel = heightmap.waterLevel();
-        for (int i = -radius; i <= radius; ++i) {
-            for (int j = -radius; j <= radius; ++j) {
-                final int at = heightmap.at(i, j);
-                for (int k = at - 3; k < at; ++k) {
-                    builder.set(i, k, j, Material.DIRT);
+
+    public static void paint(Builder var0, Heightmap var1, Surface var2) {
+        int var3 = var1.radius();
+        int var4 = var1.waterLevel();
+
+        for(int var5 = -var3; var5 <= var3; ++var5) {
+            for(int var6 = -var3; var6 <= var3; ++var6) {
+                int var7 = var1.at(var5, var6);
+
+                int var8;
+                for(var8 = var7 - 3; var8 < var7; ++var8) {
+                    var0.set(var5, var8, var6, Material.DIRT);
                 }
-                builder.set(i, at, j, surface.top(i, j, at));
-                if (heightmap.is(i, j, (byte)2)) {
-                    for (int l = at + 1; l <= waterLevel; ++l) {
-                        builder.set(i, l, j, Material.WATER);
+
+                var0.set(var5, var7, var6, var2.top(var5, var6, var7));
+                if (var1.is(var5, var6, (byte)2)) {
+                    for(var8 = var7 + 1; var8 <= var4; ++var8) {
+                        var0.set(var5, var8, var6, Material.WATER);
                     }
-                    if (heightmap.is(i, j, (byte)1)) {
-                        builder.set(i, waterLevel, j, Material.SPRUCE_PLANKS);
-                        if (bridgeSide(heightmap, i, j)) {
-                            builder.set(i, waterLevel + 1, j, "spruce_fence");
+
+                    if (var1.is(var5, var6, (byte)1)) {
+                        var0.set(var5, var4, var6, Material.SPRUCE_PLANKS);
+                        if (bridgeSide(var1, var5, var6)) {
+                            var0.set(var5, var4 + 1, var6, "spruce_fence");
                         }
                     }
                 }
             }
         }
+
     }
-    
-    private static boolean bridgeSide(final Heightmap heightmap, final int n, final int n2) {
-        for (final int[] array : TerrainPainter.DIRS) {
-            if (heightmap.is(n + array[0], n2 + array[1], (byte)2) && !heightmap.is(n + array[0], n2 + array[1], (byte)1)) {
+
+    private static boolean bridgeSide(Heightmap var0, int var1, int var2) {
+        int[][] var3 = DIRS;
+        int var4 = var3.length;
+
+        for(int var5 = 0; var5 < var4; ++var5) {
+            int[] var6 = var3[var5];
+            if (var0.is(var1 + var6[0], var2 + var6[1], (byte)2) && !var0.is(var1 + var6[0], var2 + var6[1], (byte)1)) {
                 return true;
             }
         }
+
         return false;
     }
-    
-    static {
-        DIRS = new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
-    }
-    
-    public interface Surface
-    {
-        Material top(final int p0, final int p1, final int p2);
+
+    public interface Surface {
+        Material top(int var1, int var2, int var3);
     }
 }

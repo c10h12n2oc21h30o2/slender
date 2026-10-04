@@ -1,27 +1,22 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map;
 
-import java.util.stream.Stream;
-import java.util.function.Consumer;
-import java.util.Objects;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-public final class MapCatalog
-{
+public final class MapCatalog {
     private MapCatalog() {
     }
-    
-    public static List<String> ordered(final List<String> c, final Collection<String> collection) {
-        final ArrayList list = new ArrayList((Collection<? extends E>)c);
-        final Stream<String> sorted = collection.stream().filter(s -> !list2.contains(s)).sorted();
-        final ArrayList obj = list;
-        Objects.requireNonNull(obj);
-        sorted.forEach(obj::add);
-        return list;
+
+    public static List<String> ordered(List<String> var0, Collection<String> var1) {
+        ArrayList var2 = new ArrayList(var0);
+        Stream var10000 = var1.stream().filter((var1x) -> {
+            return !var0.contains(var1x);
+        }).sorted();
+        Objects.requireNonNull(var2);
+        var10000.forEach(var2::add);
+        return var2;
     }
 }

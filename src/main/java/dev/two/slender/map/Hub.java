@@ -1,104 +1,129 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
-import java.util.Objects;
-import java.util.Iterator;
-import java.util.Optional;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
-record Hub(String world, Loc spawn, Zone exit, Map<String, Zone> doors) {
-    public Hub(final String world, final Loc spawn, final Zone exit, final Map<String, Zone> doors) {
-        final Map<Object, Object> unmodifiableMap = (Map<Object, Object>)Collections.unmodifiableMap((Map<? extends String, ? extends Zone>)new LinkedHashMap<String, Zone>(doors));
+public record Hub(String world, Loc spawn, Zone exit, Map<String, Zone> doors) {
+    public Hub(String world, Loc spawn, Zone exit, Map<String, Zone> doors) {
+        doors = Collections.unmodifiableMap(new LinkedHashMap(doors));
         this.world = world;
         this.spawn = spawn;
         this.exit = exit;
-        this.doors = (Map<String, Zone>)unmodifiableMap;
+        this.doors = doors;
     }
-    
-    public Optional<String> doorAt(final double n, final double n2, final double n3) {
-        for (final Map.Entry entry : this.doors.entrySet()) {
-            if (((Zone)entry.getValue()).contains(n, n2, n3)) {
-                return Optional.of(entry.getKey());
+
+    public Optional<String> doorAt(double var1, double var3, double var5) {
+        Iterator var7 = this.doors.entrySet().iterator();
+
+        Map.Entry var8;
+        do {
+            if (!var7.hasNext()) {
+                return Optional.empty();
             }
-        }
-        return Optional.empty();
+
+            var8 = (Map.Entry)var7.next();
+        } while(!((Zone)var8.getValue()).contains(var1, var3, var5));
+
+        return Optional.of((String)var8.getKey());
     }
-    
-    public boolean inExit(final double n, final double n2, final double n3) {
-        return this.exit != null && this.exit.contains(n, n2, n3);
+
+    public boolean inExit(double var1, double var3, double var5) {
+        return this.exit != null && this.exit.contains(var1, var3, var5);
     }
-    
-    public Hub withSpawn(final Loc spawn) {
-        return new Hub(this.world, spawn, this.exit, this.doors);
+
+    public Hub withSpawn(Loc var1) {
+        return new Hub(this.world, var1, this.exit, this.doors);
     }
-    
-    public Hub withExit(final Zone exit) {
-        return new Hub(this.world, this.spawn, exit, this.doors);
+
+    public Hub withExit(Zone var1) {
+        return new Hub(this.world, this.spawn, var1, this.doors);
     }
-    
-    public Hub withDoor(final String s, final Zone zone) {
-        final LinkedHashMap doors = new LinkedHashMap((Map<? extends K, ? extends V>)this.doors);
-        doors.put(s, zone);
-        return new Hub(this.world, this.spawn, this.exit, doors);
+
+    public Hub withDoor(String var1, Zone var2) {
+        LinkedHashMap var3 = new LinkedHashMap(this.doors);
+        var3.put(var1, var2);
+        return new Hub(this.world, this.spawn, this.exit, var3);
     }
-    
-    public Hub withoutDoor(final String s) {
-        final LinkedHashMap doors = new LinkedHashMap((Map<? extends K, ? extends V>)this.doors);
-        doors.remove(s);
-        return new Hub(this.world, this.spawn, this.exit, doors);
+
+    public Hub withoutDoor(String var1) {
+        LinkedHashMap var2 = new LinkedHashMap(this.doors);
+        var2.remove(var1);
+        return new Hub(this.world, this.spawn, this.exit, var2);
     }
-    
-    public Hub withDoorsFrom(final Hub hub) {
-        if (hub == null) {
+
+    public Hub withDoorsFrom(Hub var1) {
+        if (var1 == null) {
             return this;
+        } else {
+            LinkedHashMap var2 = new LinkedHashMap(this.doors);
+            Map var10000 = var1.doors();
+            Objects.requireNonNull(var2);
+            var10000.forEach(var2::putIfAbsent);
+            return new Hub(this.world, this.spawn, this.exit, var2);
         }
-        final LinkedHashMap doors = new LinkedHashMap((Map<? extends K, ? extends V>)this.doors);
-        final Map<String, Zone> doors2 = hub.doors();
-        final LinkedHashMap obj = doors;
-        Objects.requireNonNull(obj);
-        doors2.forEach(obj::putIfAbsent);
-        return new Hub(this.world, this.spawn, this.exit, doors);
     }
-    
+
     public Map<String, Object> toMap() {
-        final LinkedHashMap linkedHashMap = new LinkedHashMap();
-        linkedHashMap.put("world", this.world);
-        linkedHashMap.put("spawn", this.spawn.serialize());
+        LinkedHashMap var1 = new LinkedHashMap();
+        var1.put("world", this.world);
+        var1.put("spawn", this.spawn.serialize());
         if (this.exit != null) {
-            linkedHashMap.put("exit", this.exit.serialize());
+            var1.put("exit", this.exit.serialize());
         }
-        final ArrayList list = new ArrayList();
-        this.doors.forEach((s, zone) -> list2.add(s + "|" + zone.serialize()));
-        linkedHashMap.put("doors", list);
-        return linkedHashMap;
+
+        ArrayList var2 = new ArrayList();
+        this.doors.forEach((var1x, var2x) -> {
+            var2.add(var1x + "|" + var2x.serialize());
+        });
+        var1.put("doors", var2);
+        return var1;
     }
-    
-    public static Hub fromMap(final Map<String, ?> map) {
-        final Object value = map.get("world");
-        final Object value2 = map.get("spawn");
-        final Object value3 = map.get("exit");
-        final Object value4 = map.get("doors");
-        if (value == null || value2 == null) {
-            throw new IllegalArgumentException("hub.yml incompleto");
-        }
-        final LinkedHashMap doors = new LinkedHashMap();
-        if (value4 instanceof final List list) {
-            final Iterator iterator = list.iterator();
-            while (iterator.hasNext()) {
-                final String[] split = iterator.next().toString().split("\\|", 2);
-                if (split.length == 2) {
-                    doors.put(split[0], Zone.parse(split[1]));
+
+    public static Hub fromMap(Map<String, ?> var0) {
+        Object var1 = var0.get("world");
+        Object var2 = var0.get("spawn");
+        Object var3 = var0.get("exit");
+        Object var4 = var0.get("doors");
+        if (var1 != null && var2 != null) {
+            LinkedHashMap var5 = new LinkedHashMap();
+            if (var4 instanceof List) {
+                List var6 = (List)var4;
+                Iterator var7 = var6.iterator();
+
+                while(var7.hasNext()) {
+                    Object var8 = var7.next();
+                    String[] var9 = var8.toString().split("\\|", 2);
+                    if (var9.length == 2) {
+                        var5.put(var9[0], Zone.parse(var9[1]));
+                    }
                 }
             }
+
+            return new Hub(var1.toString(), Loc.parse(var2.toString()), var3 == null ? null : Zone.parse(var3.toString()), var5);
+        } else {
+            throw new IllegalArgumentException("hub.yml incompleto");
         }
-        return new Hub(value.toString(), Loc.parse(value2.toString()), (value3 == null) ? null : Zone.parse(value3.toString()), doors);
+    }
+
+    public String world() {
+        return this.world;
+    }
+
+    public Loc spawn() {
+        return this.spawn;
+    }
+
+    public Zone exit() {
+        return this.exit;
+    }
+
+    public Map<String, Zone> doors() {
+        return this.doors;
     }
 }

@@ -1,61 +1,69 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map;
 
-import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class EditOps
-{
+public final class EditOps {
     private EditOps() {
     }
-    
-    public static int nearest(final List<BlockPos> list, final double n, final double n2, final double n3, final double n4) {
-        int n5 = -1;
-        double n6 = n4 * n4;
-        for (int i = 0; i < list.size(); ++i) {
-            final BlockPos blockPos = list.get(i);
-            final double n7 = blockPos.x() + 0.5 - n;
-            final double n8 = blockPos.y() + 0.5 - n2;
-            final double n9 = blockPos.z() + 0.5 - n3;
-            final double n10 = n7 * n7 + n8 * n8 + n9 * n9;
-            if (n10 <= n6) {
-                n6 = n10;
-                n5 = i;
+
+    public static int nearest(List<BlockPos> var0, double var1, double var3, double var5, double var7) {
+        int var9 = -1;
+        double var10 = var7 * var7;
+
+        for(int var12 = 0; var12 < var0.size(); ++var12) {
+            BlockPos var13 = (BlockPos)var0.get(var12);
+            double var14 = (double)var13.x() + 0.5 - var1;
+            double var16 = (double)var13.y() + 0.5 - var3;
+            double var18 = (double)var13.z() + 0.5 - var5;
+            double var20 = var14 * var14 + var16 * var16 + var18 * var18;
+            if (var20 <= var10) {
+                var10 = var20;
+                var9 = var12;
             }
         }
-        return n5;
+
+        return var9;
     }
-    
-    public static boolean wallFace(final String s) {
-        return switch (s) {
-            case "NORTH",  "SOUTH",  "EAST",  "WEST" -> true;
-            default -> false;
-        };
+
+    public static boolean wallFace(String var0) {
+        boolean var10000;
+        switch (var0) {
+            case "NORTH":
+            case "SOUTH":
+            case "EAST":
+            case "WEST":
+                var10000 = true;
+                break;
+            default:
+                var10000 = false;
+        }
+
+        return var10000;
     }
-    
-    public static BlockPos front(final BlockPos blockPos, final String s) {
-        return switch (s) {
-            case "NORTH" -> blockPos.offset(0, 0, -1);
-            case "SOUTH" -> blockPos.offset(0, 0, 1);
-            case "EAST" -> blockPos.offset(1, 0, 0);
-            case "WEST" -> blockPos.offset(-1, 0, 0);
-            default -> throw new IllegalArgumentException("Cara no v\u00e1lida: " + s);
-        };
+
+    public static BlockPos front(BlockPos var0, String var1) {
+        BlockPos var10000;
+        switch (var1) {
+            case "NORTH" -> var10000 = var0.offset(0, 0, -1);
+            case "SOUTH" -> var10000 = var0.offset(0, 0, 1);
+            case "EAST" -> var10000 = var0.offset(1, 0, 0);
+            case "WEST" -> var10000 = var0.offset(-1, 0, 0);
+            default -> throw new IllegalArgumentException("Cara no válida: " + var1);
+        }
+
+        return var10000;
     }
-    
-    public static <T> List<T> plus(final List<T> c, final T t) {
-        final ArrayList coll = new ArrayList((Collection<? extends E>)c);
-        coll.add(t);
-        return (List<T>)List.copyOf((Collection<?>)coll);
+
+    public static <T> List<T> plus(List<T> var0, T var1) {
+        ArrayList var2 = new ArrayList(var0);
+        var2.add(var1);
+        return List.copyOf(var2);
     }
-    
-    public static <T> List<T> minus(final List<T> c, final int n) {
-        final ArrayList coll = new ArrayList((Collection<? extends E>)c);
-        coll.remove(n);
-        return (List<T>)List.copyOf((Collection<?>)coll);
+
+    public static <T> List<T> minus(List<T> var0, int var1) {
+        ArrayList var2 = new ArrayList(var0);
+        var2.remove(var1);
+        return List.copyOf(var2);
     }
 }

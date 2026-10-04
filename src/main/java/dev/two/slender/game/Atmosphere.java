@@ -1,76 +1,82 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.game;
 
-import org.bukkit.SoundCategory;
-import org.bukkit.Location;
-import java.util.Iterator;
 import java.util.Collection;
-import org.bukkit.Sound;
+import java.util.Iterator;
 import java.util.Random;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.entity.Player;
 
-public final class Atmosphere
-{
-    public void applyFog(final Player player, final int n, final boolean b) {
-        final int n2 = b ? 2 : Math.max(2, 6 - n / 2);
-        if (player.getViewDistance() != n2) {
-            player.setViewDistance(n2);
+public final class Atmosphere {
+    public void applyFog(Player var1, int var2, boolean var3) {
+        int var4 = var3 ? 2 : Math.max(2, 6 - var2 / 2);
+        if (var1.getViewDistance() != var4) {
+            var1.setViewDistance(var4);
         }
-        if (player.getSendViewDistance() != n2) {
-            player.setSendViewDistance(n2);
+
+        if (var1.getSendViewDistance() != var4) {
+            var1.setSendViewDistance(var4);
+        }
+
+    }
+
+    public void darkness(Player var1) {
+        var1.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 300, 0, false, false, false));
+    }
+
+    public void ambient(Player var1, int var2, boolean var3, Random var4) {
+        if (var4.nextDouble() < 0.1) {
+            play(var1, around(var1, var4, 8.0), Sound.AMBIENT_CAVE, 0.6F, 0.8F + var4.nextFloat() * 0.2F);
+        }
+
+        if (var2 >= 2 && var4.nextDouble() < 0.125) {
+            play(var1, var1.getLocation(), Sound.AMBIENT_SOUL_SAND_VALLEY_MOOD, 0.7F, 0.6F);
+        }
+
+        if (var2 >= 4 && var4.nextDouble() < 0.05) {
+            play(var1, around(var1, var4, 20.0), Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 0.3F, 0.5F);
+        }
+
+        if (var2 >= 6 && var4.nextDouble() < 0.16) {
+            play(var1, var1.getLocation(), Sound.AMBIENT_BASALT_DELTAS_MOOD, 0.8F, 0.5F);
+        }
+
+        if (var2 >= 6 && var4.nextDouble() < 0.07) {
+            play(var1, around(var1, var4, 12.0), Sound.ENTITY_WARDEN_AMBIENT, 0.4F, 0.5F);
+        }
+
+        if (var3 && var4.nextDouble() < 0.07) {
+            play(var1, var1.getLocation(), Sound.EVENT_RAID_HORN, 0.6F, 0.5F);
+        }
+
+    }
+
+    public void heartbeat(Player var1, SurvivorState var2, double var3, long var5) {
+        if (!(var3 > 15.0) && var5 >= var2.nextHeartbeatTick) {
+            play(var1, var1.getLocation(), Sound.ENTITY_WARDEN_HEARTBEAT, 1.0F, 1.0F);
+            var2.nextHeartbeatTick = var5 + Math.round(8.0 + var3 / 15.0 * 32.0);
         }
     }
-    
-    public void darkness(final Player player) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, 300, 0, false, false, false));
+
+    public void escapeHorn(Collection<Player> var1) {
+        Iterator var2 = var1.iterator();
+
+        while(var2.hasNext()) {
+            Player var3 = (Player)var2.next();
+            play(var3, var3.getLocation(), Sound.EVENT_RAID_HORN, 1.0F, 0.5F);
+        }
+
     }
-    
-    public void ambient(final Player player, final int n, final boolean b, final Random random) {
-        if (random.nextDouble() < 0.1) {
-            play(player, around(player, random, 8.0), Sound.AMBIENT_CAVE, 0.6f, 0.8f + random.nextFloat() * 0.2f);
-        }
-        if (n >= 2 && random.nextDouble() < 0.125) {
-            play(player, player.getLocation(), Sound.AMBIENT_SOUL_SAND_VALLEY_MOOD, 0.7f, 0.6f);
-        }
-        if (n >= 4 && random.nextDouble() < 0.05) {
-            play(player, around(player, random, 20.0), Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 0.3f, 0.5f);
-        }
-        if (n >= 6 && random.nextDouble() < 0.16) {
-            play(player, player.getLocation(), Sound.AMBIENT_BASALT_DELTAS_MOOD, 0.8f, 0.5f);
-        }
-        if (n >= 6 && random.nextDouble() < 0.07) {
-            play(player, around(player, random, 12.0), Sound.ENTITY_WARDEN_AMBIENT, 0.4f, 0.5f);
-        }
-        if (b && random.nextDouble() < 0.07) {
-            play(player, player.getLocation(), Sound.EVENT_RAID_HORN, 0.6f, 0.5f);
-        }
+
+    static Location around(Player var0, Random var1, double var2) {
+        double var4 = var1.nextDouble() * Math.PI * 2.0;
+        return var0.getLocation().add(Math.cos(var4) * var2, 1.0, Math.sin(var4) * var2);
     }
-    
-    public void heartbeat(final Player player, final SurvivorState survivorState, final double n, final long n2) {
-        if (n > 15.0 || n2 < survivorState.nextHeartbeatTick) {
-            return;
-        }
-        play(player, player.getLocation(), Sound.ENTITY_WARDEN_HEARTBEAT, 1.0f, 1.0f);
-        survivorState.nextHeartbeatTick = n2 + Math.round(8.0 + n / 15.0 * 32.0);
-    }
-    
-    public void escapeHorn(final Collection<Player> collection) {
-        for (final Player player : collection) {
-            play(player, player.getLocation(), Sound.EVENT_RAID_HORN, 1.0f, 0.5f);
-        }
-    }
-    
-    static Location around(final Player player, final Random random, final double n) {
-        final double n2 = random.nextDouble() * 3.141592653589793 * 2.0;
-        return player.getLocation().add(Math.cos(n2) * n, 1.0, Math.sin(n2) * n);
-    }
-    
-    static void play(final Player player, final Location location, final Sound sound, final float n, final float n2) {
-        player.playSound(location, sound, SoundCategory.AMBIENT, n, n2);
+
+    static void play(Player var0, Location var1, Sound var2, float var3, float var4) {
+        var0.playSound(var1, var2, SoundCategory.AMBIENT, var3, var4);
     }
 }

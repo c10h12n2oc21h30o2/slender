@@ -1,19 +1,35 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map;
 
-record PageSpot(BlockPos pos, String facing, String label) {
-    public String serialize() {
-        return this.pos.serialize() + "|" + this.facing + "|" + this.label;
+public record PageSpot(BlockPos pos, String facing, String label) {
+    public PageSpot(BlockPos pos, String facing, String label) {
+        this.pos = pos;
+        this.facing = facing;
+        this.label = label;
     }
-    
-    public static PageSpot parse(final String s) {
-        final String[] split = s.split("\\|", 3);
-        if (split.length != 3) {
-            throw new IllegalArgumentException("PageSpot inv\u00e1lido: " + s);
+
+    public String serialize() {
+        String var10000 = this.pos.serialize();
+        return var10000 + "|" + this.facing + "|" + this.label;
+    }
+
+    public static PageSpot parse(String var0) {
+        String[] var1 = var0.split("\\|", 3);
+        if (var1.length != 3) {
+            throw new IllegalArgumentException("PageSpot inválido: " + var0);
+        } else {
+            return new PageSpot(BlockPos.parse(var1[0]), var1[1], var1[2]);
         }
-        return new PageSpot(BlockPos.parse(split[0]), split[1], split[2]);
+    }
+
+    public BlockPos pos() {
+        return this.pos;
+    }
+
+    public String facing() {
+        return this.facing;
+    }
+
+    public String label() {
+        return this.label;
     }
 }

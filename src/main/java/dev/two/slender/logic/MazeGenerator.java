@@ -1,143 +1,166 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.logic;
 
-import java.util.ArrayList;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Random;
 
-public final class MazeGenerator
-{
-    private static final int[][] DIRS;
-    
+public final class MazeGenerator {
+    private static final int[][] DIRS = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
     private MazeGenerator() {
     }
-    
-    public static boolean[][] generate(final int n, final int n2, final double n3, final Random random) {
-        final boolean[][] array = new boolean[2 * n + 1][2 * n2 + 1];
-        final boolean[][] array2 = new boolean[n][n2];
-        final ArrayDeque arrayDeque = new ArrayDeque();
-        arrayDeque.push(new int[] { 0, 0 });
-        array2[0][0] = true;
-        array[1][1] = true;
-        while (!arrayDeque.isEmpty()) {
-            final int[] array3 = (int[])arrayDeque.peek();
-            final ArrayList list = new ArrayList();
-            for (final int[] array4 : MazeGenerator.DIRS) {
-                final int n4 = array3[0] + array4[0];
-                final int n5 = array3[1] + array4[1];
-                if (n4 >= 0 && n5 >= 0 && n4 < n && n5 < n2 && !array2[n4][n5]) {
-                    list.add(new int[] { n4, n5 });
+
+    public static boolean[][] generate(int var0, int var1, double var2, Random var4) {
+        boolean[][] var5 = new boolean[2 * var0 + 1][2 * var1 + 1];
+        boolean[][] var6 = new boolean[var0][var1];
+        ArrayDeque var7 = new ArrayDeque();
+        var7.push(new int[]{0, 0});
+        var6[0][0] = true;
+        var5[1][1] = true;
+
+        while(!var7.isEmpty()) {
+            int[] var8 = (int[])var7.peek();
+            ArrayList var9 = new ArrayList();
+            int[][] var10 = DIRS;
+            int var11 = var10.length;
+
+            for(int var12 = 0; var12 < var11; ++var12) {
+                int[] var13 = var10[var12];
+                int var14 = var8[0] + var13[0];
+                int var15 = var8[1] + var13[1];
+                if (var14 >= 0 && var15 >= 0 && var14 < var0 && var15 < var1 && !var6[var14][var15]) {
+                    var9.add(new int[]{var14, var15});
                 }
             }
-            if (list.isEmpty()) {
-                arrayDeque.pop();
-            }
-            else {
-                final int[] array5 = (int[])list.get(random.nextInt(list.size()));
-                array2[array5[0]][array5[1]] = true;
-                array[array3[0] + array5[0] + 1][array3[1] + array5[1] + 1] = true;
-                array[2 * array5[0] + 1][2 * array5[1] + 1] = true;
-                arrayDeque.push(array5);
+
+            if (var9.isEmpty()) {
+                var7.pop();
+            } else {
+                int[] var16 = (int[])var9.get(var4.nextInt(var9.size()));
+                var6[var16[0]][var16[1]] = true;
+                var5[var8[0] + var16[0] + 1][var8[1] + var16[1] + 1] = true;
+                var5[2 * var16[0] + 1][2 * var16[1] + 1] = true;
+                var7.push(var16);
             }
         }
-        if (n3 > 0.0) {
-            braid(array, n, n2, n3, random);
+
+        if (var2 > 0.0) {
+            braid(var5, var0, var1, var2, var4);
         }
-        return array;
+
+        return var5;
     }
-    
-    private static void braid(final boolean[][] array, final int n, final int n2, final double n3, final Random random) {
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n2; ++j) {
-                final int n4 = 2 * i + 1;
-                final int n5 = 2 * j + 1;
-                int n6 = 0;
-                final ArrayList list = new ArrayList();
-                for (final int[] array2 : MazeGenerator.DIRS) {
-                    final int n7 = n4 + array2[0];
-                    final int n8 = n5 + array2[1];
-                    final int n9 = i + array2[0];
-                    final int n10 = j + array2[1];
-                    if (array[n7][n8]) {
-                        ++n6;
+
+    private static void braid(boolean[][] var0, int var1, int var2, double var3, Random var5) {
+        for(int var6 = 0; var6 < var1; ++var6) {
+            for(int var7 = 0; var7 < var2; ++var7) {
+                int var8 = 2 * var6 + 1;
+                int var9 = 2 * var7 + 1;
+                int var10 = 0;
+                ArrayList var11 = new ArrayList();
+                int[][] var12 = DIRS;
+                int var13 = var12.length;
+
+                for(int var14 = 0; var14 < var13; ++var14) {
+                    int[] var15 = var12[var14];
+                    int var16 = var8 + var15[0];
+                    int var17 = var9 + var15[1];
+                    int var18 = var6 + var15[0];
+                    int var19 = var7 + var15[1];
+                    if (var0[var16][var17]) {
+                        ++var10;
+                    } else if (var18 >= 0 && var19 >= 0 && var18 < var1 && var19 < var2) {
+                        var11.add(new int[]{var16, var17});
                     }
-                    else if (n9 >= 0 && n10 >= 0 && n9 < n && n10 < n2) {
-                        list.add(new int[] { n7, n8 });
-                    }
                 }
-                if (n6 == 1 && !list.isEmpty() && random.nextDouble() < n3) {
-                    final int[] array3 = (int[])list.get(random.nextInt(list.size()));
-                    array[array3[0]][array3[1]] = true;
+
+                if (var10 == 1 && !var11.isEmpty() && var5.nextDouble() < var3) {
+                    int[] var20 = (int[])var11.get(var5.nextInt(var11.size()));
+                    var0[var20[0]][var20[1]] = true;
                 }
             }
         }
+
     }
-    
-    public static void carve(final boolean[][] array, final int n, final int n2, final int n3, final int n4) {
-        final int max = Math.max(1, Math.min(n, n3));
-        final int min = Math.min(array.length - 2, Math.max(n, n3));
-        final int max2 = Math.max(1, Math.min(n2, n4));
-        final int min2 = Math.min(array[0].length - 2, Math.max(n2, n4));
-        for (int i = max; i <= min; ++i) {
-            for (int j = max2; j <= min2; ++j) {
-                array[i][j] = true;
+
+    public static void carve(boolean[][] var0, int var1, int var2, int var3, int var4) {
+        int var5 = Math.max(1, Math.min(var1, var3));
+        int var6 = Math.min(var0.length - 2, Math.max(var1, var3));
+        int var7 = Math.max(1, Math.min(var2, var4));
+        int var8 = Math.min(var0[0].length - 2, Math.max(var2, var4));
+
+        for(int var9 = var5; var9 <= var6; ++var9) {
+            for(int var10 = var7; var10 <= var8; ++var10) {
+                var0[var9][var10] = true;
             }
         }
+
     }
-    
-    public static int openCount(final boolean[][] array) {
-        int n = 0;
-        for (final boolean[] array2 : array) {
-            for (int length2 = array2.length, j = 0; j < length2; ++j) {
-                if (array2[j]) {
-                    ++n;
+
+    public static int openCount(boolean[][] var0) {
+        int var1 = 0;
+        boolean[][] var2 = var0;
+        int var3 = var0.length;
+
+        for(int var4 = 0; var4 < var3; ++var4) {
+            boolean[] var5 = var2[var4];
+            boolean[] var6 = var5;
+            int var7 = var5.length;
+
+            for(int var8 = 0; var8 < var7; ++var8) {
+                boolean var9 = var6[var8];
+                if (var9) {
+                    ++var1;
                 }
             }
         }
-        return n;
+
+        return var1;
     }
-    
-    public static boolean isConnected(final boolean[][] array) {
-        final int openCount = openCount(array);
-        if (openCount == 0) {
+
+    public static boolean isConnected(boolean[][] var0) {
+        int var1 = openCount(var0);
+        if (var1 == 0) {
             return true;
-        }
-        int n = -1;
-        int n2 = -1;
-    Label_0068:
-        for (int i = 0; i < array.length; ++i) {
-            for (int j = 0; j < array[0].length; ++j) {
-                if (array[i][j]) {
-                    n = i;
-                    n2 = j;
-                    break Label_0068;
+        } else {
+            int var2 = -1;
+            int var3 = -1;
+
+            label60:
+            for(int var4 = 0; var4 < var0.length; ++var4) {
+                for(int var5 = 0; var5 < var0[0].length; ++var5) {
+                    if (var0[var4][var5]) {
+                        var2 = var4;
+                        var3 = var5;
+                        break label60;
+                    }
                 }
             }
-        }
-        final boolean[][] array2 = new boolean[array.length][array[0].length];
-        final ArrayDeque arrayDeque = new ArrayDeque();
-        arrayDeque.add(new int[] { n, n2 });
-        array2[n][n2] = true;
-        int n3 = 0;
-        while (!arrayDeque.isEmpty()) {
-            final int[] array3 = (int[])arrayDeque.poll();
-            ++n3;
-            for (final int[] array4 : MazeGenerator.DIRS) {
-                final int n4 = array3[0] + array4[0];
-                final int n5 = array3[1] + array4[1];
-                if (n4 >= 0 && n5 >= 0 && n4 < array.length && n5 < array[0].length && array[n4][n5] && !array2[n4][n5]) {
-                    array2[n4][n5] = true;
-                    arrayDeque.add(new int[] { n4, n5 });
+
+            boolean[][] var14 = new boolean[var0.length][var0[0].length];
+            ArrayDeque var15 = new ArrayDeque();
+            var15.add(new int[]{var2, var3});
+            var14[var2][var3] = true;
+            int var6 = 0;
+
+            while(!var15.isEmpty()) {
+                int[] var7 = (int[])var15.poll();
+                ++var6;
+                int[][] var8 = DIRS;
+                int var9 = var8.length;
+
+                for(int var10 = 0; var10 < var9; ++var10) {
+                    int[] var11 = var8[var10];
+                    int var12 = var7[0] + var11[0];
+                    int var13 = var7[1] + var11[1];
+                    if (var12 >= 0 && var13 >= 0 && var12 < var0.length && var13 < var0[0].length && var0[var12][var13] && !var14[var12][var13]) {
+                        var14[var12][var13] = true;
+                        var15.add(new int[]{var12, var13});
+                    }
                 }
             }
+
+            return var6 == var1;
         }
-        return n3 == openCount;
-    }
-    
-    static {
-        DIRS = new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
     }
 }

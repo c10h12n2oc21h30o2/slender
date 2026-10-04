@@ -1,44 +1,79 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map;
 
-import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.function.DoubleSupplier;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
-record SoundZone(BlockPos center, int radius, String sound, float volume, float pitch, double chance) {
-    public boolean contains(final double n, final double n2) {
-        final double n3 = n - (this.center.x() + 0.5);
-        final double n4 = n2 - (this.center.z() + 0.5);
-        return n3 * n3 + n4 * n4 <= this.radius * (double)this.radius;
+public record SoundZone(BlockPos center, int radius, String sound, float volume, float pitch, double chance) {
+    public SoundZone(BlockPos center, int radius, String sound, float volume, float pitch, double chance) {
+        this.center = center;
+        this.radius = radius;
+        this.sound = sound;
+        this.volume = volume;
+        this.pitch = pitch;
+        this.chance = chance;
     }
-    
-    public SoundZone offset(final int n, final int n2, final int n3) {
-        return new SoundZone(this.center.offset(n, n2, n3), this.radius, this.sound, this.volume, this.pitch, this.chance);
+
+    public boolean contains(double var1, double var3) {
+        double var5 = var1 - ((double)this.center.x() + 0.5);
+        double var7 = var3 - ((double)this.center.z() + 0.5);
+        return var5 * var5 + var7 * var7 <= (double)this.radius * (double)this.radius;
     }
-    
+
+    public SoundZone offset(int var1, int var2, int var3) {
+        return new SoundZone(this.center.offset(var1, var2, var3), this.radius, this.sound, this.volume, this.pitch, this.chance);
+    }
+
     public String serialize() {
-        return this.center.serialize() + "|" + this.radius + "|" + this.sound + "|" + this.volume + "|" + this.pitch + "|" + this.chance;
+        String var10000 = this.center.serialize();
+        return var10000 + "|" + this.radius + "|" + this.sound + "|" + this.volume + "|" + this.pitch + "|" + this.chance;
     }
-    
-    public static SoundZone parse(final String s) {
-        final String[] split = s.split("\\|");
-        if (split.length != 6) {
-            throw new IllegalArgumentException("Zona de sonido inv\u00e1lida: " + s);
+
+    public static SoundZone parse(String var0) {
+        String[] var1 = var0.split("\\|");
+        if (var1.length != 6) {
+            throw new IllegalArgumentException("Zona de sonido inválida: " + var0);
+        } else {
+            return new SoundZone(BlockPos.parse(var1[0]), Integer.parseInt(var1[1]), var1[2], Float.parseFloat(var1[3]), Float.parseFloat(var1[4]), Double.parseDouble(var1[5]));
         }
-        return new SoundZone(BlockPos.parse(split[0]), Integer.parseInt(split[1]), split[2], Float.parseFloat(split[3]), Float.parseFloat(split[4]), Double.parseDouble(split[5]));
     }
-    
-    public static List<SoundZone> due(final List<SoundZone> list, final double n, final double n2, final DoubleSupplier doubleSupplier) {
-        final ArrayList list2 = new ArrayList();
-        for (final SoundZone soundZone : list) {
-            if (soundZone.contains(n, n2) && doubleSupplier.getAsDouble() < soundZone.chance()) {
-                list2.add(soundZone);
+
+    public static List<SoundZone> due(List<SoundZone> var0, double var1, double var3, DoubleSupplier var5) {
+        ArrayList var6 = new ArrayList();
+        Iterator var7 = var0.iterator();
+
+        while(var7.hasNext()) {
+            SoundZone var8 = (SoundZone)var7.next();
+            if (var8.contains(var1, var3) && var5.getAsDouble() < var8.chance()) {
+                var6.add(var8);
             }
         }
-        return list2;
+
+        return var6;
+    }
+
+    public BlockPos center() {
+        return this.center;
+    }
+
+    public int radius() {
+        return this.radius;
+    }
+
+    public String sound() {
+        return this.sound;
+    }
+
+    public float volume() {
+        return this.volume;
+    }
+
+    public float pitch() {
+        return this.pitch;
+    }
+
+    public double chance() {
+        return this.chance;
     }
 }

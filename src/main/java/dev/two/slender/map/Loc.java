@@ -1,24 +1,43 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map;
 
-record Loc(double x, double y, double z, float yaw) {
+public record Loc(double x, double y, double z, float yaw) {
+    public Loc(double x, double y, double z, float yaw) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+    }
+
     public String serialize() {
         return this.x + "," + this.y + "," + this.z + "," + this.yaw;
     }
-    
-    public static Loc parse(final String s) {
-        final String[] split = s.split(",");
-        if (split.length != 4) {
-            throw new IllegalArgumentException("Loc inv\u00e1lida: " + s);
+
+    public static Loc parse(String var0) {
+        String[] var1 = var0.split(",");
+        if (var1.length != 4) {
+            throw new IllegalArgumentException("Loc inválida: " + var0);
+        } else {
+            try {
+                return new Loc(Double.parseDouble(var1[0]), Double.parseDouble(var1[1]), Double.parseDouble(var1[2]), Float.parseFloat(var1[3]));
+            } catch (NumberFormatException var3) {
+                throw new IllegalArgumentException("Loc inválida: " + var0, var3);
+            }
         }
-        try {
-            return new Loc(Double.parseDouble(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Float.parseFloat(split[3]));
-        }
-        catch (final NumberFormatException cause) {
-            throw new IllegalArgumentException("Loc inv\u00e1lida: " + s, (Throwable)cause);
-        }
+    }
+
+    public double x() {
+        return this.x;
+    }
+
+    public double y() {
+        return this.y;
+    }
+
+    public double z() {
+        return this.z;
+    }
+
+    public float yaw() {
+        return this.yaw;
     }
 }

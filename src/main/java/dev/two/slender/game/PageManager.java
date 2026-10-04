@@ -1,138 +1,143 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.game;
 
-import org.bukkit.entity.Player;
-import java.util.Collection;
 import dev.two.slender.logic.LightDiff;
+import dev.two.slender.map.PageSpot;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
-import org.bukkit.entity.Entity;
-import org.bukkit.block.BlockFace;
-import org.bukkit.Location;
 import java.util.Iterator;
 import java.util.List;
-import org.bukkit.World;
-import java.util.HashMap;
-import org.bukkit.entity.ItemFrame;
-import dev.two.slender.map.PageSpot;
-import java.util.UUID;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Logger;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public final class PageManager
-{
+public final class PageManager {
     public static final String TAG = "slender_page";
     public static final String FAKE_TAG = "slender_fake_page";
     private final Plugin plugin;
     private final Items items;
-    private final Map<UUID, PageSpot> spots;
-    private final Map<UUID, ItemFrame> frames;
-    private final Map<UUID, UUID> fakeViewer;
-    
-    public PageManager(final Plugin plugin, final Items items) {
-        this.spots = new HashMap<UUID, PageSpot>();
-        this.frames = new HashMap<UUID, ItemFrame>();
-        this.fakeViewer = new HashMap<UUID, UUID>();
-        this.plugin = plugin;
-        this.items = items;
+    private final Map<UUID, PageSpot> spots = new HashMap();
+    private final Map<UUID, ItemFrame> frames = new HashMap();
+    private final Map<UUID, UUID> fakeViewer = new HashMap();
+
+    public PageManager(Plugin var1, Items var2) {
+        this.plugin = var1;
+        this.items = var2;
     }
-    
-    public void spawnAll(final World world, final List<PageSpot> list) {
-        for (PageSpot pageSpot : list) {
-            final ItemFrame spawn = this.spawn(world, pageSpot, true);
-            if (spawn == null) {
-                this.plugin.getLogger().warning("No se pudo colgar la p\u00e1gina en " + pageSpot.label() + " " + pageSpot.pos().serialize());
-            }
-            else {
-                this.spots.put(spawn.getUniqueId(), pageSpot);
-                this.frames.put(spawn.getUniqueId(), spawn);
+
+    public void spawnAll(World var1, List<PageSpot> var2) {
+        Iterator var3 = var2.iterator();
+
+        while(var3.hasNext()) {
+            PageSpot var4 = (PageSpot)var3.next();
+            ItemFrame var5 = this.spawn(var1, var4, true);
+            if (var5 == null) {
+                Logger var10000 = this.plugin.getLogger();
+                String var10001 = var4.label();
+                var10000.warning("No se pudo colgar la página en " + var10001 + " " + var4.pos().serialize());
+            } else {
+                this.spots.put(var5.getUniqueId(), var4);
+                this.frames.put(var5.getUniqueId(), var5);
             }
         }
+
     }
-    
-    private ItemFrame spawn(final World world, final PageSpot pageSpot, final boolean b) {
-        final Location location = new Location(world, pageSpot.pos().x() + 0.5, pageSpot.pos().y() + 0.5, pageSpot.pos().z() + 0.5);
-        BlockFace.valueOf(pageSpot.facing());
+
+    private ItemFrame spawn(World var1, PageSpot var2, boolean var3) {
+        Location var4 = new Location(var1, (double)var2.pos().x() + 0.5, (double)var2.pos().y() + 0.5, (double)var2.pos().z() + 0.5);
+        BlockFace var5 = BlockFace.valueOf(var2.facing());
+
         try {
-            return (ItemFrame)world.spawn(location, (Class)ItemFrame.class, itemFrame -> {
-                itemFrame.setFacingDirection(blockFace, (boolean)(1 != 0));
-                itemFrame.setItem(this.items.make("page"), (boolean)(0 != 0));
-                itemFrame.setFixed((boolean)(1 != 0));
-                itemFrame.setInvulnerable((boolean)(1 != 0));
-                itemFrame.setPersistent((boolean)(0 != 0));
-                itemFrame.setVisibleByDefault(visibleByDefault);
-                itemFrame.getScoreboardTags().add(visibleByDefault ? "slender_page" : "slender_fake_page");
+            return (ItemFrame)var1.spawn(var4, ItemFrame.class, (var3x) -> {
+                var3x.setFacingDirection(var5, true);
+                var3x.setItem(this.items.make("page"), false);
+                var3x.setFixed(true);
+                var3x.setInvulnerable(true);
+                var3x.setPersistent(false);
+                var3x.setVisibleByDefault(var3);
+                var3x.getScoreboardTags().add(var3 ? "slender_page" : "slender_fake_page");
             });
-        }
-        catch (final RuntimeException ex) {
+        } catch (RuntimeException var7) {
             return null;
         }
     }
-    
-    public boolean isPage(final Entity entity) {
-        return this.spots.containsKey(entity.getUniqueId());
+
+    public boolean isPage(Entity var1) {
+        return this.spots.containsKey(var1.getUniqueId());
     }
-    
-    public void collect(final Entity entity) {
-        this.spots.remove(entity.getUniqueId());
-        this.frames.remove(entity.getUniqueId());
-        entity.remove();
+
+    public void collect(Entity var1) {
+        this.spots.remove(var1.getUniqueId());
+        this.frames.remove(var1.getUniqueId());
+        var1.remove();
     }
-    
+
     public int remaining() {
         return this.spots.size();
     }
-    
+
     public Set<Long> framePositions() {
-        final HashSet set = new HashSet();
-        for (final ItemFrame itemFrame : this.frames.values()) {
-            if (!itemFrame.isValid()) {
-                continue;
+        HashSet var1 = new HashSet();
+        Iterator var2 = this.frames.values().iterator();
+
+        while(var2.hasNext()) {
+            ItemFrame var3 = (ItemFrame)var2.next();
+            if (var3.isValid()) {
+                Location var4 = var3.getLocation();
+                var1.add(LightDiff.pack(var4.getBlockX(), var4.getBlockY(), var4.getBlockZ()));
             }
-            final Location location = itemFrame.getLocation();
-            set.add(LightDiff.pack(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
         }
-        return set;
+
+        return var1;
     }
-    
+
     public Set<PageSpot> activeSpots() {
-        return new HashSet<PageSpot>(this.spots.values());
+        return new HashSet(this.spots.values());
     }
-    
-    public ItemFrame spawnFake(final World world, final PageSpot pageSpot, final Player player) {
-        final ItemFrame spawn = this.spawn(world, pageSpot, false);
-        if (spawn == null) {
+
+    public ItemFrame spawnFake(World var1, PageSpot var2, Player var3) {
+        ItemFrame var4 = this.spawn(var1, var2, false);
+        if (var4 == null) {
             return null;
+        } else {
+            var3.showEntity(this.plugin, var4);
+            this.frames.put(var4.getUniqueId(), var4);
+            this.fakeViewer.put(var4.getUniqueId(), var3.getUniqueId());
+            return var4;
         }
-        player.showEntity(this.plugin, (Entity)spawn);
-        this.frames.put(spawn.getUniqueId(), spawn);
-        this.fakeViewer.put(spawn.getUniqueId(), player.getUniqueId());
-        return spawn;
     }
-    
-    public boolean isFake(final Entity entity) {
-        return this.fakeViewer.containsKey(entity.getUniqueId());
+
+    public boolean isFake(Entity var1) {
+        return this.fakeViewer.containsKey(var1.getUniqueId());
     }
-    
-    public boolean hasFake(final UUID uuid) {
-        return this.fakeViewer.containsValue(uuid);
+
+    public boolean hasFake(UUID var1) {
+        return this.fakeViewer.containsValue(var1);
     }
-    
-    public void removeFake(final Entity entity) {
-        this.fakeViewer.remove(entity.getUniqueId());
-        this.frames.remove(entity.getUniqueId());
-        entity.remove();
+
+    public void removeFake(Entity var1) {
+        this.fakeViewer.remove(var1.getUniqueId());
+        this.frames.remove(var1.getUniqueId());
+        var1.remove();
     }
-    
+
     public void clear() {
-        for (final ItemFrame itemFrame : this.frames.values()) {
-            if (itemFrame.isValid()) {
-                itemFrame.remove();
+        Iterator var1 = this.frames.values().iterator();
+
+        while(var1.hasNext()) {
+            ItemFrame var2 = (ItemFrame)var1.next();
+            if (var2.isValid()) {
+                var2.remove();
             }
         }
+
         this.frames.clear();
         this.spots.clear();
         this.fakeViewer.clear();

@@ -1,120 +1,117 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.ui;
 
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.inventory.ItemStack;
-import java.util.Optional;
-import dev.two.slender.game.Game;
-import dev.two.slender.map.MapValidator;
-import net.kyori.adventure.text.Component;
-import dev.two.slender.map.ArenaMap;
-import java.util.List;
-import org.bukkit.inventory.Inventory;
-import dev.two.slender.config.Msg;
-import java.util.function.Function;
-import dev.two.slender.map.MapBuilder;
-import org.bukkit.Material;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import dev.two.slender.SlenderPlugin;
+import dev.two.slender.config.Msg;
+import dev.two.slender.game.Game;
+import dev.two.slender.map.ArenaMap;
+import dev.two.slender.map.MapBuilder;
+import dev.two.slender.map.MapValidator;
+import java.util.List;
+import java.util.Optional;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
-public final class MenuGui
-{
-    private static final int[] MAP_SLOTS;
+public final class MenuGui {
+    private static final int[] MAP_SLOTS = new int[]{10, 11, 12, 13, 14, 15, 16};
     private final SlenderPlugin plugin;
-    
-    public MenuGui(final SlenderPlugin plugin) {
-        this.plugin = plugin;
+
+    public MenuGui(SlenderPlugin var1) {
+        this.plugin = var1;
     }
-    
-    public void openMaps(final Player player) {
-        final Msg msg = this.plugin.msg();
-        final MenuHolder menuHolder = new MenuHolder(MenuHolder.Type.MAPS, null);
-        final Inventory inventory = Bukkit.createInventory((InventoryHolder)menuHolder, 27, msg.get("menu-title", new String[0]));
-        menuHolder.setInventory(inventory);
-        final List<String> catalog = this.plugin.catalog();
-        for (int n = 0; n < catalog.size() && n < MenuGui.MAP_SLOTS.length; ++n) {
-            final String s = catalog.get(n);
-            inventory.setItem(MenuGui.MAP_SLOTS[n], this.icon((Material)this.plugin.builds().builder(s).map((Function<? super MapBuilder, ?>)MapBuilder::icon).orElse(Material.FILLED_MAP), "<white>" + this.nameOf(s) + "</white>", this.statusLine(s)));
+
+    public void openMaps(Player var1) {
+        Msg var2 = this.plugin.msg();
+        MenuHolder var3 = new MenuHolder(MenuHolder.Type.MAPS, (String)null);
+        Inventory var4 = Bukkit.createInventory(var3, 27, (Component)var2.get("menu-title"));
+        var3.setInventory(var4);
+        List var5 = this.plugin.catalog();
+
+        for(int var6 = 0; var6 < var5.size() && var6 < MAP_SLOTS.length; ++var6) {
+            String var7 = (String)var5.get(var6);
+            Material var8 = (Material)this.plugin.builds().builder(var7).map(MapBuilder::icon).orElse(Material.FILLED_MAP);
+            var4.setItem(MAP_SLOTS[var6], this.icon(var8, "<white>" + this.nameOf(var7) + "</white>", this.statusLine(var7)));
         }
-        player.openInventory(inventory);
+
+        var1.openInventory(var4);
     }
-    
-    public String nameOf(final String other) {
-        final ArenaMap arenaMap = this.plugin.maps().get(other);
-        if (arenaMap != null) {
-            return arenaMap.displayName();
-        }
-        return this.plugin.builds().builder(other).map((Function<? super MapBuilder, ? extends String>)MapBuilder::displayName).orElse(other);
+
+    public String nameOf(String var1) {
+        ArenaMap var2 = (ArenaMap)this.plugin.maps().get(var1);
+        return var2 != null ? var2.displayName() : (String)this.plugin.builds().builder(var1).map(MapBuilder::displayName).orElse(var1);
     }
-    
-    public Component statusLine(final String s) {
-        final Msg msg = this.plugin.msg();
-        final ArenaMap arenaMap = this.plugin.maps().get(s);
-        final Optional<Game> game = this.plugin.games().game(s);
-        final String s2 = (arenaMap == null) ? "state-not-built" : (MapValidator.playable(arenaMap, this.plugin.cfg().pages) ? ((game.isPresent() && !game.get().acceptingPlayers()) ? "state-running" : "state-waiting") : "state-incomplete");
-        final int intValue = game.map((Function<? super Object, ? extends Integer>)Game::size).orElse(0);
-        final String s3 = (game.isPresent() && game.get().mode() != null) ? game.get().mode().id() : "coop";
-        return msg.get("list-line", "map", this.nameOf(s), "state", msg.raw(s2), "count", String.valueOf(intValue), "max", String.valueOf(this.plugin.cfg().maxPlayers(s3)), "mode", (intValue == 0) ? "-" : this.plugin.games().modeName(s3));
+
+    public Component statusLine(String var1) {
+        Msg var2 = this.plugin.msg();
+        ArenaMap var3 = (ArenaMap)this.plugin.maps().get(var1);
+        Optional<Game> var4 = this.plugin.games().game(var1);
+        String var5 = var3 == null ? "state-not-built" : (!MapValidator.playable(var3, this.plugin.cfg().pages) ? "state-incomplete" : (var4.isPresent() && !((Game)var4.get()).acceptingPlayers() ? "state-running" : "state-waiting"));
+        int var6 = (Integer)var4.map(Game::size).orElse(0);
+        String var7 = var4.isPresent() && ((Game)var4.get()).mode() != null ? ((Game)var4.get()).mode().id() : "coop";
+        return var2.get("list-line", "map", this.nameOf(var1), "state", var2.raw(var5), "count", String.valueOf(var6), "max", String.valueOf(this.plugin.cfg().maxPlayers(var7)), "mode", var6 == 0 ? "-" : this.plugin.games().modeName(var7));
     }
-    
-    public void openModes(final Player player, final String s) {
-        final Msg msg = this.plugin.msg();
-        final MenuHolder menuHolder = new MenuHolder(MenuHolder.Type.MODES, s);
-        final Inventory inventory = Bukkit.createInventory((InventoryHolder)menuHolder, 27, msg.get("mode-title", new String[0]));
-        menuHolder.setInventory(inventory);
-        inventory.setItem(11, this.icon(Material.PAPER, "<white>" + msg.raw("mode-coop") + "</white>", (Component)null));
-        inventory.setItem(15, this.icon(Material.ENDER_EYE, "<dark_red>" + msg.raw("mode-asim") + "</dark_red>", (Component)null));
-        player.openInventory(inventory);
+
+    public void openModes(Player var1, String var2) {
+        Msg var3 = this.plugin.msg();
+        MenuHolder var4 = new MenuHolder(MenuHolder.Type.MODES, var2);
+        Inventory var5 = Bukkit.createInventory(var4, 27, (Component)var3.get("mode-title"));
+        var4.setInventory(var5);
+        var5.setItem(11, this.icon(Material.PAPER, "<white>" + var3.raw("mode-coop") + "</white>", (Component)null));
+        var5.setItem(15, this.icon(Material.ENDER_EYE, "<dark_red>" + var3.raw("mode-asim") + "</dark_red>", (Component)null));
+        var1.openInventory(var5);
     }
-    
-    private ItemStack icon(final Material material, final String s, final Component component) {
-        final ItemStack itemStack = new ItemStack(material);
-        itemStack.editMeta(itemMeta -> {
-            itemMeta.displayName(this.plugin.msg().parse(s2).decoration(TextDecoration.ITALIC, (boolean)(0 != 0)));
-            if (component2 != null) {
-                itemMeta.lore((List)List.of(component2.decoration(TextDecoration.ITALIC, (boolean)(0 != 0))));
+
+    private ItemStack icon(Material var1, String var2, Component var3) {
+        ItemStack var4 = new ItemStack(var1);
+        var4.editMeta((var3x) -> {
+            var3x.displayName(this.plugin.msg().parse(var2).decoration(TextDecoration.ITALIC, false));
+            if (var3 != null) {
+                var3x.lore(List.of(var3.decoration(TextDecoration.ITALIC, false)));
             }
-            return;
+
         });
-        return itemStack;
+        return var4;
     }
-    
-    public void click(final Player player, final MenuHolder menuHolder, final int n) {
-        if (menuHolder.type() == MenuHolder.Type.MAPS) {
-            final List<String> catalog = this.plugin.catalog();
-            for (int n2 = 0; n2 < MenuGui.MAP_SLOTS.length && n2 < catalog.size(); ++n2) {
-                if (MenuGui.MAP_SLOTS[n2] == n) {
-                    final Optional<Game> game = this.plugin.games().game(catalog.get(n2));
-                    if (game.isPresent() && game.get().size() > 0) {
-                        this.later(player, () -> this.plugin.hub().join(player2, s, null));
-                    }
-                    else {
-                        Bukkit.getScheduler().runTask((Plugin)this.plugin, () -> this.openModes(player3, s2));
+
+    public void click(Player var1, MenuHolder var2, int var3) {
+        if (var2.type() != MenuHolder.Type.MAPS) {
+            String var8 = var3 == 11 ? "coop" : (var3 == 15 ? "asim" : null);
+            if (var8 != null) {
+                this.later(var1, () -> {
+                    this.plugin.hub().join(var1, var2.mapId(), var8);
+                });
+            }
+
+        } else {
+            List var4 = this.plugin.catalog();
+
+            for(int var5 = 0; var5 < MAP_SLOTS.length && var5 < var4.size(); ++var5) {
+                if (MAP_SLOTS[var5] == var3) {
+                    String var6 = (String)var4.get(var5);
+                    Optional var7 = this.plugin.games().game(var6);
+                    if (var7.isPresent() && ((Game)var7.get()).size() > 0) {
+                        this.later(var1, () -> {
+                            this.plugin.hub().join(var1, var6, (String)null);
+                        });
+                    } else {
+                        Bukkit.getScheduler().runTask(this.plugin, (Runnable)(() -> {
+                            this.openModes(var1, var6);
+                        }));
                     }
                 }
             }
-            return;
-        }
-        if (((n == 11) ? "coop" : ((n == 15) ? "asim" : null)) != null) {
-            this.later(player, () -> this.plugin.hub().join(player4, menuHolder2.mapId(), s3));
+
         }
     }
-    
-    private void later(final Player player, final Runnable runnable) {
-        Bukkit.getScheduler().runTask((Plugin)this.plugin, () -> {
-            player2.closeInventory();
-            runnable2.run();
-        });
-    }
-    
-    static {
-        MAP_SLOTS = new int[] { 10, 11, 12, 13, 14, 15, 16 };
+
+    private void later(Player var1, Runnable var2) {
+        Bukkit.getScheduler().runTask(this.plugin, (Runnable)(() -> {
+            var1.closeInventory();
+            var2.run();
+        }));
     }
 }

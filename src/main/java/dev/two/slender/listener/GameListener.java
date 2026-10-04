@@ -1,290 +1,318 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.listener;
 
+import dev.two.slender.SlenderPlugin;
+import dev.two.slender.game.Game;
+import dev.two.slender.ui.MenuHolder;
+import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Set;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
-import org.bukkit.event.hanging.HangingBreakEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.entity.HumanEntity;
-import dev.two.slender.ui.MenuHolder;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.EventHandler;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.Bukkit;
-import org.bukkit.event.block.Action;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.event.player.PlayerInteractEvent;
-import java.util.Iterator;
-import org.bukkit.entity.Entity;
-import dev.two.slender.game.Game;
-import java.util.Optional;
-import org.bukkit.entity.Player;
-import dev.two.slender.SlenderPlugin;
-import java.util.Set;
-import org.bukkit.event.Listener;
+import org.bukkit.inventory.InventoryHolder;
 
-public final class GameListener implements Listener
-{
-    private static final Set<String> TAGS;
+public final class GameListener implements Listener {
+    private static final Set<String> TAGS = Set.of("slender_page", "slender_fake_page", "slender_body", "slender_battery");
     private final SlenderPlugin plugin;
-    
-    public GameListener(final SlenderPlugin plugin) {
-        this.plugin = plugin;
+
+    public GameListener(SlenderPlugin var1) {
+        this.plugin = var1;
     }
-    
-    private Optional<Game> game(final Player player) {
-        return this.plugin.games().gameOf(player.getUniqueId());
+
+    private Optional<Game> game(Player var1) {
+        return this.plugin.games().gameOf(var1.getUniqueId());
     }
-    
-    private boolean inHub(final Player player) {
-        return this.plugin.hub().inside(player.getUniqueId());
+
+    private boolean inHub(Player var1) {
+        return this.plugin.hub().inside(var1.getUniqueId());
     }
-    
-    private boolean guarded(final Player player) {
-        return this.game(player).isPresent() || this.inHub(player);
+
+    private boolean guarded(Player var1) {
+        return this.game(var1).isPresent() || this.inHub(var1);
     }
-    
-    private static boolean tagged(final Entity entity) {
-        final Iterator iterator = entity.getScoreboardTags().iterator();
-        while (iterator.hasNext()) {
-            if (GameListener.TAGS.contains(iterator.next())) {
-                return true;
+
+    private static boolean tagged(Entity var0) {
+        Iterator var1 = var0.getScoreboardTags().iterator();
+
+        String var2;
+        do {
+            if (!var1.hasNext()) {
+                return false;
+            }
+
+            var2 = (String)var1.next();
+        } while(!TAGS.contains(var2));
+
+        return true;
+    }
+
+    @EventHandler(
+        priority = EventPriority.HIGH
+    )
+    public void onInteract(PlayerInteractEvent var1) {
+        if (var1.getHand() == EquipmentSlot.HAND && var1.getAction() != Action.PHYSICAL) {
+            Player var2 = var1.getPlayer();
+            String var3 = this.plugin.items().idOf(var1.getItem());
+            if (var3 != null) {
+                boolean var4 = var1.getAction() == Action.RIGHT_CLICK_AIR || var1.getAction() == Action.RIGHT_CLICK_BLOCK;
+                if (!"hub-menu".equals(var3) && !"hub-exit".equals(var3)) {
+                    Optional var5 = this.game(var2);
+                    if (!var5.isEmpty()) {
+                        if (var1.getAction() != Action.RIGHT_CLICK_BLOCK || var1.getClickedBlock() == null || !ProtectionListener.isOpenable(var1.getClickedBlock().getType())) {
+                            var1.setCancelled(true);
+                            if (var4) {
+                                if ("flashlight".equals(var3)) {
+                                    ((Game)var5.get()).toggleFlashlight(var2);
+                                } else {
+                                    ((Game)var5.get()).useAbility(var2, var3);
+                                }
+
+                            }
+                        }
+                    }
+                } else {
+                    var1.setCancelled(true);
+                    if (this.inHub(var2)) {
+                        if ("hub-menu".equals(var3)) {
+                            Bukkit.getScheduler().runTask(this.plugin, (Runnable)(() -> {
+                                this.plugin.menu().openMaps(var2);
+                            }));
+                        } else if (var4) {
+                            Bukkit.getScheduler().runTask(this.plugin, (Runnable)(() -> {
+                                this.plugin.hub().exit(var2);
+                            }));
+                        }
+
+                    }
+                }
             }
         }
-        return false;
     }
-    
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onInteract(final PlayerInteractEvent playerInteractEvent) {
-        if (playerInteractEvent.getHand() != EquipmentSlot.HAND || playerInteractEvent.getAction() == Action.PHYSICAL) {
-            return;
-        }
-        final Player player = playerInteractEvent.getPlayer();
-        final String id = this.plugin.items().idOf(playerInteractEvent.getItem());
-        if (id == null) {
-            return;
-        }
-        final boolean b = playerInteractEvent.getAction() == Action.RIGHT_CLICK_AIR || playerInteractEvent.getAction() == Action.RIGHT_CLICK_BLOCK;
-        if ("hub-menu".equals(id) || "hub-exit".equals(id)) {
-            playerInteractEvent.setCancelled(true);
-            if (!this.inHub(player)) {
-                return;
-            }
-            if ("hub-menu".equals(id)) {
-                Bukkit.getScheduler().runTask((Plugin)this.plugin, () -> this.plugin.menu().openMaps(player2));
-            }
-            else if (b) {
-                Bukkit.getScheduler().runTask((Plugin)this.plugin, () -> this.plugin.hub().exit(player3));
-            }
-        }
-        else {
-            final Optional<Game> game = this.game(player);
-            if (game.isEmpty()) {
-                return;
-            }
-            if (playerInteractEvent.getAction() == Action.RIGHT_CLICK_BLOCK && playerInteractEvent.getClickedBlock() != null && ProtectionListener.isOpenable(playerInteractEvent.getClickedBlock().getType())) {
-                return;
-            }
-            playerInteractEvent.setCancelled(true);
-            if (!b) {
-                return;
-            }
-            if ("flashlight".equals(id)) {
-                game.get().toggleFlashlight(player);
-            }
-            else {
-                game.get().useAbility(player, id);
-            }
-        }
-    }
-    
+
     @EventHandler
-    public void onDrop(final PlayerDropItemEvent playerDropItemEvent) {
-        if (!this.guarded(playerDropItemEvent.getPlayer())) {
-            return;
-        }
-        playerDropItemEvent.setCancelled(true);
-        final Optional<Game> game = this.game(playerDropItemEvent.getPlayer());
-        if (game.isPresent() && "flashlight".equals(this.plugin.items().idOf(playerDropItemEvent.getItemDrop().getItemStack()))) {
-            game.get().toggleFlashlight(playerDropItemEvent.getPlayer());
-        }
-    }
-    
-    @EventHandler
-    public void onSwap(final PlayerSwapHandItemsEvent playerSwapHandItemsEvent) {
-        if (this.guarded(playerSwapHandItemsEvent.getPlayer())) {
-            playerSwapHandItemsEvent.setCancelled(true);
-        }
-    }
-    
-    @EventHandler
-    public void onInventoryClick(final InventoryClickEvent inventoryClickEvent) {
-        final HumanEntity whoClicked = inventoryClickEvent.getWhoClicked();
-        if (!(whoClicked instanceof Player)) {
-            return;
-        }
-        final Player player = (Player)whoClicked;
-        final InventoryHolder holder = inventoryClickEvent.getInventory().getHolder();
-        if (holder instanceof final MenuHolder menuHolder) {
-            inventoryClickEvent.setCancelled(true);
-            if (inventoryClickEvent.getClickedInventory() == inventoryClickEvent.getInventory()) {
-                this.plugin.menu().click(player, menuHolder, inventoryClickEvent.getSlot());
+    public void onDrop(PlayerDropItemEvent var1) {
+        if (this.guarded(var1.getPlayer())) {
+            var1.setCancelled(true);
+            Optional var2 = this.game(var1.getPlayer());
+            if (var2.isPresent() && "flashlight".equals(this.plugin.items().idOf(var1.getItemDrop().getItemStack()))) {
+                ((Game)var2.get()).toggleFlashlight(var1.getPlayer());
             }
-            return;
-        }
-        if (this.guarded(player)) {
-            inventoryClickEvent.setCancelled(true);
+
         }
     }
-    
+
     @EventHandler
-    public void onInventoryDrag(final InventoryDragEvent inventoryDragEvent) {
-        if (inventoryDragEvent.getInventory().getHolder() instanceof MenuHolder) {
-            inventoryDragEvent.setCancelled(true);
-            return;
+    public void onSwap(PlayerSwapHandItemsEvent var1) {
+        if (this.guarded(var1.getPlayer())) {
+            var1.setCancelled(true);
         }
-        final HumanEntity whoClicked = inventoryDragEvent.getWhoClicked();
-        if (whoClicked instanceof Player && this.guarded((Player)whoClicked)) {
-            inventoryDragEvent.setCancelled(true);
-        }
+
     }
-    
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onEntityInteract(final PlayerInteractEntityEvent playerInteractEntityEvent) {
-        if (playerInteractEntityEvent.getHand() != EquipmentSlot.HAND) {
-            if (tagged(playerInteractEntityEvent.getRightClicked())) {
-                playerInteractEntityEvent.setCancelled(true);
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent var1) {
+        HumanEntity var3 = var1.getWhoClicked();
+        if (var3 instanceof Player var2) {
+            InventoryHolder var4 = var1.getInventory().getHolder();
+            if (var4 instanceof MenuHolder var5) {
+                var1.setCancelled(true);
+                if (var1.getClickedInventory() == var1.getInventory()) {
+                    this.plugin.menu().click(var2, var5, var1.getSlot());
+                }
+
+            } else {
+                if (this.guarded(var2)) {
+                    var1.setCancelled(true);
+                }
+
             }
-            return;
-        }
-        final Entity rightClicked = playerInteractEntityEvent.getRightClicked();
-        final Optional<Game> game = this.game(playerInteractEntityEvent.getPlayer());
-        if (tagged(rightClicked) || (game.isPresent() && rightClicked instanceof ItemFrame)) {
-            playerInteractEntityEvent.setCancelled(true);
-        }
-        if (game.isPresent() && rightClicked instanceof ItemFrame) {
-            game.get().interactFrame(playerInteractEntityEvent.getPlayer(), rightClicked);
         }
     }
-    
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPreAttack(final PrePlayerAttackEntityEvent prePlayerAttackEntityEvent) {
-        final Entity attacked = prePlayerAttackEntityEvent.getAttacked();
-        if (tagged(attacked)) {
-            prePlayerAttackEntityEvent.setCancelled(true);
-        }
-        final Optional<Game> game = this.game(prePlayerAttackEntityEvent.getPlayer());
-        if (game.isEmpty()) {
-            return;
-        }
-        prePlayerAttackEntityEvent.setCancelled(true);
-        if (attacked instanceof ItemFrame) {
-            game.get().interactFrame(prePlayerAttackEntityEvent.getPlayer(), attacked);
-        }
-        else if (attacked instanceof final Player player) {
-            game.get().slenderHit(prePlayerAttackEntityEvent.getPlayer(), player);
-        }
-    }
-    
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onDamageBy(final EntityDamageByEntityEvent entityDamageByEntityEvent) {
-        if (tagged(entityDamageByEntityEvent.getEntity())) {
-            entityDamageByEntityEvent.setCancelled(true);
-        }
-        final Entity damager = entityDamageByEntityEvent.getDamager();
-        if (damager instanceof Player && this.guarded((Player)damager)) {
-            entityDamageByEntityEvent.setCancelled(true);
-        }
-    }
-    
+
     @EventHandler
-    public void onDamage(final EntityDamageEvent entityDamageEvent) {
-        if (tagged(entityDamageEvent.getEntity())) {
-            entityDamageEvent.setCancelled(true);
-            return;
-        }
-        final Entity entity = entityDamageEvent.getEntity();
-        if (entity instanceof Player && this.guarded((Player)entity)) {
-            entityDamageEvent.setCancelled(true);
-        }
-    }
-    
-    @EventHandler
-    public void onHangingBreak(final HangingBreakEvent hangingBreakEvent) {
-        if (hangingBreakEvent.getEntity().getWorld().getName().equals(this.plugin.cfg().world)) {
-            hangingBreakEvent.setCancelled(true);
-        }
-    }
-    
-    @EventHandler
-    public void onPickup(final PlayerAttemptPickupItemEvent playerAttemptPickupItemEvent) {
-        if (!playerAttemptPickupItemEvent.getItem().getScoreboardTags().contains("slender_battery")) {
-            return;
-        }
-        playerAttemptPickupItemEvent.setCancelled(true);
-        this.game(playerAttemptPickupItemEvent.getPlayer()).ifPresent(game -> game.pickupBattery(playerAttemptPickupItemEvent2.getPlayer(), item));
-    }
-    
-    @EventHandler
-    public void onFood(final FoodLevelChangeEvent foodLevelChangeEvent) {
-        final HumanEntity entity = foodLevelChangeEvent.getEntity();
-        if (entity instanceof Player && this.guarded((Player)entity)) {
-            foodLevelChangeEvent.setCancelled(true);
-        }
-    }
-    
-    @EventHandler
-    public void onQuit(final PlayerQuitEvent playerQuitEvent) {
-        this.plugin.games().quit(playerQuitEvent.getPlayer());
-        this.plugin.hub().quit(playerQuitEvent.getPlayer());
-    }
-    
-    @EventHandler
-    public void onJoin(final PlayerJoinEvent playerJoinEvent) {
-        if (!this.plugin.snapshots().has(playerJoinEvent.getPlayer().getUniqueId())) {
-            return;
-        }
-        Bukkit.getScheduler().runTaskLater((Plugin)this.plugin, () -> {
-            if (player.isOnline() && this.plugin.games().gameOf(player.getUniqueId()).isEmpty()) {
-                this.plugin.snapshots().restore(player, true);
+    public void onInventoryDrag(InventoryDragEvent var1) {
+        if (var1.getInventory().getHolder() instanceof MenuHolder) {
+            var1.setCancelled(true);
+        } else {
+            HumanEntity var3 = var1.getWhoClicked();
+            if (var3 instanceof Player) {
+                Player var2 = (Player)var3;
+                if (this.guarded(var2)) {
+                    var1.setCancelled(true);
+                }
             }
-        }, 5L);
-    }
-    
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onWorldLeaving(final PlayerChangedWorldEvent playerChangedWorldEvent) {
-        final String world = this.plugin.cfg().world;
-        if (playerChangedWorldEvent.getFrom().getName().equals(world) && !playerChangedWorldEvent.getPlayer().getWorld().getName().equals(world)) {
-            this.plugin.hub().noteLeaving(playerChangedWorldEvent.getPlayer());
+
         }
     }
-    
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onWorldChange(final PlayerChangedWorldEvent playerChangedWorldEvent) {
-        if (playerChangedWorldEvent.getPlayer().getWorld().getName().equals(this.plugin.cfg().world)) {
-            return;
+
+    @EventHandler(
+        priority = EventPriority.HIGH
+    )
+    public void onEntityInteract(PlayerInteractEntityEvent var1) {
+        if (var1.getHand() != EquipmentSlot.HAND) {
+            if (tagged(var1.getRightClicked())) {
+                var1.setCancelled(true);
+            }
+
+        } else {
+            Entity var2 = var1.getRightClicked();
+            Optional var3 = this.game(var1.getPlayer());
+            if (tagged(var2) || var3.isPresent() && var2 instanceof ItemFrame) {
+                var1.setCancelled(true);
+            }
+
+            if (var3.isPresent() && var2 instanceof ItemFrame) {
+                ((Game)var3.get()).interactFrame(var1.getPlayer(), var2);
+            }
+
         }
-        this.plugin.games().worldChanged(playerChangedWorldEvent.getPlayer());
-        this.plugin.hub().leftWorld(playerChangedWorldEvent.getPlayer());
     }
-    
-    static {
-        TAGS = Set.of("slender_page", "slender_fake_page", "slender_body", "slender_battery");
+
+    @EventHandler(
+        priority = EventPriority.HIGH
+    )
+    public void onPreAttack(PrePlayerAttackEntityEvent var1) {
+        Entity var2 = var1.getAttacked();
+        if (tagged(var2)) {
+            var1.setCancelled(true);
+        }
+
+        Optional var3 = this.game(var1.getPlayer());
+        if (!var3.isEmpty()) {
+            var1.setCancelled(true);
+            if (var2 instanceof ItemFrame) {
+                ((Game)var3.get()).interactFrame(var1.getPlayer(), var2);
+            } else if (var2 instanceof Player) {
+                Player var4 = (Player)var2;
+                ((Game)var3.get()).slenderHit(var1.getPlayer(), var4);
+            }
+
+        }
+    }
+
+    @EventHandler(
+        priority = EventPriority.HIGH
+    )
+    public void onDamageBy(EntityDamageByEntityEvent var1) {
+        if (tagged(var1.getEntity())) {
+            var1.setCancelled(true);
+        }
+
+        Entity var3 = var1.getDamager();
+        if (var3 instanceof Player var2) {
+            if (this.guarded(var2)) {
+                var1.setCancelled(true);
+            }
+        }
+
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent var1) {
+        if (tagged(var1.getEntity())) {
+            var1.setCancelled(true);
+        } else {
+            Entity var3 = var1.getEntity();
+            if (var3 instanceof Player) {
+                Player var2 = (Player)var3;
+                if (this.guarded(var2)) {
+                    var1.setCancelled(true);
+                }
+            }
+
+        }
+    }
+
+    @EventHandler
+    public void onHangingBreak(HangingBreakEvent var1) {
+        if (var1.getEntity().getWorld().getName().equals(this.plugin.cfg().world)) {
+            var1.setCancelled(true);
+        }
+
+    }
+
+    @EventHandler
+    public void onPickup(PlayerAttemptPickupItemEvent var1) {
+        Item var2 = var1.getItem();
+        if (var2.getScoreboardTags().contains("slender_battery")) {
+            var1.setCancelled(true);
+            this.game(var1.getPlayer()).ifPresent((var2x) -> {
+                var2x.pickupBattery(var1.getPlayer(), var2);
+            });
+        }
+    }
+
+    @EventHandler
+    public void onFood(FoodLevelChangeEvent var1) {
+        HumanEntity var3 = var1.getEntity();
+        if (var3 instanceof Player var2) {
+            if (this.guarded(var2)) {
+                var1.setCancelled(true);
+            }
+        }
+
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent var1) {
+        this.plugin.games().quit(var1.getPlayer());
+        this.plugin.hub().quit(var1.getPlayer());
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent var1) {
+        Player var2 = var1.getPlayer();
+        if (this.plugin.snapshots().has(var2.getUniqueId())) {
+            Bukkit.getScheduler().runTaskLater(this.plugin, (Runnable)(() -> {
+                if (var2.isOnline() && this.plugin.games().gameOf(var2.getUniqueId()).isEmpty()) {
+                    this.plugin.snapshots().restore(var2, true);
+                }
+
+            }), 5L);
+        }
+    }
+
+    @EventHandler(
+        priority = EventPriority.LOWEST
+    )
+    public void onWorldLeaving(PlayerChangedWorldEvent var1) {
+        String var2 = this.plugin.cfg().world;
+        if (var1.getFrom().getName().equals(var2) && !var1.getPlayer().getWorld().getName().equals(var2)) {
+            this.plugin.hub().noteLeaving(var1.getPlayer());
+        }
+
+    }
+
+    @EventHandler(
+        priority = EventPriority.HIGHEST
+    )
+    public void onWorldChange(PlayerChangedWorldEvent var1) {
+        if (!var1.getPlayer().getWorld().getName().equals(this.plugin.cfg().world)) {
+            this.plugin.games().worldChanged(var1.getPlayer());
+            this.plugin.hub().leftWorld(var1.getPlayer());
+        }
     }
 }

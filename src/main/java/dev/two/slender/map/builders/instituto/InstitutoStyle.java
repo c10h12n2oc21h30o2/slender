@@ -1,113 +1,213 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map.builders.instituto;
 
-import java.util.List;
-import dev.two.slender.map.gen.FloorPlan;
-import java.util.Iterator;
 import dev.two.slender.map.Builder;
+import dev.two.slender.map.gen.FloorPlan;
 import dev.two.slender.map.gen.PlanStyle;
+import java.util.Iterator;
+import java.util.List;
 
-final class InstitutoStyle implements PlanStyle
-{
+final class InstitutoStyle implements PlanStyle {
     private final Builder b;
     private final String building;
-    
-    InstitutoStyle(final Builder b, final String building) {
-        this.b = b;
-        this.building = building;
+
+    InstitutoStyle(Builder var1, String var2) {
+        this.b = var1;
+        this.building = var2;
     }
-    
-    static String stripe(final String s) {
-        return switch (s) {
-            case "A" -> "light_blue_terracotta";
-            case "B" -> "lime_terracotta";
-            case "C" -> "orange_terracotta";
-            default -> null;
-        };
-    }
-    
-    static String floorFor(final String s, final String s2) {
-        if (s2 == null) {
-            return s.equals("P") ? "spruce_planks" : "polished_andesite";
+
+    static String stripe(String var0) {
+        String var10000;
+        switch (var0) {
+            case "A" -> var10000 = "light_blue_terracotta";
+            case "B" -> var10000 = "lime_terracotta";
+            case "C" -> var10000 = "orange_terracotta";
+            default -> var10000 = null;
         }
-        return switch (s2) {
-            case "aula",  "biblioteca",  "profes",  "despacho",  
-                 "musica",  "plastica",  "info",  "salon",  
-                 "conserje" -> "oak_planks";
-            case "banos",  "vestuario",  "cocina" -> "white_concrete";
-            case "comedor" -> "smooth_stone";
-            default -> "light_gray_concrete";
-        };
+
+        return var10000;
     }
-    
-    static String kindAt(final String anObject, final int n, final int n2, final int n3) {
-        for (final InstitutoLayout.Room room : InstitutoLayout.ROOMS) {
-            if (room.building().equals(anObject) && room.floor() == n && room.contains(n2, n3)) {
-                return room.kind();
+
+    static String floorFor(String var0, String var1) {
+        if (var1 == null) {
+            return var0.equals("P") ? "spruce_planks" : "polished_andesite";
+        } else {
+            String var10000;
+            switch (var1) {
+                case "aula":
+                case "biblioteca":
+                case "profes":
+                case "despacho":
+                case "musica":
+                case "plastica":
+                case "info":
+                case "salon":
+                case "conserje":
+                    var10000 = "oak_planks";
+                    break;
+                case "banos":
+                case "vestuario":
+                case "cocina":
+                    var10000 = "white_concrete";
+                    break;
+                case "comedor":
+                    var10000 = "smooth_stone";
+                    break;
+                default:
+                    var10000 = "light_gray_concrete";
             }
+
+            return var10000;
         }
-        return null;
     }
-    
-    @Override
-    public String wall(final FloorPlan.Cell cell, final boolean b) {
-        return this.b.pick("white_concrete", "white_concrete", "white_concrete", "light_gray_concrete");
+
+    static String kindAt(String var0, int var1, int var2, int var3) {
+        Iterator var4 = InstitutoLayout.ROOMS.iterator();
+
+        InstitutoLayout.Room var5;
+        do {
+            if (!var4.hasNext()) {
+                return null;
+            }
+
+            var5 = (InstitutoLayout.Room)var4.next();
+        } while(!var5.building().equals(var0) || var5.floor() != var1 || !var5.contains(var2, var3));
+
+        return var5.kind();
     }
-    
-    @Override
-    public String stripe(final FloorPlan.Cell cell) {
+
+    public String wall(FloorPlan.Cell var1, boolean var2) {
+        return (String)this.b.pick("white_concrete", "white_concrete", "white_concrete", "light_gray_concrete");
+    }
+
+    public String stripe(FloorPlan.Cell var1) {
         return stripe(this.building);
     }
-    
-    @Override
-    public String floor(final FloorPlan.Cell cell) {
-        return floorFor(this.building, kindAt(this.building, cell.floor(), cell.x(), cell.z()));
+
+    public String floor(FloorPlan.Cell var1) {
+        return floorFor(this.building, kindAt(this.building, var1.floor(), var1.x(), var1.z()));
     }
-    
-    @Override
-    public String roof(final int n, final int n2) {
+
+    public String roof(int var1, int var2) {
         return "light_gray_concrete";
     }
-    
-    @Override
+
     public String door() {
         return "birch_door";
     }
-    
-    @Override
+
     public String stairs() {
         return "polished_andesite_stairs";
     }
-    
-    @Override
-    public List<String> furniture(final char c) {
-        return switch (c) {
-            case 'k' -> PlanStyle.stack("dark_oak_planks", "black_concrete", "black_concrete");
-            case 'm' -> PlanStyle.stack("oak_fence", "oak_pressure_plate");
-            case 'p' -> PlanStyle.stack("birch_slab[type=top]");
-            case 'h' -> PlanStyle.stack("birch_stairs[facing=south,half=bottom,shape=straight]");
-            case 'b' -> PlanStyle.stack("bookshelf", "bookshelf", "bookshelf");
-            case 'r' -> PlanStyle.stack("white_concrete", "brewing_stand");
-            case 'c' -> PlanStyle.stack("smoker[facing=south]");
-            case 'f' -> PlanStyle.stack("polished_andesite");
-            case 'w' -> PlanStyle.stack("cauldron");
-            case 't' -> PlanStyle.stack("blue_terracotta", "blue_terracotta");
-            case 'u' -> PlanStyle.stack("birch_slab[type=top]", "black_stained_glass_pane");
-            case 'a' -> PlanStyle.stack("crafting_table");
-            case 'A' -> PlanStyle.stack("anvil[facing=north]");
-            case 'n' -> PlanStyle.stack("note_block");
-            case 'z' -> PlanStyle.stack("loom[facing=south]");
-            case 'y' -> PlanStyle.stack("barrel[facing=up]", "barrel[facing=up]");
-            case 'e' -> PlanStyle.stack("spruce_planks");
-            case 'j' -> PlanStyle.stack("spruce_slab[type=bottom]");
-            case 'P' -> PlanStyle.stack("white_concrete", "white_concrete");
-            case 'Q' -> PlanStyle.stack("air", "white_concrete");
-            case 'g' -> PlanStyle.stack("smooth_quartz_stairs[facing=west,half=bottom,shape=straight]");
-            case 'G' -> PlanStyle.stack("smooth_quartz", "smooth_quartz_stairs[facing=west,half=bottom,shape=straight]");
-            default -> List.of();
-        };
+
+    public List<String> furniture(char var1) {
+        List var10000;
+        switch (var1) {
+            case 'A':
+                var10000 = PlanStyle.stack("anvil[facing=north]");
+                break;
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F':
+            case 'H':
+            case 'I':
+            case 'J':
+            case 'K':
+            case 'L':
+            case 'M':
+            case 'N':
+            case 'O':
+            case 'R':
+            case 'S':
+            case 'T':
+            case 'U':
+            case 'V':
+            case 'W':
+            case 'X':
+            case 'Y':
+            case 'Z':
+            case '[':
+            case '\\':
+            case ']':
+            case '^':
+            case '_':
+            case '`':
+            case 'd':
+            case 'i':
+            case 'l':
+            case 'o':
+            case 'q':
+            case 's':
+            case 'v':
+            case 'x':
+            default:
+                var10000 = List.of();
+                break;
+            case 'G':
+                var10000 = PlanStyle.stack("smooth_quartz", "smooth_quartz_stairs[facing=west,half=bottom,shape=straight]");
+                break;
+            case 'P':
+                var10000 = PlanStyle.stack("white_concrete", "white_concrete");
+                break;
+            case 'Q':
+                var10000 = PlanStyle.stack("air", "white_concrete");
+                break;
+            case 'a':
+                var10000 = PlanStyle.stack("crafting_table");
+                break;
+            case 'b':
+                var10000 = PlanStyle.stack("bookshelf", "bookshelf", "bookshelf");
+                break;
+            case 'c':
+                var10000 = PlanStyle.stack("smoker[facing=south]");
+                break;
+            case 'e':
+                var10000 = PlanStyle.stack("spruce_planks");
+                break;
+            case 'f':
+                var10000 = PlanStyle.stack("polished_andesite");
+                break;
+            case 'g':
+                var10000 = PlanStyle.stack("smooth_quartz_stairs[facing=west,half=bottom,shape=straight]");
+                break;
+            case 'h':
+                var10000 = PlanStyle.stack("birch_stairs[facing=south,half=bottom,shape=straight]");
+                break;
+            case 'j':
+                var10000 = PlanStyle.stack("spruce_slab[type=bottom]");
+                break;
+            case 'k':
+                var10000 = PlanStyle.stack("dark_oak_planks", "black_concrete", "black_concrete");
+                break;
+            case 'm':
+                var10000 = PlanStyle.stack("oak_fence", "oak_pressure_plate");
+                break;
+            case 'n':
+                var10000 = PlanStyle.stack("note_block");
+                break;
+            case 'p':
+                var10000 = PlanStyle.stack("birch_slab[type=top]");
+                break;
+            case 'r':
+                var10000 = PlanStyle.stack("white_concrete", "brewing_stand");
+                break;
+            case 't':
+                var10000 = PlanStyle.stack("blue_terracotta", "blue_terracotta");
+                break;
+            case 'u':
+                var10000 = PlanStyle.stack("birch_slab[type=top]", "black_stained_glass_pane");
+                break;
+            case 'w':
+                var10000 = PlanStyle.stack("cauldron");
+                break;
+            case 'y':
+                var10000 = PlanStyle.stack("barrel[facing=up]", "barrel[facing=up]");
+                break;
+            case 'z':
+                var10000 = PlanStyle.stack("loom[facing=south]");
+        }
+
+        return var10000;
     }
 }

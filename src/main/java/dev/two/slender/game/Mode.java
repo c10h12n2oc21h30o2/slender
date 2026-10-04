@@ -1,25 +1,20 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.game;
 
-public enum Mode
-{
-    COOP("coop"), 
+public enum Mode {
+    COOP("coop"),
     ASIM("asim");
-    
+
     private final String id;
-    
-    private Mode(final String id) {
-        this.id = id;
+
+    private Mode(String var3) {
+        this.id = var3;
     }
-    
+
     public String id() {
         return this.id;
     }
-    
-    public static Mode of(final String anObject) {
-        return "asim".equals(anObject) ? Mode.ASIM : Mode.COOP;
+
+    public static Mode of(String var0) {
+        return "asim".equals(var0) ? ASIM : COOP;
     }
 }

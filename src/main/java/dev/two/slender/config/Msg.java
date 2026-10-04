@@ -1,56 +1,51 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.config;
 
-import org.bukkit.command.CommandSender;
-import net.kyori.adventure.text.Component;
 import java.util.HashMap;
-import org.bukkit.configuration.ConfigurationSection;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import java.util.Map;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 
-public final class Msg
-{
-    private final Map<String, String> raw;
-    private final MiniMessage mm;
+public final class Msg {
+    private final Map<String, String> raw = new HashMap();
+    private final MiniMessage mm = MiniMessage.miniMessage();
     private final ConfigurationSection messages;
-    
-    public Msg(final ConfigurationSection messages) {
-        this.raw = new HashMap<String, String>();
-        this.mm = MiniMessage.miniMessage();
-        this.messages = messages;
+
+    public Msg(ConfigurationSection var1) {
+        this.messages = var1;
     }
-    
-    public String raw(final String key) {
-        return this.raw.computeIfAbsent(key, s -> {
-            final String s2 = (this.messages == null) ? null : this.messages.getString(s);
-            return (s2 == null) ? ("<red>" + s + "</red>") : s2;
+
+    public String raw(String var1) {
+        return (String)this.raw.computeIfAbsent(var1, (var1x) -> {
+            String var2 = this.messages == null ? null : this.messages.getString(var1x);
+            return var2 == null ? "<red>" + var1x + "</red>" : var2;
         });
     }
-    
-    public String fill(final String s, final String... array) {
-        String s2 = this.raw(s);
-        for (int n = 0; n + 1 < array.length; n += 2) {
-            s2 = s2.replace("{" + array[n], (CharSequence)array[n + 1]);
+
+    public String fill(String var1, String... var2) {
+        String var3 = this.raw(var1);
+
+        for(int var4 = 0; var4 + 1 < var2.length; var4 += 2) {
+            var3 = var3.replace("{" + var2[var4] + "}", var2[var4 + 1]);
         }
-        return s2;
+
+        return var3;
     }
-    
-    public Component get(final String s, final String... array) {
-        return this.mm.deserialize((Object)this.fill(s, array));
+
+    public Component get(String var1, String... var2) {
+        return this.mm.deserialize(this.fill(var1, var2));
     }
-    
-    public Component parse(final String s) {
-        return this.mm.deserialize((Object)s);
+
+    public Component parse(String var1) {
+        return this.mm.deserialize(var1);
     }
-    
-    public Component prefixed(final String s, final String... array) {
-        return this.mm.deserialize((Object)this.raw("prefix")).append(this.get(s, array));
+
+    public Component prefixed(String var1, String... var2) {
+        return this.mm.deserialize(this.raw("prefix")).append(this.get(var1, var2));
     }
-    
-    public void send(final CommandSender commandSender, final String s, final String... array) {
-        commandSender.sendMessage(this.prefixed(s, array));
+
+    public void send(CommandSender var1, String var2, String... var3) {
+        var1.sendMessage(this.prefixed(var2, var3));
     }
 }

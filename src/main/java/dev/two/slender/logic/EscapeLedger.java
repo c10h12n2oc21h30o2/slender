@@ -1,37 +1,28 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.logic;
 
 import java.util.HashSet;
-import java.util.UUID;
 import java.util.Set;
+import java.util.UUID;
 
-public final class EscapeLedger
-{
-    private final Set<UUID> escaped;
-    
-    public EscapeLedger() {
-        this.escaped = new HashSet<UUID>();
+public final class EscapeLedger {
+    private final Set<UUID> escaped = new HashSet();
+
+    public void escaped(UUID var1) {
+        this.escaped.add(var1);
     }
-    
-    public void escaped(final UUID uuid) {
-        this.escaped.add(uuid);
+
+    public boolean hasEscaped(UUID var1) {
+        return this.escaped.contains(var1);
     }
-    
-    public boolean hasEscaped(final UUID uuid) {
-        return this.escaped.contains(uuid);
-    }
-    
+
     public boolean anyEscaped() {
         return !this.escaped.isEmpty();
     }
-    
+
     public int count() {
         return this.escaped.size();
     }
-    
+
     public void clear() {
         this.escaped.clear();
     }

@@ -1,59 +1,59 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.game;
 
-import net.kyori.adventure.title.Title;
 import java.time.Duration;
-import java.util.Iterator;
-import org.bukkit.Bukkit;
-import java.util.Collection;
 import java.util.ArrayList;
-import org.bukkit.entity.Player;
 import java.util.HashSet;
-import net.kyori.adventure.text.Component;
-import java.util.UUID;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBar.Color;
+import net.kyori.adventure.bossbar.BossBar.Overlay;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.Title.Times;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
-public final class Hud
-{
+public final class Hud {
     private final BossBar bar;
     private final Set<UUID> viewers;
-    
+
     public Hud() {
-        this.bar = BossBar.bossBar((Component)Component.empty(), 0.0f, BossBar.Color.RED, BossBar.Overlay.PROGRESS);
-        this.viewers = new HashSet<UUID>();
+        this.bar = BossBar.bossBar((Component)Component.empty(), 0.0F, Color.RED, Overlay.PROGRESS);
+        this.viewers = new HashSet();
     }
-    
-    public void show(final Player player) {
-        player.showBossBar(this.bar);
-        this.viewers.add(player.getUniqueId());
+
+    public void show(Player var1) {
+        var1.showBossBar(this.bar);
+        this.viewers.add(var1.getUniqueId());
     }
-    
-    public void hide(final Player player) {
-        player.hideBossBar(this.bar);
-        this.viewers.remove(player.getUniqueId());
+
+    public void hide(Player var1) {
+        var1.hideBossBar(this.bar);
+        this.viewers.remove(var1.getUniqueId());
     }
-    
-    public void update(final Component component, final float b) {
-        this.bar.name(component);
-        this.bar.progress(Math.max(0.0f, Math.min(1.0f, b)));
+
+    public void update(Component var1, float var2) {
+        this.bar.name(var1);
+        this.bar.progress(Math.max(0.0F, Math.min(1.0F, var2)));
     }
-    
+
     public void hideAll() {
-        final Iterator iterator = new ArrayList(this.viewers).iterator();
-        while (iterator.hasNext()) {
-            final Player player = Bukkit.getPlayer((UUID)iterator.next());
-            if (player != null) {
-                player.hideBossBar(this.bar);
+        Iterator var1 = (new ArrayList(this.viewers)).iterator();
+
+        while(var1.hasNext()) {
+            UUID var2 = (UUID)var1.next();
+            Player var3 = Bukkit.getPlayer(var2);
+            if (var3 != null) {
+                var3.hideBossBar(this.bar);
             }
         }
+
         this.viewers.clear();
     }
-    
-    public static void title(final Player player, final Component component, final Component component2, final int n, final int n2, final int n3) {
-        player.showTitle(Title.title(component, component2, Title.Times.times(Duration.ofMillis(n * 50L), Duration.ofMillis(n2 * 50L), Duration.ofMillis(n3 * 50L))));
+
+    public static void title(Player var0, Component var1, Component var2, int var3, int var4, int var5) {
+        var0.showTitle((Title)Title.title(var1, var2, Times.times(Duration.ofMillis((long)var3 * 50L), Duration.ofMillis((long)var4 * 50L), Duration.ofMillis((long)var5 * 50L))));
     }
 }

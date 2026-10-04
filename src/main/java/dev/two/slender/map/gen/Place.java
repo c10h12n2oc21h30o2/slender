@@ -1,13 +1,42 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map.gen;
 
-record Place(String id, String name, int x, int z, int pad, int y) {
+public record Place(String id, String name, int x, int z, int pad, int y) {
     public static final int AUTO = Integer.MIN_VALUE;
-    
-    public Place(final String id, final String name, final int x, final int z, final int pad) {
-        this(id, name, x, z, pad, Integer.MIN_VALUE);
+
+    public Place(String var1, String var2, int var3, int var4, int var5) {
+        this(var1, var2, var3, var4, var5, Integer.MIN_VALUE);
+    }
+
+    public Place(String id, String name, int x, int z, int pad, int y) {
+        this.id = id;
+        this.name = name;
+        this.x = x;
+        this.z = z;
+        this.pad = pad;
+        this.y = y;
+    }
+
+    public String id() {
+        return this.id;
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    public int x() {
+        return this.x;
+    }
+
+    public int z() {
+        return this.z;
+    }
+
+    public int pad() {
+        return this.pad;
+    }
+
+    public int y() {
+        return this.y;
     }
 }

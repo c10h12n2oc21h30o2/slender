@@ -1,85 +1,48 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.logic;
 
-public final class Signposts
-{
+public final class Signposts {
     private Signposts() {
     }
-    
-    public static String arrow(final String s, final int n, final int n2) {
-        int n3 = -1;
-        switch (s.hashCode()) {
-            case 74469605: {
-                if (s.equals("NORTH")) {
-                    n3 = 0;
-                    break;
-                }
+
+    public static String arrow(String var0, int var1, int var2) {
+        byte var3;
+        byte var4;
+        switch (var0) {
+            case "NORTH":
+                var3 = 0;
+                var4 = 1;
                 break;
-            }
-            case 79090093: {
-                if (s.equals("SOUTH")) {
-                    n3 = 1;
-                    break;
-                }
+            case "SOUTH":
+                var3 = 0;
+                var4 = -1;
                 break;
-            }
-            case 2120701: {
-                if (s.equals("EAST")) {
-                    n3 = 2;
-                    break;
-                }
+            case "EAST":
+                var3 = -1;
+                var4 = 0;
                 break;
-            }
-            case 2660783: {
-                if (s.equals("WEST")) {
-                    n3 = 3;
-                    break;
-                }
+            case "WEST":
+                var3 = 1;
+                var4 = 0;
                 break;
-            }
+            default:
+                throw new IllegalArgumentException("Cara no válida: " + var0);
         }
-        int n4 = 0;
-        int n5 = 0;
-        switch (n3) {
-            case 0: {
-                n4 = 0;
-                n5 = 1;
-                break;
-            }
-            case 1: {
-                n4 = 0;
-                n5 = -1;
-                break;
-            }
-            case 2: {
-                n4 = -1;
-                n5 = 0;
-                break;
-            }
-            case 3: {
-                n4 = 1;
-                n5 = 0;
-                break;
-            }
-            default: {
-                throw new IllegalArgumentException("Cara no v\u00e1lida: " + s);
-            }
-        }
-        final double degrees = Math.toDegrees(Math.atan2(n * -n5 + n2 * n4, n * n4 + n2 * n5));
-        if (Math.abs(degrees) <= 45.0) {
+
+        int var5 = -var4;
+        double var7 = (double)(var1 * var3 + var2 * var4);
+        double var9 = (double)(var1 * var5 + var2 * var3);
+        double var11 = Math.toDegrees(Math.atan2(var9, var7));
+        if (Math.abs(var11) <= 45.0) {
             return "^";
-        }
-        if (Math.abs(degrees) >= 135.0) {
+        } else if (Math.abs(var11) >= 135.0) {
             return "v";
+        } else {
+            return var11 > 0.0 ? ">" : "<";
         }
-        return (degrees > 0.0) ? ">" : "<";
     }
-    
-    public static String line(final String s, final String s2, final int n, final int n2) {
-        final String arrow = arrow(s, n, n2);
-        return arrow.equals(">") ? (s2 + " >") : (arrow + " " + s2);
+
+    public static String line(String var0, String var1, int var2, int var3) {
+        String var4 = arrow(var0, var2, var3);
+        return var4.equals(">") ? var1 + " >" : var4 + " " + var1;
     }
 }

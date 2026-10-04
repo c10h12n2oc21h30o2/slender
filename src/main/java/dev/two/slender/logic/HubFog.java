@@ -1,52 +1,49 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.logic;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public final class HubFog
-{
+public final class HubFog {
     private HubFog() {
     }
-    
-    public static int viewDistance(final int a, final int b) {
-        if (b <= 0) {
-            return a;
+
+    public static int viewDistance(int var0, int var1) {
+        if (var1 <= 0) {
+            return var0;
+        } else {
+            int var2 = Math.max(2, var1);
+            return var0 <= 1 ? var2 : Math.min(var0, var2);
         }
-        final int max = Math.max(2, b);
-        return (a <= 1) ? max : Math.min(a, max);
     }
-    
-    public static boolean onPlatform(final double a, final double a2) {
-        final int n = (int)Math.floor(a);
-        final int n2 = (int)Math.floor(a2);
-        return n >= -30 && n <= 30 && n2 >= -2 && n2 <= 7;
+
+    public static boolean onPlatform(double var0, double var2) {
+        int var4 = (int)Math.floor(var0);
+        int var5 = (int)Math.floor(var2);
+        return var4 >= -30 && var4 <= 30 && var5 >= -2 && var5 <= 7;
     }
-    
-    public static boolean onTracks(final double a, final double a2) {
-        final int n = (int)Math.floor(a);
-        final int n2 = (int)Math.floor(a2);
-        return n >= -35 && n <= 35 && n2 >= 8 && n2 <= 16;
+
+    public static boolean onTracks(double var0, double var2) {
+        int var4 = (int)Math.floor(var0);
+        int var5 = (int)Math.floor(var2);
+        return var4 >= -35 && var4 <= 35 && var5 >= 8 && var5 <= 16;
     }
-    
-    public static List<double[]> mist(final double n, final double n2, final int n3, final double n4, final Random random) {
-        final ArrayList list = new ArrayList();
-        for (int n5 = 0; n5 < n3 * 3 && list.size() < n3; ++n5) {
-            final double n6 = random.nextDouble() * 2.0 * 3.141592653589793;
-            final double n7 = n4 * Math.sqrt(random.nextDouble());
-            final double n8 = n + Math.cos(n6) * n7;
-            final double n9 = n2 + Math.sin(n6) * n7;
-            if (onPlatform(n8, n9)) {
-                list.add(new double[] { n8, 2.0 + random.nextDouble() * 0.6, n9 });
-            }
-            else if (onTracks(n8, n9)) {
-                list.add(new double[] { n8, 1.0 + random.nextDouble() * 0.6, n9 });
+
+    public static List<double[]> mist(double var0, double var2, int var4, double var5, Random var7) {
+        ArrayList var8 = new ArrayList();
+
+        for(int var9 = 0; var9 < var4 * 3 && var8.size() < var4; ++var9) {
+            double var10 = var7.nextDouble() * 2.0 * Math.PI;
+            double var12 = var5 * Math.sqrt(var7.nextDouble());
+            double var14 = var0 + Math.cos(var10) * var12;
+            double var16 = var2 + Math.sin(var10) * var12;
+            if (onPlatform(var14, var16)) {
+                var8.add(new double[]{var14, 2.0 + var7.nextDouble() * 0.6, var16});
+            } else if (onTracks(var14, var16)) {
+                var8.add(new double[]{var14, 1.0 + var7.nextDouble() * 0.6, var16});
             }
         }
-        return list;
+
+        return var8;
     }
 }

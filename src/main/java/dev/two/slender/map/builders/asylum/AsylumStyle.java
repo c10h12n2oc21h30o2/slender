@@ -1,100 +1,115 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.map.builders.asylum;
 
-import java.util.List;
-import dev.two.slender.map.gen.FloorPlan;
 import dev.two.slender.map.Builder;
+import dev.two.slender.map.gen.FloorPlan;
 import dev.two.slender.map.gen.PlanStyle;
+import java.util.List;
 
-final class AsylumStyle implements PlanStyle
-{
+final class AsylumStyle implements PlanStyle {
     private final Builder b;
-    
-    AsylumStyle(final Builder b) {
-        this.b = b;
+
+    AsylumStyle(Builder var1) {
+        this.b = var1;
     }
-    
-    static String ward(final int n, final int n2, final int n3) {
-        if (n < 0) {
+
+    static String ward(int var0, int var1, int var2) {
+        if (var0 < 0) {
             return null;
-        }
-        if (n2 >= 10) {
+        } else if (var1 >= 10) {
             return "blue_terracotta";
-        }
-        if (n2 <= -10) {
+        } else if (var1 <= -10) {
             return "red_terracotta";
+        } else {
+            return var2 <= -9 ? "green_terracotta" : null;
         }
-        if (n3 <= -9) {
-            return "green_terracotta";
-        }
-        return null;
     }
-    
-    static boolean chapel(final int n, final int a, final int n2) {
-        return n == 1 && n2 >= 3 && Math.abs(a) <= 8;
+
+    static boolean chapel(int var0, int var1, int var2) {
+        return var0 == 1 && var2 >= 3 && Math.abs(var1) <= 8;
     }
-    
-    @Override
-    public String wall(final FloorPlan.Cell cell, final boolean b) {
-        if (cell.floor() < 0) {
-            return this.b.pick("deepslate_bricks", "deepslate_bricks", "cracked_deepslate_bricks", "cobbled_deepslate");
+
+    public String wall(FloorPlan.Cell var1, boolean var2) {
+        if (var1.floor() < 0) {
+            return (String)this.b.pick("deepslate_bricks", "deepslate_bricks", "cracked_deepslate_bricks", "cobbled_deepslate");
+        } else {
+            return var2 ? (String)this.b.pick("stone_bricks", "stone_bricks", "stone_bricks", "cracked_stone_bricks", "mossy_stone_bricks") : (String)this.b.pick("white_terracotta", "white_terracotta", "white_terracotta", "light_gray_terracotta", "white_concrete");
         }
-        if (b) {
-            return this.b.pick("stone_bricks", "stone_bricks", "stone_bricks", "cracked_stone_bricks", "mossy_stone_bricks");
-        }
-        return this.b.pick("white_terracotta", "white_terracotta", "white_terracotta", "light_gray_terracotta", "white_concrete");
     }
-    
-    @Override
-    public String stripe(final FloorPlan.Cell cell) {
-        return ward(cell.floor(), cell.x(), cell.z());
+
+    public String stripe(FloorPlan.Cell var1) {
+        return ward(var1.floor(), var1.x(), var1.z());
     }
-    
-    @Override
-    public String floor(final FloorPlan.Cell cell) {
-        if (cell.floor() < 0) {
-            return this.b.pick("stone", "cobblestone", "andesite", "stone");
-        }
-        if (chapel(cell.floor(), cell.x(), cell.z())) {
+
+    public String floor(FloorPlan.Cell var1) {
+        if (var1.floor() < 0) {
+            return (String)this.b.pick("stone", "cobblestone", "andesite", "stone");
+        } else if (chapel(var1.floor(), var1.x(), var1.z())) {
             return "dark_oak_planks";
+        } else {
+            boolean var2 = Math.floorMod(var1.x() + var1.z(), 2) == 0;
+            if (this.b.chance(0.08)) {
+                return "cracked_stone_bricks";
+            } else {
+                return var2 ? "light_gray_terracotta" : "white_terracotta";
+            }
         }
-        final boolean b = Math.floorMod(cell.x() + cell.z(), 2) == 0;
-        if (this.b.chance(0.08)) {
-            return "cracked_stone_bricks";
-        }
-        return b ? "light_gray_terracotta" : "white_terracotta";
     }
-    
-    @Override
-    public String roof(final int n, final int n2) {
+
+    public String roof(int var1, int var2) {
         return this.b.chance(0.9) ? "deepslate_tiles" : "cracked_deepslate_tiles";
     }
-    
-    @Override
+
     public String door() {
         return "dark_oak_door";
     }
-    
-    @Override
+
     public String stairs() {
         return "stone_brick_stairs";
     }
-    
-    @Override
-    public List<String> furniture(final char c) {
-        return switch (c) {
-            case 'b' -> PlanStyle.stack("white_wool");
-            case 't' -> PlanStyle.stack("oak_fence", "oak_pressure_plate");
-            case 'r' -> PlanStyle.stack("polished_andesite");
-            case 'k' -> PlanStyle.stack("blast_furnace[facing=south]");
-            case 'm' -> PlanStyle.stack("smooth_stone", "smooth_stone");
-            case 'c' -> PlanStyle.stack("barrel[facing=up]", "barrel[facing=up]");
-            case 'p' -> PlanStyle.stack("dark_oak_stairs[facing=north,half=bottom,shape=straight]");
-            case 'a' -> PlanStyle.stack("polished_andesite", "candle[candles=3,lit=false]");
-            default -> List.of();
-        };
+
+    public List<String> furniture(char var1) {
+        List var10000;
+        switch (var1) {
+            case 'a':
+                var10000 = PlanStyle.stack("polished_andesite", "candle[candles=3,lit=false]");
+                break;
+            case 'b':
+                var10000 = PlanStyle.stack("white_wool");
+                break;
+            case 'c':
+                var10000 = PlanStyle.stack("barrel[facing=up]", "barrel[facing=up]");
+                break;
+            case 'd':
+            case 'e':
+            case 'f':
+            case 'g':
+            case 'h':
+            case 'i':
+            case 'j':
+            case 'l':
+            case 'n':
+            case 'o':
+            case 'q':
+            case 's':
+            default:
+                var10000 = List.of();
+                break;
+            case 'k':
+                var10000 = PlanStyle.stack("blast_furnace[facing=south]");
+                break;
+            case 'm':
+                var10000 = PlanStyle.stack("smooth_stone", "smooth_stone");
+                break;
+            case 'p':
+                var10000 = PlanStyle.stack("dark_oak_stairs[facing=north,half=bottom,shape=straight]");
+                break;
+            case 'r':
+                var10000 = PlanStyle.stack("polished_andesite");
+                break;
+            case 't':
+                var10000 = PlanStyle.stack("oak_fence", "oak_pressure_plate");
+        }
+
+        return var10000;
     }
 }

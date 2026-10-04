@@ -1,30 +1,33 @@
-// 
-// Decompiled by Procyon v0.6.0
-// 
-
 package dev.two.slender.logic;
 
-public final class SightMath
-{
+public final class SightMath {
     private SightMath() {
     }
-    
-    public static double angleBetweenDeg(final Vec3 vec3, final Vec3 vec4) {
-        final double length = vec3.length();
-        final double length2 = vec4.length();
-        if (length < 1.0E-9 || length2 < 1.0E-9) {
+
+    public static double angleBetweenDeg(Vec3 var0, Vec3 var1) {
+        double var2 = var0.length();
+        double var4 = var1.length();
+        if (!(var2 < 1.0E-9) && !(var4 < 1.0E-9)) {
+            double var6 = Math.max(-1.0, Math.min(1.0, var0.dot(var1) / (var2 * var4)));
+            return Math.toDegrees(Math.acos(var6));
+        } else {
             return 180.0;
         }
-        return Math.toDegrees(Math.acos(Math.max(-1.0, Math.min(1.0, vec3.dot(vec4) / (length * length2)))));
     }
-    
-    public static boolean inCone(final Vec3 vec3, final Vec3 vec4, final Vec3 vec5, final double n, final double n2) {
-        final Vec3 sub = vec5.sub(vec3);
-        final double length = sub.length();
-        return length <= n2 && (length < 1.0E-6 || angleBetweenDeg(vec4, sub) <= n);
+
+    public static boolean inCone(Vec3 var0, Vec3 var1, Vec3 var2, double var3, double var5) {
+        Vec3 var7 = var2.sub(var0);
+        double var8 = var7.length();
+        if (var8 > var5) {
+            return false;
+        } else if (var8 < 1.0E-6) {
+            return true;
+        } else {
+            return angleBetweenDeg(var1, var7) <= var3;
+        }
     }
-    
-    public static double horizontalAngleDeg(final Vec3 vec3, final Vec3 vec4, final Vec3 vec5) {
-        return angleBetweenDeg(vec4.horizontal(), vec5.sub(vec3).horizontal());
+
+    public static double horizontalAngleDeg(Vec3 var0, Vec3 var1, Vec3 var2) {
+        return angleBetweenDeg(var1.horizontal(), var2.sub(var0).horizontal());
     }
 }
