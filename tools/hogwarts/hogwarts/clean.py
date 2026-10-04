@@ -71,3 +71,23 @@ def contain_lake(vol: Volume, top: int = 30) -> None:
     vol.data[0:top + 1, :, -1] = b
     vol.data[0:top + 1, 0, :] = b
     vol.data[0:top + 1, -1, :] = b
+
+
+TERRAIN = {f'minecraft:{n}' for n in (
+    'stone', 'andesite', 'diorite', 'granite', 'dirt', 'bedrock', 'gravel', 'sand', 'coarse_dirt', 'podzol',
+    'grass_block', 'clay', 'coal_ore', 'iron_ore', 'gold_ore', 'lapis_ore', 'redstone_ore', 'diamond_ore',
+    'emerald_ore')}
+
+
+def hollow(vol: Volume) -> int:
+    """Vacía el terreno que no se ve (las 6 caras tocan terreno). Solo para el schem final: acelera el pegado."""
+    solid = vol.mask(lambda s: s.split('[')[0] in TERRAIN)
+    inner = solid.copy()
+    inner[0] = inner[-1] = False
+    inner[:, 0] = inner[:, -1] = False
+    inner[:, :, 0] = inner[:, :, -1] = False
+    for ax in range(3):
+        for s in (1, -1):
+            inner &= np.roll(solid, s, axis=ax)
+    vol.data[inner] = vol.idx(AIR)
+    return int(inner.sum())

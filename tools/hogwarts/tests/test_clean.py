@@ -48,3 +48,16 @@ def test_lake_wall():
     assert v.get(2, 15, 0) == 'minecraft:barrier'
     assert v.get(0, 31, 200) != 'minecraft:barrier'
     assert v.get(2, 15, 200) == 'minecraft:air'
+
+def test_hollow_only_hidden_terrain():
+    v = Volume.empty(5, 5, 5)
+    for x in range(5):
+        for y in range(5):
+            for z in range(5):
+                v.set(x, y, z, 'minecraft:stone')
+    v.set(2, 4, 2, 'minecraft:air')  # hueco en la cara de arriba
+    n = clean.hollow(v)
+    assert v.get(2, 2, 2) == 'minecraft:air'      # escondido: se vacía
+    assert v.get(2, 3, 2) == 'minecraft:stone'    # toca el hueco de arriba: se queda
+    assert v.get(0, 2, 2) == 'minecraft:stone'    # borde del volumen: se queda
+    assert n == 26                                # 3x3x3 interior menos (2,3,2)
