@@ -58,6 +58,8 @@ public final class Game {
     private final Consumer<UUID> onRemove;
     private final Map<UUID, Participant> participants = new LinkedHashMap();
     private final Random random = new Random();
+    /** Frases de las páginas de esta partida, sin repetir (se baraja al empezar). */
+    private PhraseDeck phrases;
     private final SightService sight;
     private final Flashlights flashlights;
     private final SurvivorEffects effects;
@@ -337,6 +339,7 @@ public final class Game {
             this.startTick = this.tick;
             this.lastPageTick = this.tick;
             this.pagesCollected = 0;
+            this.phrases = new PhraseDeck(this.map.ambience().phrasesOr(this.cfg.pagePhrases), this.random);
             this.timeLeft = this.cfg.timeLimit(this.mode.id());
             this.body = new SlenderBody(this.plugin, this.cfg);
             this.scares = new ScareScheduler(this.plugin, this.cfg, this.msg, this.sight, this.flashlights, this.pages, this::stateOf, this::freePageSpots);
@@ -560,8 +563,10 @@ public final class Game {
                     ++this.pagesCollected;
                     this.lastPageTick = this.tick;
                     ++this.stateOf(var1.getUniqueId()).pages;
-                    List var3 = this.map.ambience().phrasesOr(this.cfg.pagePhrases);
-                    String var4 = (String)var3.get(this.random.nextInt(var3.size()));
+                    if (this.phrases == null) {
+                        this.phrases = new PhraseDeck(this.map.ambience().phrasesOr(this.cfg.pagePhrases), this.random);
+                    }
+                    String var4 = this.phrases.next();
                     Iterator var5 = this.online().iterator();
 
                     Player var6;

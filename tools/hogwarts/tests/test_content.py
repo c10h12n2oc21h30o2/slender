@@ -214,3 +214,11 @@ def test_cells_codec_roundtrip():
     m[1, 2, 3] = m[3, 4, 5] = m[0, 0, 0] = True
     enc = content.encode_cells(m)
     assert content.decode_cells(enc) == [0, 3 + 2 * 6 + 1 * 6 * 5, 5 + 4 * 6 + 3 * 6 * 5]
+
+def test_phrases_unique_across_sections():
+    """En LA NOCHE ENTERA se juegan las 7 seguidas: ninguna frase de página se repite entre secciones."""
+    seen = {}
+    for d in sections.load_defs():
+        for ph in content.load_content(d.id)['phrases']:
+            assert ph not in seen, (ph, seen.get(ph), d.id)
+            seen[ph] = d.id
