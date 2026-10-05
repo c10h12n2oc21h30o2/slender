@@ -16,7 +16,7 @@ import org.bukkit.Material;
  * Andén 9¾ en el patio sin usar de la estación (x 0…34, z −24…−4, relativo a su origen).
  * El andén 1 se alarga hasta un muro (z = −6) con un tramo de ladrillo: su hueco central son block_display
  * (Java ve ladrillos y lo cruza, Bedrock ve un hueco). Detrás, a la misma altura, el Expreso de Hogwarts con una
- * puerta por sección y una 8.ª tapiada.
+ * puerta por sección y una 8.ª para LA NOCHE ENTERA.
  */
 public final class Anden934 {
     /** Etiqueta de scoreboard de los block_display del hueco. */
@@ -29,8 +29,10 @@ public final class Anden934 {
     static final int TRAIN_Z = -18;
     /** x de las puertas 1–7, en el orden de HogwartsMaps.IDS. */
     private static final int[] DOOR_X = {3, 6, 9, 14, 17, 20, 24};
-    /** La 8.ª puerta, tapiada: el modo historia ("la noche entera"). */
-    private static final int SEALED_X = 26;
+    /** La 8.ª puerta: LA NOCHE ENTERA. */
+    private static final int NIGHT_X = 26;
+    /** Id de la zona de la 8.ª puerta (reservado en MapIds). */
+    public static final String NIGHT_DOOR = "noche";
     /** Vagones (x de inicio y fin) y enganches entre ellos; la locomotora va de 28 a 34. */
     private static final int[][] CARRIAGES = {{1, 10}, {12, 21}, {23, 27}};
     private static final int[] COUPLINGS = {11, 22};
@@ -51,6 +53,15 @@ public final class Anden934 {
             out.put(ids.get(i), Zone.of(new BlockPos(x - 1, y, TRAIN_Z), new BlockPos(x + 1, y + 2, TRAIN_Z)));
         }
         return out;
+    }
+
+    /**
+     * Zona de la 8.ª puerta, relativa a la estación. Solo x 26…27: la 7.ª puerta (x 24) ocupa hasta x 25 y su
+     * hueco está en el mismo vagón.
+     */
+    public static Zone nightDoor() {
+        int y = FLOOR_Y + 2;
+        return Zone.of(new BlockPos(NIGHT_X, y, TRAIN_Z), new BlockPos(NIGHT_X + 1, y + 2, TRAIN_Z));
     }
 
     /** Las 9 celdas del hueco del muro (3 de ancho × 3 de alto, desde el suelo del andén), relativas a la estación. */
@@ -118,11 +129,13 @@ public final class Anden934 {
             List<String> l = doorSign(i + 1, names.getOrDefault(ids.get(i), ids.get(i)));
             h.sign(x, 4, TRAIN_Z + 1, "south", DyeColor.YELLOW, l.toArray(String[]::new));
         }
-        h.fill(SEALED_X, 2, TRAIN_Z, SEALED_X, 3, TRAIN_Z, "bricks");
-        h.sign(SEALED_X, 4, TRAIN_Z + 1, "south", DyeColor.RED, "LA NOCHE", "ENTERA", "", "próximamente");
+        h.set(NIGHT_X, 1, TRAIN_Z + 1, "stone_brick_slab[type=bottom]");
+        h.sign(NIGHT_X, 4, TRAIN_Z + 1, "south", DyeColor.RED, "LA NOCHE", "ENTERA", "", "8.ª puerta");
         h.sign(1, 3, -9, "east", DyeColor.WHITE, "Hogwarts por", "Gabbel", "v1.1.0", "planetminecraft");
         LinkedHashMap<String, Zone> out = new LinkedHashMap<>();
-        doors().forEach((id, z) -> out.put(id, Zone.of(b.abs(z.min().x(), z.min().y(), z.min().z()),
+        LinkedHashMap<String, Zone> rel = doors();
+        rel.put(NIGHT_DOOR, nightDoor());
+        rel.forEach((id, z) -> out.put(id, Zone.of(b.abs(z.min().x(), z.min().y(), z.min().z()),
                 b.abs(z.max().x(), z.max().y(), z.max().z()))));
         return out;
     }
@@ -224,7 +237,7 @@ public final class Anden934 {
     }
 
     private static boolean isDoor(int x) {
-        if (x == SEALED_X) {
+        if (x == NIGHT_X) {
             return true;
         }
         for (int d : DOOR_X) {

@@ -31,6 +31,7 @@ public final class HubBuilder {
         station(var0);
         Zone var2 = exitRoom(var0);
         Map<String, Zone> var3 = arches(var0);
+        Sala.build(var0);
         wagon(var0);
         yard(var0);
         LinkedHashMap<String, Zone> doors = new LinkedHashMap<>(var3);

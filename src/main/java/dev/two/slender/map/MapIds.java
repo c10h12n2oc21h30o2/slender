@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public final class MapIds {
     private static final Pattern SLUG = Pattern.compile("[a-z0-9_]{2,20}");
-    private static final Set<String> RESERVED = Set.of("all", "vestibulo", "list", "create", "hogwarts");
+    private static final Set<String> RESERVED = Set.of("all", "vestibulo", "list", "create", "hogwarts", "noche");
 
     private MapIds() {
     }

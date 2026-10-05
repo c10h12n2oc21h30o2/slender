@@ -56,6 +56,20 @@ class Anden934Test {
         }
     }
 
+    @Test
+    void nightDoorBesideTheSeven() {
+        assertEquals("noche", Anden934.NIGHT_DOOR);
+        Zone n = Anden934.nightDoor();
+        assertTrue(n.min().x() >= 0 && n.max().x() <= 34, "x fuera del andén: " + n);
+        assertTrue(n.min().z() >= -24 && n.max().z() <= -4, "z fuera del andén: " + n);
+        assertEquals(-18, n.min().z());
+        assertEquals(3, n.min().y());
+        assertTrue(n.contains(26.5, 3.0, -17.5), "no cubre el hueco de la 8.ª puerta: " + n);
+        for (Zone z : Anden934.doors().values()) {
+            assertFalse(overlap(n, z), "pisa otra puerta: " + n + " / " + z);
+        }
+    }
+
     /** El andén 1 está a y = 1 (se pisa a y = 2): el hueco del muro y el andén 9¾ van a esa misma altura, sin bajar. */
     @Test
     void levelWithPlatformOne() {
