@@ -26,6 +26,7 @@ final class MapAmbience {
     private final Ambience amb;
     private final Map<String, Sound> sounds = new HashMap();
     private final Map<BlockPos, Boolean> lit = new HashMap();
+    private final LightSuppression off = new LightSuppression();
 
     MapAmbience(Plugin var1, World var2, Ambience var3) {
         this.plugin = var1;
@@ -64,7 +65,7 @@ final class MapAmbience {
 
         while(var4.hasNext()) {
             MapLight var5 = (MapLight)var4.next();
-            boolean var6 = var5.litAt(var1, var3.nextDouble());
+            boolean var6 = var5.litAt(var1, var3.nextDouble()) && !this.off.suppressed(var5.pos(), var1);
             if (!Boolean.valueOf(var6).equals(this.lit.get(var5.pos())) && this.apply(var5.pos(), var6)) {
                 this.lit.put(var5.pos(), var6);
             }
@@ -81,11 +82,28 @@ final class MapAmbience {
         }
 
         this.lit.clear();
+        this.off.clear();
+    }
+
+    /** Apaga hasta untilTick las luces del mapa a ≤ radius de center (siguen apagadas aunque toque encenderlas). */
+    void suppress(Location center, double radius, long untilTick) {
+        for (MapLight l : this.amb.lights()) {
+            BlockPos p = l.pos();
+            double dx = p.x() + 0.5 - center.getX();
+            double dy = p.y() + 0.5 - center.getY();
+            double dz = p.z() + 0.5 - center.getZ();
+            if (dx * dx + dy * dy + dz * dz <= radius * radius) {
+                this.off.suppress(p, untilTick);
+                if (this.apply(p, false)) {
+                    this.lit.put(p, false);
+                }
+            }
+        }
     }
 
     private boolean apply(BlockPos var1, boolean var2) {
         Block var3 = this.world.getBlockAt(var1.x(), var1.y(), var1.z());
-        if (var3.getType() != Material.REDSTONE_LAMP) {
+        if (!LightSuppression.toggles(var3.getType()) || !(var3.getBlockData() instanceof Lightable)) {
             return false;
         } else {
             Lightable var4 = (Lightable)var3.getBlockData();

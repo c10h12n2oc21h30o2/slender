@@ -779,6 +779,11 @@ public final class Game {
         this.reset();
     }
 
+    /** Apaga las luces del mapa a ≤ radius de center hasta untilTick (tick de la partida). */
+    public void lightsOut(Location center, double radius, long untilTick) {
+        this.ambience.suppress(center, radius, untilTick);
+    }
+
     public void reset() {
         Iterator var1 = (new ArrayList(this.participants.keySet())).iterator();
 
