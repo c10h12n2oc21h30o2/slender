@@ -90,6 +90,8 @@ public final class Game {
     private Team team;
     /** LA NOCHE ENTERA: reglas de la fase; null en una partida normal. */
     private PhaseHooks hooks;
+    /** Durante stop(): la fase de la noche que acabe ahora no cuenta. */
+    private boolean stopping;
 
     public Game(Plugin var1, SlenderConfig var2, Msg var3, Items var4, HubAccess var5, ArenaMap var6, World var7, Consumer<UUID> var8) {
         this.state = GameState.WAITING;
@@ -866,11 +868,16 @@ public final class Game {
     }
 
     public void stop() {
-        if (this.running()) {
-            this.end(Game.Winner.NOBODY);
-        }
+        this.stopping = true;
+        try {
+            if (this.running()) {
+                this.end(Game.Winner.NOBODY);
+            }
 
-        this.reset();
+            this.reset();
+        } finally {
+            this.stopping = false;
+        }
     }
 
     /** Apaga las luces del mapa a ≤ radius de center hasta untilTick (tick de la partida). */
@@ -891,7 +898,8 @@ public final class Game {
                     dead.add(p.id);
                 }
             }
-            result = new PhaseResult(this.outcome(), this.state != GameState.ENDING, esc, dead, List.copyOf(this.participants.keySet()));
+            result = new PhaseResult(this.outcome(), PhaseResult.aborted(this.state == GameState.ENDING, this.stopping), esc, dead,
+                    List.copyOf(this.participants.keySet()));
         }
         Iterator var1 = (new ArrayList(this.participants.keySet())).iterator();
 

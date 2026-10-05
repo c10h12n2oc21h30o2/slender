@@ -38,6 +38,8 @@ public final class Director {
     private UUID lureTarget;
     private double lureFactor = 1.0;
     private Location lureLoc;
+    private double lureMin = 6;
+    private double lureMax = 10;
     private boolean suspended;
 
     public Director(SlenderConfig var1, SightService var2, SlenderBody var3, ArenaMap var4, BiConsumer<Player, String> var5) {
@@ -65,7 +67,14 @@ public final class Director {
 
     /** El próximo teletransporte coloca a Slender a 6–10 bloques de loc (si no lo ven). */
     public void lureTo(Location loc) {
+        this.lureTo(loc, 6, 10);
+    }
+
+    /** Igual, a [min, max] bloques de loc (cazar cabezas: justo al lado). */
+    public void lureTo(Location loc, double min, double max) {
         this.lureLoc = loc;
+        this.lureMin = min;
+        this.lureMax = max;
     }
 
     public void suspend(boolean on) {
@@ -98,7 +107,7 @@ public final class Director {
         }
         for (int i = 0; i < 12; i++) {
             double ang = r.nextDouble() * Math.PI * 2;
-            double d = 6 + r.nextDouble() * 4;
+            double d = this.lureMin + r.nextDouble() * (this.lureMax - this.lureMin);
             Location c = loc.clone().add(Math.cos(ang) * d, 0, Math.sin(ang) * d);
             Location g = SlenderBody.ground(c, 4, 6);
             if (g == null || !SpotRules.allows(this.map.id(), g.getBlockX(), g.getBlockY(), g.getBlockZ())) {

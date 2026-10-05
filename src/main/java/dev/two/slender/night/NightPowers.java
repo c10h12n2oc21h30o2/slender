@@ -35,6 +35,8 @@ import org.bukkit.potion.PotionEffectType;
 /** Las 6 habilidades nuevas de Slender en LA NOCHE ENTERA (spec §6). Usa los modelos puros del paquete. */
 public final class NightPowers {
     public static final String TAG = "slender_night";
+    /** Cazar cabezas: a esta distancia Slender coge una cabeza (spec §6). */
+    static final double GRAB_RADIUS = 3;
     private final NightPlan plan;
     private final NightSettings s;
     private final SlenderConfig cfg;
@@ -43,8 +45,7 @@ public final class NightPowers {
     private final Function<UUID, Optional<Item>> headEntity;
     private final AbilityClock clock = new AbilityClock();
     private final SprintEar ear = new SprintEar();
-    private final Map<UUID, Double> exposed = new HashMap<>();
-    private final Map<UUID, Double> grabbing = new HashMap<>();
+    private final HeadHunt hunt;
     private Vec3 lastBody;
     private Mannequin mimic;
     private UUID mimicTarget;
@@ -61,6 +62,7 @@ public final class NightPowers {
         this.phase = phase;
         this.heads = heads;
         this.headEntity = headEntity;
+        this.hunt = new HeadHunt(s.heads().seconds(), s.heads().grabSeconds(), GRAB_RADIUS);
     }
 
     public static double chaseStep(double speed, double dtSeconds) {
@@ -162,33 +164,23 @@ public final class NightPowers {
         for (UUID owner : this.heads.onGround()) {
             Optional<Item> e = this.headEntity.apply(owner);
             if (e.isEmpty() || !e.get().isValid()) {
+                this.hunt.forget(owner);
                 continue;
             }
             Location at = e.get().getLocation();
-            boolean guarded = alive.stream().anyMatch(p -> p.getWorld().equals(at.getWorld())
-                    && p.getLocation().distance(at) <= this.s.heads().radius());
-            if (guarded) {
-                this.exposed.remove(owner);
-                this.grabbing.remove(owner);
-                continue;
-            }
-            double secs = this.exposed.merge(owner, 1.0, Double::sum);
-            if (secs >= this.s.heads().seconds() && d != null && !d.suspended() && !d.observed(alive)
-                    && (!bodyAlive || body.location().distance(at) > 3)) {
-                d.lureTo(at);
-            }
-            if (bodyAlive && body.location().getWorld().equals(at.getWorld()) && body.location().distance(at) <= 3) {
-                double grab = this.grabbing.merge(owner, 1.0, Double::sum);
-                if (grab >= this.s.heads().grabSeconds()) {
-                    e.get().remove();
-                    this.heads.stolen(owner);
-                    this.exposed.remove(owner);
-                    this.grabbing.remove(owner);
-                    String name = Optional.ofNullable(Bukkit.getOfflinePlayer(owner).getName()).orElse("?");
-                    for (Player p : g.online()) {
-                        p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_SCREAM, SoundCategory.HOSTILE, 0.7F, 0.5F);
-                        g.msg().send(p, "noche-cabeza-robada", "player", name);
-                    }
+            boolean guarded = alive.stream().anyMatch(p -> Places.near(p.getLocation(), at, this.s.heads().radius()));
+            double dist = bodyAlive && body.location().getWorld() != null && body.location().getWorld().equals(at.getWorld())
+                    ? body.location().distance(at) : Double.POSITIVE_INFINITY;
+            HeadHunt.Action act = this.hunt.step(owner, guarded, dist, 1.0);
+            if (act == HeadHunt.Action.LURE && d != null && !d.suspended() && !d.observed(alive)) {
+                d.lureTo(at, 1.5, GRAB_RADIUS);
+            } else if (act == HeadHunt.Action.STEAL) {
+                e.get().remove();
+                this.heads.stolen(owner);
+                String name = Optional.ofNullable(Bukkit.getOfflinePlayer(owner).getName()).orElse("?");
+                for (Player p : g.online()) {
+                    p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_SCREAM, SoundCategory.HOSTILE, 0.7F, 0.5F);
+                    g.msg().send(p, "noche-cabeza-robada", "player", name);
                 }
             }
         }
@@ -242,8 +234,10 @@ public final class NightPowers {
         at.setDirection(target.getLocation().toVector().subtract(at.toVector()));
         this.mimic = w.spawn(at, Mannequin.class, m -> {
             m.setProfile(ResolvableProfile.resolvableProfile(face.getPlayerProfile()));
-            m.customName(Component.text(face.getName()));
-            m.setCustomNameVisible(true);
+            // como un compañero de verdad: sin la etiqueta "NPC" ni nombre a la vista (el equipo los oculta)
+            m.setDescription(Component.empty());
+            m.setCustomNameVisible(false);
+            m.setImmovable(true);
             m.setInvulnerable(true);
             m.setPersistent(false);
             m.setSilent(true);
@@ -369,7 +363,6 @@ public final class NightPowers {
             this.mimic = null;
         }
         this.chaseTarget = null;
-        this.exposed.clear();
-        this.grabbing.clear();
+        this.hunt.clear();
     }
 }

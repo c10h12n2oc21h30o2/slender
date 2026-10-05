@@ -49,7 +49,7 @@ public final class NightPhase implements PhaseHooks {
     private final int phase;
     private final Random random = new Random();
     private final Map<UUID, Item> headItems = new HashMap<>();
-    private final List<BlockPos> placed = new ArrayList<>();
+    private final BlockRestore placed = new BlockRestore();
     private HeadLedger heads;
     private Ritual ritual;
     private NightPowers powers;
@@ -194,9 +194,9 @@ public final class NightPhase implements PhaseHooks {
 
     @Override
     public void onLeave(Game g, UUID id, Location last) {
-        if (last != null) {
-            this.dropHeads(g, id, Bukkit.getPlayer(id), last);
-        }
+        // si ha salido del mundo (/spawn, /home…), last está en otro mundo: las cabezas van al caldero
+        this.dropHeads(g, id, Bukkit.getPlayer(id), Places.dropSpot(last, g.world(),
+                this.altar == null ? null : this.besideAltar()));
     }
 
     @Override
@@ -219,10 +219,11 @@ public final class NightPhase implements PhaseHooks {
             return true;
         }
         if (at.equals(this.brazier) && b.getBlockData() instanceof Lightable l && !l.isLit()) {
-            l.setLit(true);
-            b.setBlockData(l, false);
-            w(g).playSound(b.getLocation(), Sound.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1F, 1F);
-            this.missionFound(g);
+            if (this.missionFound(g, p) != MissionRules.Found.IGNORED) {
+                l.setLit(true);
+                b.setBlockData(l, false);
+                w(g).playSound(b.getLocation(), Sound.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1F, 1F);
+            }
             return true;
         }
         return false;
@@ -231,9 +232,10 @@ public final class NightPhase implements PhaseHooks {
     @Override
     public boolean onInteractEntity(Game g, Player p, Entity e) {
         if (this.cat != null && e.equals(this.cat)) {
-            this.cat.remove();
-            this.cat = null;
-            this.missionFound(g);
+            if (this.missionFound(g, p) != MissionRules.Found.IGNORED) {
+                this.cat.remove();
+                this.cat = null;
+            }
             return true;
         }
         return false;
@@ -251,10 +253,9 @@ public final class NightPhase implements PhaseHooks {
             return Pickup.DENY;
         }
         if (HeadItems.isCard(item.getItemStack())) {
-            if (g.isAliveSurvivor(p)) {
+            if (this.missionFound(g, p) != MissionRules.Found.IGNORED) {
                 item.remove();
                 this.card = null;
-                this.missionFound(g);
             }
             return Pickup.DENY;
         }
@@ -264,8 +265,9 @@ public final class NightPhase implements PhaseHooks {
     @Override
     public void onCleanup(Game g) {
         World w = g.world();
-        for (BlockPos p : this.placed) {
-            w.getBlockAt(p.x(), p.y(), p.z()).setType(Material.AIR, false);
+        for (Map.Entry<BlockPos, String> e : this.placed.restoreOrder()) {
+            BlockPos p = e.getKey();
+            w.getBlockAt(p.x(), p.y(), p.z()).setBlockData(Bukkit.createBlockData(e.getValue()), false);
         }
         this.placed.clear();
         this.headItems.values().forEach(Entity::remove);
@@ -306,7 +308,7 @@ public final class NightPhase implements PhaseHooks {
         }
         for (UUID owner : owners) {
             Player o = Bukkit.getPlayer(owner);
-            if (o == null) {
+            if (o == null || at == null) {
                 continue;
             }
             Item it = at.getWorld().dropItem(at, HeadItems.make(o), i -> {
@@ -377,7 +379,11 @@ public final class NightPhase implements PhaseHooks {
     // ------------------------------------------------------------------ misión y Snitch
 
     private void spawnMission(Game g, World w) {
-        BlockPos at = this.floorAwayFromSpawns(20);
+        Optional<BlockPos> spot = this.clearFloor(w, 20);
+        if (spot.isEmpty()) {
+            return;
+        }
+        BlockPos at = spot.get();
         Location loc = new Location(w, at.x() + 0.5, at.y(), at.z() + 0.5);
         switch (this.state.mission.type()) {
             case NORRIS -> this.cat = w.spawn(loc, Cat.class, c -> {
@@ -402,15 +408,14 @@ public final class NightPhase implements PhaseHooks {
         }
     }
 
-    private void missionFound(Game g) {
-        this.state.mission.found(this.phase);
-        if (this.state.mission.done() && !this.state.missionRewarded) {
-            this.state.missionRewarded = true;
-            this.gainCandle();
+    private MissionRules.Found missionFound(Game g, Player who) {
+        MissionRules.Found f = MissionRules.find(this.state, this.heads, who.getUniqueId(), this.set.candlesMax());
+        if (f == MissionRules.Found.REWARDED) {
             for (Player p : g.online()) {
                 g.msg().send(p, "noche-mision-hecha");
             }
         }
+        return f;
     }
 
     private void gainCandle() {
@@ -479,6 +484,23 @@ public final class NightPhase implements PhaseHooks {
 
     // ------------------------------------------------------------------ utilidades
 
+    /**
+     * Celda de suelo libre de verdad (aire a los pies y en la cabeza, algo sólido debajo): la mayoría de celdas de
+     * suelo son escaleras, losas, alfombras, puertas o escalas, que no se pueden pisar con un brasero. Primero lejos
+     * de los spawns; si no, en cualquier sitio.
+     */
+    private Optional<BlockPos> clearFloor(World w, double minDist) {
+        List<BlockPos> spawns = this.section.spawnCellsWorld();
+        java.util.function.Predicate<BlockPos> clear = c -> w.getBlockAt(c.x(), c.y(), c.z()).getType().isAir()
+                && w.getBlockAt(c.x(), c.y() + 1, c.z()).getType().isAir()
+                && w.getBlockAt(c.x(), c.y() - 1, c.z()).getType().isSolid();
+        Optional<BlockPos> far = NightSpots.pick(this.section.floorCount(), this.section::floorWorld,
+                c -> spawns.stream().allMatch(s -> Math.hypot(s.x() - c.x(), s.z() - c.z()) >= minDist) && clear.test(c),
+                this.random, 300);
+        return far.isPresent() ? far
+                : NightSpots.pick(this.section.floorCount(), this.section::floorWorld, clear, this.random, 300);
+    }
+
     private BlockPos floorAwayFromSpawns(double minDist) {
         List<BlockPos> spawns = this.section.spawnCellsWorld();
         BlockPos pick = this.section.floorWorld(this.random.nextInt(this.section.floorCount()));
@@ -493,9 +515,11 @@ public final class NightPhase implements PhaseHooks {
         return pick;
     }
 
+    /** Pone un bloque y apunta lo que había, para dejarlo igual al acabar (escaleras, puertas, escalas…). */
     private void place(World w, BlockPos p, String state) {
-        w.getBlockAt(p.x(), p.y(), p.z()).setBlockData(Bukkit.createBlockData(state), false);
-        this.placed.add(p);
+        Block b = w.getBlockAt(p.x(), p.y(), p.z());
+        this.placed.record(p, b.getBlockData().getAsString());
+        b.setBlockData(Bukkit.createBlockData(state), false);
     }
 
     private double now(Game g) {
