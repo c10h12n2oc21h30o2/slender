@@ -1,8 +1,8 @@
-# Instalar Slender (v1.8.1)
+# Instalar Slender (v1.9.0)
 
 1. Copia `Slender.jar` a la carpeta `plugins/` del servidor (desde tu PC):
    `scp C:\Users\kivi2\IdeaProjects\slender\Slender.jar USUARIO@IP:RUTA_DEL_SERVIDOR/plugins/`
-2. Reinicia el servidor (no uses /reload). `/version Slender` debe decir **1.8.1**.
+2. Reinicia el servidor (no uses /reload). `/version Slender` debe decir **1.9.0**.
 3. No hace falta importar `slender` en Multiverse: el plugin crea y carga el mundo él solo en cada arranque.
    (Si aun así lo quieres en Multiverse: `/mv import slender normal --generator Slender --skip-folder-check`,
    pero entonces Multiverse puede forzar modo supervivencia en ese mundo.)
@@ -19,6 +19,41 @@
    Sin skin, Slender es un Enderman.
 6. Genera el vestíbulo y los mapas (uno detrás de otro): `/slender build all`
    (solo el vestíbulo: `/slender build vestibulo`). Con las 7 secciones de Hogwarts, `all` tarda unos 25–35 min.
+
+## Novedades 1.9: LA NOCHE ENTERA
+
+Para tenerlo: cambia el jar, reinicia y usa `/slender build vestibulo` sin nadie en la estación (sale la Sala de los
+Menesteres y se abre la 8.ª puerta del Expreso). Hogwarts **no** hace falta reconstruirlo: el caldero de cada fase
+se pone al empezarla y se quita al acabar. Tienen que estar construidas las 7 secciones (`/slender build hogwarts`).
+
+- **Qué es:** el modo historia de Hogwarts. Un grupo de 1 a 8 jugadores pasa la noche entera por las 7 secciones,
+  una detrás de otra: Terrenos, Gran Comedor, Mazmorras, Ala Este, Patio, Aulas altas y Torres. Filch salió a hacer
+  la ronda y no ha vuelto; en el castillo solo queda Él. Cada fase es más difícil: más páginas (según cuántos
+  jugáis), más agresividad, más estática y nuevos poderes de Slender.
+- **Cómo se entra:** la **8.ª puerta** del Expreso (cartel "LA NOCHE ENTERA") abre un menú: *Nueva noche*,
+  *Continuar* (tu última noche guardada) o *Unirse* (si ya hay una en marcha). Solo hay una noche a la vez.
+- **La Sala de los Menesteres:** entre fase y fase. Tiene un tablón (fase, velas, misión y la siguiente página del
+  diario de Filch), un **círculo de farolillos** (cuando todos los que no están perdidos se meten dentro, empieza la
+  fase en 10 s; o si alguien se queda 30 s dentro, empieza con los que haya), un **altar con una vela** (quedarse
+  3 s gasta una vela para que vuelva un perdido) y la **puerta de salida** (se guarda y vuelves a la estación; la
+  noche sigue esperando si queda alguien en la sala).
+- **Velas:** se empieza con 2 (máximo 4). Si en una fase no sale nadie, se gasta una y se repite la fase; sin
+  velas se acaba la noche. Se gana una vela con la **misión de la noche** (al azar: encontrar a la Señora Norris,
+  reunir 5 cromos de ranas de chocolate o encender los 4 braseros de las casas) y otra con un secreto dorado que
+  vuela por el castillo en una de las fases...
+- **Cabezas y caldero:** quien muere suelta su cabeza (brilla). Un compañero vivo puede cogerla y llevarla al
+  **caldero** de la fase (clic derecho con la cabeza en la mano y quedarse cerca 8 s: Slender acude) para que
+  vuelva, o sacarla por la salida para rescatarlo. Quien acaba muerto sin rescatar queda **perdido**: la fase
+  siguiente la ve como espectador y después vuelve.
+- **Poderes nuevos de Slender** (se van sumando de fase en fase): apaga luces y linternas, oye a quien corre mucho
+  rato seguido, caza cabezas sueltas, lanza un fogonazo a la pantalla, se hace pasar por un jugador y persigue.
+- **Guardado:** al acabar cada fase. Si os vais todos a mitad de fase, esa fase no cuenta. Las noches se guardan
+  en `plugins/Slender/noches/`.
+- **Admin:** `/slender noche estado` (fase, velas, miembros y misión), `/slender noche terminar` (la fase en curso
+  no cuenta y la noche queda guardada) y `/slender noche fase N` (con la noche esperando en la sala).
+- **Ajustes:** el apartado `noche:` del `config.yml` (páginas por fase y por jugadores, tiempo, agresividad,
+  estática, velas, cada poder, el caldero y la Snitch). Cambia y `/slender reload`.
+- **Arreglo:** las velas de Hogwarts ahora parpadean como las lámparas de los otros mapas.
 
 ## Novedades 1.8.1: andén 9¾ y Expreso nuevos
 
