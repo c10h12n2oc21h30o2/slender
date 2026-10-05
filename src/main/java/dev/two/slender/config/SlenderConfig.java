@@ -55,6 +55,7 @@ public final class SlenderConfig {
     public final int asimBlackoutTicks;
     public final List<String> pagePhrases;
     public final int hubFog;
+    public final dev.two.slender.night.NightSettings night;
     public final boolean hubMist;
 
     public SlenderConfig(FileConfiguration var1) {
@@ -108,6 +109,7 @@ public final class SlenderConfig {
         this.asimGrabCooldown = var1.getDouble("asim.grab-cooldown", 3.0);
         this.asimCooldownReductionPerPage = var1.getDouble("asim.cooldown-reduction-per-page", 0.05);
         this.hubFog = var1.getInt("vestibulo.niebla", 2);
+        this.night = dev.two.slender.night.NightSettings.from(var1.getConfigurationSection("noche"));
         this.hubMist = var1.getBoolean("vestibulo.bruma", true);
         List var2 = var1.getStringList("page-phrases");
         this.pagePhrases = var2.isEmpty() ? List.of("SIEMPRE MIRA") : List.copyOf(var2);

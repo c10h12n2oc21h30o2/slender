@@ -93,6 +93,29 @@ page-phrases:
   - "LOS ÁRBOLES OBSERVAN"
   - "NO GRITES"
 
+# LA NOCHE ENTERA (modo historia de Hogwarts): ajustes de dificultad. Cambia y /slender reload.
+noche:
+  paginas-base: [3, 4, 5, 5, 6, 7, 8]     # páginas de cada fase con 2-3 jugadores
+  factor-jugadores: {1: 0.75, 2: 1.0, 4: 1.25, 6: 1.5}   # a partir de N jugadores
+  paginas-min: 2
+  paginas-max: 12
+  tiempo-base: 180          # segundos de cada fase…
+  tiempo-por-pagina: 60     # …más estos por página
+  agresividad-por-fase: 0.5
+  huida-por-fase: 0.3
+  estatica-por-fase: 0.08
+  velas-inicio: 2
+  velas-max: 4
+  frecuencia-por-fase: 0.25
+  luces: {radio: 12, min: 30, max: 60, pila-mirando: 6.0}
+  correr: {umbral: 6.0, baja-por-fase: 0.5, distancia: 0.6}
+  cabezas: {radio: 8, segundos: 20, coger: 2}
+  fogonazo: {enfriamiento: 90, prob: 0.02, segundos: 3, estatica: 15}
+  suplantar: {enfriamiento: 120, prob: 0.03, min: 15, max: 30, revela: 4, dura: 30, estatica: 30}
+  perseguir: {radio: 20, prob: 0.35, velocidad: 3.5, dura: 8, enfriamiento: 30}
+  caldero: {segundos: 8, radio: 3, enfriamiento: 60, pila: 50}
+  snitch: {cada-min: 120, cada-max: 240, dura: 45, velocidad: 5.0, huye: 6, atrapa: 1.2}
+
 messages:
   prefix: "<dark_gray>[<dark_red>Slender</dark_red>]</dark_gray> "
   usage: "<gray>Uso: <white>/slender</white> (vestíbulo) · <white>/slender join <mapa> [coop|asim] | leave | list</white></gray>"
@@ -218,3 +241,40 @@ messages:
   editor-deleted: "<gray>Mapa {map} borrado (los bloques siguen ahí).</gray>"
   hub-set: "<green>Spawn del vestíbulo guardado.</green>"
   hub-exit-set: "<green>Zona de salida del vestíbulo guardada.</green>"
+  # --- LA NOCHE ENTERA ---
+  noche-premisa: "<gray><italic>Llegáis tarde en el Expreso. No hay nadie esperando en el andén. Filch salió anoche a hacer la ronda con la Señora Norris y no ha vuelto. En el castillo solo queda Él.</italic></gray>"
+  noche-diario-1: "<dark_gray>Diario de Filch:</dark_gray> <gray><italic>Las barcas han vuelto vacías. Bajo a la orilla con el farol.</italic></gray>"
+  noche-diario-2: "<dark_gray>Diario de Filch:</dark_gray> <gray><italic>Las velas del Comedor bajan solas. Alguien se sienta en la mesa de profesores. No tiene cara.</italic></gray>"
+  noche-diario-3: "<dark_gray>Diario de Filch:</dark_gray> <gray><italic>Ahí abajo el eco devuelve pasos que no son míos. Norris no quiere bajar.</italic></gray>"
+  noche-diario-4: "<dark_gray>Diario de Filch:</dark_gray> <gray><italic>El gramófono suena sin disco. He oído mi nombre entre la música.</italic></gray>"
+  noche-diario-5: "<dark_gray>Diario de Filch:</dark_gray> <gray><italic>Las armaduras me siguen con la cabeza. Si corro, me oye.</italic></gray>"
+  noche-diario-6: "<dark_gray>Diario de Filch:</dark_gray> <gray><italic>He visto a un alumno al fondo del pasillo. Al acercarme ya no era un alumno.</italic></gray>"
+  noche-diario-7: "<dark_gray>Diario de Filch:</dark_gray> <gray><italic>Subo a la torre. Si alguien lee esto, que no suba detrás de mí.</italic></gray>"
+  noche-final-bueno: "<gold>Amanece.</gold> <gray>En lo alto de la torre, en un armario de escobas, encontráis a Filch temblando, abrazado a la Señora Norris. «Ha estado aquí toda la noche», susurra. «Vosotros también.»</gray>"
+  noche-final-malo: "<dark_red>La última vela se apaga.</dark_red> <gray>Por la mañana, en el tablón de la estación hay carteles nuevos de DESAPARECIDOS. Llevan vuestras caras.</gray>"
+  noche-fase-titulo: "<gold>Fase {n}</gold><gray>: {name}</gray>"
+  noche-menu-titulo: "<dark_red>LA NOCHE ENTERA</dark_red>"
+  noche-menu-nueva: "<white>Nueva noche</white>"
+  noche-menu-continuar: "<white>Continuar</white> <gray>(fase {phase}, {candles} velas)</gray>"
+  noche-menu-unirse: "<white>Unirse a la noche</white>"
+  noche-ocupada: "<red>Ya hay una noche en marcha: únete desde la 8.ª puerta o espera.</red>"
+  noche-sin-hogwarts: "<red>Falta construir Hogwarts: /slender build hogwarts</red>"
+  noche-esperando: "<gray>Esperando a que se libere {name}…</gray>"
+  noche-listos: "<gray>Empieza la fase en <white>{seconds}</white> s…</gray>"
+  noche-vela-gastada: "<gold>Una vela se consume:</gold> <white>{player}</white> <gray>vuelve con vosotros.</gray>"
+  noche-velas: "<gold>Velas: {candles}</gold>"
+  noche-fase-ganada: "<green>Habéis salido. La noche sigue.</green>"
+  noche-fase-perdida: "<dark_red>Nadie ha salido.</dark_red> <gray>Se apaga una vela; quedan {candles}.</gray>"
+  noche-te-oigo: "<dark_gray><italic>Te he oído.</italic></dark_gray>"
+  noche-cabeza-robada: "<dark_red>Slender se ha llevado la cabeza de {player}.</dark_red>"
+  noche-cabeza: "<gray>Llevas la cabeza de <white>{player}</white>: al caldero o a la salida.</gray>"
+  noche-ritual: "<light_purple>Ritual: {seconds} s</light_purple>"
+  noche-revivido: "<light_purple>{player} vuelve del caldero.</light_purple>"
+  noche-mision-norris: "Encontrad a la Señora Norris"
+  noche-mision-cromos: "Reunid 5 cromos de ranas de chocolate"
+  noche-mision-braseros: "Encended los 4 braseros de las casas"
+  noche-mision-hecha: "<gold>¡Misión cumplida! +1 vela.</gold>"
+  noche-mision-fallida: "<gray>La misión de esta noche ya no se puede cumplir.</gray>"
+  noche-snitch: "<gold>¡{player} ha atrapado la Snitch Dorada! +1 vela.</gold>"
+  noche-perdido: "<gray>{player} está perdido: se salta esta fase.</gray>"
+  noche-estado: "<gray>Noche: fase <white>{phase}</white>, velas <white>{candles}</white>, miembros <white>{members}</white>, misión <white>{mission}</white>.</gray>"
