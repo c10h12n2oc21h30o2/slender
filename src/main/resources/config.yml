@@ -278,3 +278,7 @@ messages:
   noche-snitch: "<gold>¡{player} ha atrapado la Snitch Dorada! +1 vela.</gold>"
   noche-perdido: "<gray>{player} está perdido: se salta esta fase.</gray>"
   noche-estado: "<gray>Noche: fase <white>{phase}</white>, velas <white>{candles}</white>, miembros <white>{members}</white>, misión <white>{mission}</white>.</gray>"
+  noche-ninguna: "<gray>No hay ninguna noche en marcha.</gray>"
+  noche-terminada: "<gray>Noche terminada: queda guardada sin contar la fase en curso.</gray>"
+  noche-fase-puesta: "<gray>La noche pasa a la fase <white>{phase}</white>.</gray>"
+  noche-uso: "<gray>Uso: <white>/slender noche estado | terminar | fase N</white> (N de 1 a 7; solo con la noche esperando en la sala)</gray>"

@@ -29,7 +29,7 @@ import org.bukkit.entity.Player;
 
 public final class SlenderCommand implements CommandExecutor, TabCompleter {
     private static final List<String> PLAYER_SUBS = List.of("join", "leave", "list");
-    private static final List<String> ADMIN_SUBS = List.of("build", "start", "stop", "tp", "reload", "skin", "map", "hub");
+    private static final List<String> ADMIN_SUBS = List.of("build", "start", "stop", "tp", "reload", "skin", "map", "hub", "noche");
     private static final String HUB = "vestibulo";
     private final SlenderPlugin plugin;
     private final EditorCommand editor;
@@ -181,12 +181,55 @@ public final class SlenderCommand implements CommandExecutor, TabCompleter {
                     case "hub":
                         this.editor.hub(var1, var4);
                         break;
+                    case "noche":
+                        this.night(var1, var4);
+                        break;
                     default:
                         var5.send(var1, "usage");
                 }
 
                 return true;
             }
+        }
+    }
+
+    /** /slender noche estado | terminar | fase N */
+    private void night(CommandSender s, String[] a) {
+        dev.two.slender.night.NightManager n = this.plugin.night();
+        String sub = a.length >= 2 ? a[1].toLowerCase(Locale.ROOT) : "";
+        switch (sub) {
+            case "estado" -> {
+                String st = n.status();
+                if (st == null) {
+                    this.plugin.msg().send(s, "noche-ninguna");
+                } else {
+                    s.sendMessage(this.plugin.msg().parse(st));
+                }
+            }
+            case "terminar" -> {
+                if (n.active().isEmpty()) {
+                    this.plugin.msg().send(s, "noche-ninguna");
+                } else {
+                    n.terminate();
+                    this.plugin.msg().send(s, "noche-terminada");
+                }
+            }
+            case "fase" -> {
+                int phase;
+                try {
+                    phase = a.length >= 3 ? Integer.parseInt(a[2]) : -1;
+                } catch (NumberFormatException e) {
+                    phase = -1;
+                }
+                if (n.setPhase(phase)) {
+                    this.plugin.msg().send(s, "noche-fase-puesta", "phase", String.valueOf(phase));
+                } else if (n.active().isEmpty()) {
+                    this.plugin.msg().send(s, "noche-ninguna");
+                } else {
+                    this.plugin.msg().send(s, "noche-uso");
+                }
+            }
+            default -> this.plugin.msg().send(s, "noche-uso");
         }
     }
 
@@ -334,6 +377,12 @@ public final class SlenderCommand implements CommandExecutor, TabCompleter {
                 var5.addAll(this.plugin.catalog());
             } else if (var4.length == 3 && var6.equals("join")) {
                 var5.addAll(List.of("coop", "asim"));
+            } else if (var4.length == 2 && var6.equals("noche") && var1.hasPermission("slender.admin")) {
+                var5.addAll(List.of("estado", "terminar", "fase"));
+            } else if (var4.length == 3 && var6.equals("noche") && var4[1].equalsIgnoreCase("fase")) {
+                for (int i = 1; i <= 7; i++) {
+                    var5.add(String.valueOf(i));
+                }
             }
         } else {
             var5.addAll(this.editor.complete(var4));

@@ -303,6 +303,7 @@ public final class GameListener implements Listener {
     public void onQuit(PlayerQuitEvent var1) {
         this.plugin.games().quit(var1.getPlayer());
         this.plugin.hub().quit(var1.getPlayer());
+        this.plugin.night().left(var1.getPlayer());
     }
 
     @EventHandler
@@ -336,6 +337,7 @@ public final class GameListener implements Listener {
         if (!var1.getPlayer().getWorld().getName().equals(this.plugin.cfg().world)) {
             this.plugin.games().worldChanged(var1.getPlayer());
             this.plugin.hub().leftWorld(var1.getPlayer());
+            this.plugin.night().left(var1.getPlayer());
         }
     }
 }

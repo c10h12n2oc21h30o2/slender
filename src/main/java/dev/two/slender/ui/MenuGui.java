@@ -81,6 +81,10 @@ public final class MenuGui {
     }
 
     public void click(Player var1, MenuHolder var2, int var3) {
+        if (var2.type() == MenuHolder.Type.NIGHT) {
+            this.plugin.night().click(var1, var3);
+            return;
+        }
         if (var2.type() != MenuHolder.Type.MAPS) {
             String var8 = var3 == 11 ? "coop" : (var3 == 15 ? "asim" : null);
             if (var8 != null) {

@@ -46,6 +46,7 @@ public final class SlenderPlugin extends JavaPlugin {
     private GameManager games;
     private MenuGui menu;
     private HubManager hub;
+    private dev.two.slender.night.NightManager night;
 
     public void onEnable() {
         this.saveDefaultConfig();
@@ -89,9 +90,13 @@ public final class SlenderPlugin extends JavaPlugin {
         });
         this.menu = new MenuGui(this);
         this.hub.start();
+        this.night = new dev.two.slender.night.NightManager(this,
+                new dev.two.slender.night.NightStore(new File(this.getDataFolder(), "noches"), this.getLogger()));
+        this.night.start();
     }
 
     public void reloadAll() {
+        this.night.shutdown();
         this.games.shutdown();
         this.hub.shutdown();
         this.builds.cancel();
@@ -100,6 +105,10 @@ public final class SlenderPlugin extends JavaPlugin {
     }
 
     public void onDisable() {
+        if (this.night != null) {
+            this.night.shutdown();
+        }
+
         if (this.games != null) {
             this.games.shutdown();
         }
@@ -148,6 +157,10 @@ public final class SlenderPlugin extends JavaPlugin {
 
     public MenuGui menu() {
         return this.menu;
+    }
+
+    public dev.two.slender.night.NightManager night() {
+        return this.night;
     }
 
     public HubManager hub() {

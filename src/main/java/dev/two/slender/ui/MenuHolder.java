@@ -21,7 +21,7 @@ public final class MenuHolder implements InventoryHolder {
         return this.mapId;
     }
 
-    void setInventory(Inventory var1) {
+    public void setInventory(Inventory var1) {
         this.inventory = var1;
     }
 
@@ -31,6 +31,7 @@ public final class MenuHolder implements InventoryHolder {
 
     public static enum Type {
         MAPS,
-        MODES;
+        MODES,
+        NIGHT;
     }
 }

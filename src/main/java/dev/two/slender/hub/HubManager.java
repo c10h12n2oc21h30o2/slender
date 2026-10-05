@@ -298,6 +298,10 @@ public final class HubManager implements HubAccess {
     }
 
     private void door(Player var1, String var2) {
+        if (Anden934.NIGHT_DOOR.equals(var2)) {
+            this.plugin.night().openMenu(var1);
+            return;
+        }
         Optional var3 = this.plugin.games().gameOf(var1.getUniqueId());
         if (!var3.isPresent() || !((Game)var3.get()).map().id().equals(var2)) {
             if (!this.plugin.maps().containsKey(var2)) {
