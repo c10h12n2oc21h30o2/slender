@@ -280,3 +280,24 @@ def test_altar_spot(built):
             busy.append((px + FACE[f][0], py, pz + FACE[f][1]))
         for bx, by, bz in busy:
             assert max(abs(bx - x), abs(by - y), abs(bz - z)) > 2, (s['id'], 'tapa algo', (bx, by, bz))
+
+
+def test_spawn_near_pages():
+    """El spawn no deja al grupo lejos de todo: al menos 2 páginas a ≤ 45 bloques en horizontal y ≤ 12 de altura
+    (en Terrenos salía en una ladera a 211 pasos de la primera página)."""
+    for d in sections.load_defs():
+        c = content.load_content(d.id)
+        sx, sy, sz = c['spawns'][0][:3]
+        near = [p for p in c['pages'] if ((p[0] - sx) ** 2 + (p[2] - sz) ** 2) ** 0.5 <= 45 and abs(p[1] - sy) <= 12]
+        assert len(near) >= 2, (d.id, [p[4] for p in near])
+
+
+def test_sections_json_matches_content():
+    """secciones.json está regenerado con los spawns del contenido."""
+    path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'main', 'resources', 'maps', 'hogwarts',
+                        'secciones.json')
+    with open(path, encoding='utf-8') as f:
+        data = json.load(f)
+    for s in data['sections']:
+        c = content.load_content(s['id'])
+        assert s['spawns'] == [content.loc(content.conv(p)) for p in c['spawns']], s['id']

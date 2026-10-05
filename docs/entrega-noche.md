@@ -43,7 +43,8 @@ Entre fase y fase espera en la Sala de los Menesteres.
 
 1. Cambia `Slender.jar` y reinicia el servidor. `/version Slender` debe decir **1.9.0**.
 2. `/slender build vestibulo` sin nadie en la estación. Así aparecen la Sala y la 8.ª puerta.
-3. Hogwarts no hace falta reconstruirlo. Tienen que estar construidas las 7 secciones (`/slender build hogwarts`).
+3. De Hogwarts solo hay que reconstruir Terrenos: `/slender build hw_terrenos` (spawn nuevo en el patio de los
+   invernaderos). Tienen que estar construidas las 7 secciones (`/slender build hogwarts`).
 
 Los ficheros están en `C:\Users\kivi2\IdeaProjects\slender\`: `Slender.jar`, `INSTALACION.md` (con el apartado "Novedades 1.9") y `codigo-1.8.zip`.
 
@@ -90,6 +91,7 @@ Los ficheros están en `C:\Users\kivi2\IdeaProjects\slender\`: `Slender.jar`, `I
 
 ## Lista de comprobación en el servidor
 
+- [ ] Terrenos: se aparece en el patio de los invernaderos, con páginas cerca.
 - [ ] Una noche entera con 2 jugadores.
 - [ ] Morir, coger la cabeza, hacer el ritual y revivir.
 - [ ] Revivir justo al morir (antes de 1,5 s): no te tiene que dejar en espectador.

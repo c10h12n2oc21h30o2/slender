@@ -25,6 +25,8 @@
 Para tenerlo: cambia el jar, reinicia y usa `/slender build vestibulo` sin nadie en la estación (sale la Sala de los
 Menesteres y se abre la 8.ª puerta del Expreso). Hogwarts **no** hace falta reconstruirlo: el caldero de cada fase
 se pone al empezarla y se quita al acabar. Tienen que estar construidas las 7 secciones (`/slender build hogwarts`).
+Solo Terrenos: `/slender build hw_terrenos`, para que salga su spawn nuevo (antes aparecíais en una ladera
+al oeste de la isla, a más de 200 pasos de la primera página; ahora en el patio de los invernaderos).
 
 - **Qué es:** el modo historia de Hogwarts. Un grupo de 1 a 8 jugadores pasa la noche entera por las 7 secciones,
   una detrás de otra: Terrenos, Gran Comedor, Mazmorras, Ala Este, Patio, Aulas altas y Torres. Filch salió a hacer
