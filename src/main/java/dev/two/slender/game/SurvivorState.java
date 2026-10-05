@@ -28,4 +28,9 @@ public final class SurvivorState {
     public boolean active() {
         return this.alive && !this.escaped;
     }
+
+    /** Pasa a espectador 30 ticks después de morir salvo que lo hayan revivido entretanto (caldero). */
+    public static boolean becomesSpectator(SurvivorState st) {
+        return st == null || !st.alive;
+    }
 }

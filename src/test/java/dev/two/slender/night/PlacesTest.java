@@ -39,4 +39,16 @@ class PlacesTest {
         assertSame(altar, Places.dropSpot(new Location(this.overworld, 5, 70, 5), this.slender, altar));
         assertSame(altar, Places.dropSpot(null, this.slender, altar));
     }
+
+    /** Pendiente 9: una cabeza fuera del mapa (por abajo o por un lado) vuelve al caldero. */
+    @Test
+    void outsideTheMap() {
+        dev.two.slender.map.BlockPos min = new dev.two.slender.map.BlockPos(0, 40, 0);
+        dev.two.slender.map.BlockPos max = new dev.two.slender.map.BlockPos(100, 120, 100);
+        assertFalse(Places.outside(50, 60, 50, min, max, 30));
+        assertTrue(Places.outside(50, 29, 50, min, max, 30));
+        assertTrue(Places.outside(-3, 60, 50, min, max, 30));
+        assertTrue(Places.outside(50, 60, 101.5, min, max, 30));
+        assertFalse(Places.outside(100.9, 60, 0, min, max, 30));
+    }
 }

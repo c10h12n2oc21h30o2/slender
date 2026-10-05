@@ -73,6 +73,7 @@ public final class NightManager {
     private long anyInSince = -1;
     private boolean pending;
     private List<String> lastBoard = List.of();
+    private boolean worksChecked;
 
     public NightManager(SlenderPlugin plugin, NightStore store) {
         this.plugin = plugin;
@@ -181,9 +182,19 @@ public final class NightManager {
             this.openMenu(p);
             return;
         }
-        if (!this.active.members.containsKey(p.getUniqueId())) {
-            this.active.members.put(p.getUniqueId(), p.getName());
-            this.store.save(this.active);
+        UUID id = p.getUniqueId();
+        if (!NightRules.canJoin(this.active, id, this.set.maxMembers())) {
+            this.msg.send(p, "noche-llena", "max", String.valueOf(this.set.maxMembers()));
+            return;
+        }
+        if (!this.active.members.containsKey(id)) {
+            this.active.members.put(id, p.getName());
+            if (this.current != null) {
+                // a mitad de fase: en disco solo el miembro nuevo, no lo que va pasando en la fase
+                this.store.addMember(this.active.id, id, p.getName());
+            } else {
+                this.store.save(this.active);
+            }
         }
         this.toSala(p);
     }
@@ -204,6 +215,9 @@ public final class NightManager {
     /** Cada 10 ticks: salida, altar de la vela, círculo de listos y tablón. */
     public void tick() {
         this.step++;
+        if (!this.worksChecked) {
+            this.recoverWorks();
+        }
         this.exitDoor();
         if (this.active == null || this.current != null) {
             return;
@@ -224,6 +238,33 @@ public final class NightManager {
         if (this.active != null && this.current == null && this.step % 2 == 0) {
             this.board();
         }
+    }
+
+    /**
+     * Si el servidor se cayó a mitad de fase, lo que puso (caldero, brasero) sigue en el castillo: se deshace al
+     * arrancar, en cuanto el mundo está cargado.
+     */
+    private void recoverWorks() {
+        Optional<Map.Entry<String, List<String>>> works = this.store.loadWorks();
+        if (works.isEmpty()) {
+            this.worksChecked = true;
+            return;
+        }
+        World w = Bukkit.getWorld(works.get().getKey());
+        if (w == null) {
+            return; // aún no está cargado: se reintenta en el siguiente tick
+        }
+        for (Map.Entry<BlockPos, String> e : BlockRestore.parse(works.get().getValue()).restoreOrder()) {
+            BlockPos p = e.getKey();
+            try {
+                w.getBlockAt(p.x(), p.y(), p.z()).setBlockData(Bukkit.createBlockData(e.getValue()), false);
+            } catch (IllegalArgumentException ex) {
+                this.plugin.getLogger().warning("Bloque sin deshacer en " + p + ": " + e.getValue());
+            }
+        }
+        this.store.clearWorks();
+        this.worksChecked = true;
+        this.plugin.getLogger().info("Deshecho lo que dejó a medias una fase de la noche.");
     }
 
     /** Cualquiera en el hueco de la salida vuelve a la estación (haya noche o no); si es miembro, se guarda. */
@@ -430,6 +471,14 @@ public final class NightManager {
         this.store.save(s);
         NightPhase phase = new NightPhase(this::phaseFinished, s, this.plan, this.set, this.plugin.cfg(), hb, spectators,
                 players.size() - spectators.size());
+        String worldName = this.plugin.maps().get(section).world();
+        phase.journal(r -> {
+            if (r.isEmpty()) {
+                this.store.clearWorks();
+            } else {
+                this.store.saveWorks(worldName, r.serialize());
+            }
+        });
         this.current = phase;
         Optional<String> err = this.plugin.games().startPhase(section, players, phase);
         if (err.isPresent()) {
@@ -471,6 +520,9 @@ public final class NightManager {
         NightState s = this.active;
         List<Player> online = r.participants().stream().map(Bukkit::getPlayer).filter(Objects::nonNull)
                 .filter(Player::isOnline).toList();
+        if (phase.missionFailedNow()) {
+            online.forEach(p -> this.msg.send(p, "noche-mision-fallida"));
+        }
         boolean nobody = s.members.keySet().stream().map(Bukkit::getPlayer).noneMatch(Objects::nonNull);
         PhaseOutcome o = new PhaseOutcome(r.aborted() || phase.aborted() || nobody || online.isEmpty(),
                 r.winner() == Game.Winner.SURVIVORS, phase.rescued(), phase.lostNow());

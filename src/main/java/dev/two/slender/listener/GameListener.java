@@ -280,6 +280,11 @@ public final class GameListener implements Listener {
                 return;
             }
         }
+        // cabezas y cromos de la noche: solo los coge quien juega la fase (lo ha decidido arriba)
+        if (dev.two.slender.night.HeadItems.blockedForOutsider(var2.getScoreboardTags())) {
+            var1.setCancelled(true);
+            return;
+        }
         if (var2.getScoreboardTags().contains("slender_battery")) {
             var1.setCancelled(true);
             this.game(var1.getPlayer()).ifPresent((var2x) -> {

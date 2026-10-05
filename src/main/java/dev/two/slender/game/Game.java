@@ -767,7 +767,7 @@ public final class Game {
                 Player var2x = Bukkit.getPlayer(var4);
                 SurvivorState now = this.stateOf(var4);
                 // si lo han revivido en estos 30 ticks (caldero), no se le pasa a espectador
-                if (var2x != null && this.participants.containsKey(var4) && (now == null || !now.alive)) {
+                if (var2x != null && this.participants.containsKey(var4) && SurvivorState.becomesSpectator(now)) {
                     var2x.setWalkSpeed(0.2F);
                     var2x.setGameMode(GameMode.SPECTATOR);
                     this.msg.send(var2x, "spectating");

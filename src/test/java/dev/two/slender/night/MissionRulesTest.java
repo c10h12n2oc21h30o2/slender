@@ -55,4 +55,18 @@ class MissionRulesTest {
         assertEquals(4, s.candles);
         assertFalse(s.mission.failed());
     }
+
+    /** Pendiente 2: al acabar una fase ganada se sabe si la misión acaba de fallar, para avisar a los jugadores. */
+    @Test
+    void endPhaseSaysWhenTheMissionJustFailed() {
+        NightState s = this.norrisIn(3);
+        s.phase = 3;
+        assertTrue(MissionRules.endPhase(s));
+        assertTrue(s.mission.failed());
+        s.phase = 4;
+        assertFalse(MissionRules.endPhase(s), "ya estaba fallida");
+        NightState t = this.norrisIn(5);
+        t.phase = 3;
+        assertFalse(MissionRules.endPhase(t), "en esta fase no estaba");
+    }
 }

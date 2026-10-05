@@ -1,6 +1,11 @@
 package dev.two.slender.night;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Optional;
@@ -50,6 +55,57 @@ public final class NightStore {
             }
         }
         return best;
+    }
+
+    /** Apunta un miembro nuevo en la noche guardada sin tocar nada más (unirse a mitad de fase). */
+    public boolean addMember(String id, UUID member, String name) {
+        Optional<NightState> s = this.load(id);
+        if (s.isEmpty()) {
+            return false;
+        }
+        s.get().members.putIfAbsent(member, name);
+        this.save(s.get());
+        return true;
+    }
+
+    private File worksFile() {
+        return new File(this.dir, "obras.txt");
+    }
+
+    /** Lo que ha puesto la fase en curso (mundo y "x y z|estado" por línea), por si el servidor se cae. */
+    public void saveWorks(String world, List<String> lines) {
+        List<String> all = new ArrayList<>();
+        all.add(world);
+        all.addAll(lines);
+        try {
+            Files.write(this.worksFile().toPath(), all, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            this.log.warning("No se pudo apuntar " + this.worksFile() + ": " + e.getMessage());
+        }
+    }
+
+    public Optional<Map.Entry<String, List<String>>> loadWorks() {
+        File f = this.worksFile();
+        if (!f.isFile()) {
+            return Optional.empty();
+        }
+        try {
+            List<String> all = Files.readAllLines(f.toPath(), StandardCharsets.UTF_8);
+            if (all.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(Map.entry(all.get(0), List.copyOf(all.subList(1, all.size()))));
+        } catch (IOException e) {
+            this.log.warning("No se pudo leer " + f + ": " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public void clearWorks() {
+        File f = this.worksFile();
+        if (f.exists() && !f.delete()) {
+            this.log.warning("No se pudo borrar " + f);
+        }
     }
 
     public void delete(String id) {

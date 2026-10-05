@@ -57,4 +57,9 @@ public final class HeadItems {
     public static boolean isCard(ItemStack it) {
         return it != null && it.hasItemMeta() && it.getItemMeta().getPersistentDataContainer().has(CARD, PersistentDataType.BYTE);
     }
+
+    /** Una cabeza o un cromo (etiqueta de la noche) que intenta coger alguien que no juega la fase: no. */
+    public static boolean blockedForOutsider(java.util.Set<String> entityTags) {
+        return entityTags.contains(NightPowers.TAG);
+    }
 }

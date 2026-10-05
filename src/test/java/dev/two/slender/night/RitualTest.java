@@ -33,4 +33,21 @@ class RitualTest {
         assertTrue(r.start(this.carrier, this.owner, 3), "cortar no enfría");
         assertEquals(Ritual.Status.CANCELLED, r.tick(4, 1, false));
     }
+
+    /** Pendientes 7 y 8: el caldero dice por qué no empieza (espera, ocupado, el dueño ya no está). */
+    @Test
+    void tryStartExplainsWhy() {
+        Ritual r = new Ritual(8, 3, 60);
+        java.util.UUID c = java.util.UUID.randomUUID();
+        java.util.UUID o = java.util.UUID.randomUUID();
+        org.junit.jupiter.api.Assertions.assertEquals(Ritual.Start.OWNER_GONE, r.tryStart(c, o, 0, false));
+        org.junit.jupiter.api.Assertions.assertFalse(r.running());
+        org.junit.jupiter.api.Assertions.assertEquals(Ritual.Start.STARTED, r.tryStart(c, o, 0, true));
+        org.junit.jupiter.api.Assertions.assertEquals(Ritual.Start.BUSY, r.tryStart(c, o, 1, true));
+        org.junit.jupiter.api.Assertions.assertEquals(Ritual.Status.DONE, r.tick(8, 1, true));
+        org.junit.jupiter.api.Assertions.assertEquals(Ritual.Start.COOLDOWN, r.tryStart(c, o, 20, true));
+        org.junit.jupiter.api.Assertions.assertEquals(48, r.cooldownLeft(20), 1e-9);
+        org.junit.jupiter.api.Assertions.assertEquals(0, r.cooldownLeft(80), 1e-9);
+        org.junit.jupiter.api.Assertions.assertEquals(Ritual.Start.STARTED, r.tryStart(c, o, 68, true));
+    }
 }

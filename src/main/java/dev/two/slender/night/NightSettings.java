@@ -9,7 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 /** Números de LA NOCHE ENTERA (config.yml → noche:). Lo que falte toma el valor por defecto de la spec. */
 public record NightSettings(List<Integer> pagesBase, NavigableMap<Integer, Double> playerFactor, int pagesMin, int pagesMax,
                             int timeBase, int timePerPage, double aggressionPerPhase, double escapePerPhase,
-                            double staticPerPhase, int candlesStart, int candlesMax, double frequencyPerPhase, Lights lights,
+                            double staticPerPhase, int candlesStart, int candlesMax, int maxMembers, double frequencyPerPhase, Lights lights,
                             Sprint sprint, Heads heads, Flash flash, Mimic mimic, Chase chase, Altar altar, Snitch snitch) {
 
     public record Lights(double radius, double minSec, double maxSec, double lookDrain) {
@@ -47,7 +47,11 @@ public record NightSettings(List<Integer> pagesBase, NavigableMap<Integer, Doubl
         ConfigurationSection f = c == null ? null : c.getConfigurationSection("factor-jugadores");
         if (f != null) {
             for (String k : f.getKeys(false)) {
-                factor.put(Integer.parseInt(k.trim()), f.getDouble(k));
+                try {
+                    factor.put(Integer.parseInt(k.trim()), f.getDouble(k));
+                } catch (NumberFormatException e) {
+                    // clave que no es un número de jugadores: se ignora
+                }
             }
         }
         if (factor.isEmpty()) {
@@ -55,6 +59,8 @@ public record NightSettings(List<Integer> pagesBase, NavigableMap<Integer, Doubl
             factor.put(2, 1.0);
             factor.put(4, 1.25);
             factor.put(6, 1.5);
+        } else if (factor.floorKey(1) == null) {
+            factor.put(1, factor.firstEntry().getValue());
         }
         List<Integer> base = c == null ? List.of() : c.getIntegerList("paginas-base");
         if (base.size() != 7) {
@@ -63,7 +69,7 @@ public record NightSettings(List<Integer> pagesBase, NavigableMap<Integer, Doubl
         return new NightSettings(List.copyOf(new ArrayList<>(base)), java.util.Collections.unmodifiableNavigableMap(factor),
                 r.i("paginas-min", 2), r.i("paginas-max", 12), r.i("tiempo-base", 180), r.i("tiempo-por-pagina", 60),
                 r.d("agresividad-por-fase", 0.5), r.d("huida-por-fase", 0.3), r.d("estatica-por-fase", 0.08),
-                r.i("velas-inicio", 2), r.i("velas-max", 4), r.d("frecuencia-por-fase", 0.25),
+                r.i("velas-inicio", 2), r.i("velas-max", 4), Math.max(1, r.i("max-miembros", 8)), r.d("frecuencia-por-fase", 0.25),
                 new Lights(r.d("luces.radio", 12), r.d("luces.min", 30), r.d("luces.max", 60), r.d("luces.pila-mirando", 6.0)),
                 new Sprint(r.d("correr.umbral", 6.0), r.d("correr.baja-por-fase", 0.5), r.d("correr.distancia", 0.6)),
                 new Heads(r.d("cabezas.radio", 8), r.d("cabezas.segundos", 20), r.d("cabezas.coger", 2)),

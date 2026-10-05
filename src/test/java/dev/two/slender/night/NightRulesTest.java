@@ -71,4 +71,18 @@ class NightRulesTest {
         assertFalse(NightRules.spendForLost(s, this.b));
         assertFalse(NightRules.spendForLost(s, this.a), "no está perdido");
     }
+
+    /** Pendiente 5: como mucho 8 en una noche; quien ya es miembro siempre puede volver. */
+    @Test
+    void membersAreCapped() {
+        NightState s = NightState.create(java.util.UUID.randomUUID(), "A", new java.util.Random(2));
+        for (int i = 1; i < 8; i++) {
+            s.members.put(java.util.UUID.randomUUID(), "M" + i);
+        }
+        java.util.UUID first = s.members.keySet().iterator().next();
+        org.junit.jupiter.api.Assertions.assertFalse(NightRules.canJoin(s, java.util.UUID.randomUUID(), 8));
+        org.junit.jupiter.api.Assertions.assertTrue(NightRules.canJoin(s, first, 8));
+        s.members.remove(first);
+        org.junit.jupiter.api.Assertions.assertTrue(NightRules.canJoin(s, java.util.UUID.randomUUID(), 8));
+    }
 }

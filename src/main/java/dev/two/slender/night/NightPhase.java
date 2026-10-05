@@ -63,6 +63,10 @@ public final class NightPhase implements PhaseHooks {
     private double snitchNextAt = Double.MAX_VALUE;
     private double snitchUntil;
     private boolean aborted;
+    private boolean missionFailedNow;
+    /** Avisa de lo puesto en el mundo (vacío al deshacerlo), para apuntarlo en disco por si el servidor se cae. */
+    private java.util.function.Consumer<BlockRestore> journal = r -> {
+    };
 
     public NightPhase(BiConsumer<NightPhase, PhaseResult> onDone, NightState state, NightPlan plan, NightSettings set,
                       SlenderConfig cfg, HogwartsBuilder section, Set<UUID> spectators, int players) {
@@ -92,6 +96,15 @@ public final class NightPhase implements PhaseHooks {
 
     public boolean aborted() {
         return this.aborted;
+    }
+
+    /** La misión ha quedado imposible al acabar esta fase (lo avisa NightManager a quien sigue conectado). */
+    public boolean missionFailedNow() {
+        return this.missionFailedNow;
+    }
+
+    public void journal(java.util.function.Consumer<BlockRestore> j) {
+        this.journal = j;
     }
 
     public Set<UUID> rescued() {
@@ -179,7 +192,8 @@ public final class NightPhase implements PhaseHooks {
         }
         if (this.altar != null) {
             for (Item it : this.headItems.values()) {
-                if (it.isValid() && it.getLocation().getY() < g.map().fallY()) {
+                Location l = it.getLocation();
+                if (it.isValid() && Places.outside(l.getX(), l.getY(), l.getZ(), g.map().min(), g.map().max(), g.map().fallY())) {
                     it.teleport(this.besideAltar());
                     it.setVelocity(new Vector());
                 }
@@ -211,10 +225,19 @@ public final class NightPhase implements PhaseHooks {
         if (this.altar != null && at.x() == this.altar.getBlockX() && at.z() == this.altar.getBlockZ()
                 && (at.y() == this.altar.getBlockY() || at.y() == this.altar.getBlockY() + 1)) {
             Optional<UUID> owner = HeadItems.ownerOf(p.getInventory().getItemInMainHand());
-            if (owner.isPresent() && this.heads.carriedBy(p.getUniqueId()).contains(owner.get())
-                    && this.ritual.start(p.getUniqueId(), owner.get(), this.now(g))) {
-                this.ritualLured = false;
-                g.msg().send(p, "noche-ritual", "seconds", String.valueOf((int) this.set.altar().seconds()));
+            if (owner.isPresent() && this.heads.carriedBy(p.getUniqueId()).contains(owner.get())) {
+                double now = this.now(g);
+                switch (this.ritual.tryStart(p.getUniqueId(), owner.get(), now, canReturn(g, owner.get()))) {
+                    case STARTED -> {
+                        this.ritualLured = false;
+                        g.msg().send(p, "noche-ritual", "seconds", String.valueOf((int) this.set.altar().seconds()));
+                    }
+                    case COOLDOWN -> g.msg().send(p, "noche-caldero-espera", "seconds",
+                            String.valueOf((int) Math.ceil(this.ritual.cooldownLeft(now))));
+                    case OWNER_GONE -> g.msg().send(p, "noche-caldero-ausente", "player", this.nameOf(owner.get()));
+                    default -> {
+                    }
+                }
             }
             return true;
         }
@@ -270,6 +293,7 @@ public final class NightPhase implements PhaseHooks {
             w.getBlockAt(p.x(), p.y(), p.z()).setBlockData(Bukkit.createBlockData(e.getValue()), false);
         }
         this.placed.clear();
+        this.journal.accept(this.placed);
         this.headItems.values().forEach(Entity::remove);
         this.headItems.clear();
         if (this.cat != null) {
@@ -288,13 +312,8 @@ public final class NightPhase implements PhaseHooks {
     public void onFinish(Game g, PhaseResult r) {
         boolean won = !this.aborted && !r.aborted() && r.winner() == Game.Winner.SURVIVORS;
         if (won) {
-            boolean wasFailed = this.state.mission.failed();
-            this.state.mission.phaseEnded(this.phase);
-            if (!wasFailed && this.state.mission.failed()) {
-                for (Player p : g.online()) {
-                    g.msg().send(p, "noche-mision-fallida");
-                }
-            }
+            // los jugadores ya han salido de la partida: el aviso lo da NightManager
+            this.missionFailedNow = MissionRules.endPhase(this.state);
         }
         this.onDone.accept(this, r);
     }
@@ -314,6 +333,8 @@ public final class NightPhase implements PhaseHooks {
             Item it = at.getWorld().dropItem(at, HeadItems.make(o), i -> {
                 i.setGlowing(true);
                 i.setUnlimitedLifetime(true);
+                i.setPersistent(false);
+                i.setInvulnerable(true);
                 i.setPickupDelay(20);
                 i.setVelocity(new Vector());
                 i.getScoreboardTags().add(NightPowers.TAG);
@@ -354,6 +375,11 @@ public final class NightPhase implements PhaseHooks {
             }
             case DONE -> {
                 UUID owner = this.ritual.owner();
+                if (!canReturn(g, owner)) {
+                    // se ha ido durante el ritual: la cabeza no se gasta
+                    g.msg().send(carrier, "noche-caldero-ausente", "player", this.nameOf(owner));
+                    return;
+                }
                 removeHeads(carrier, List.of(owner));
                 this.heads.revived(owner);
                 g.revive(owner, this.besideAltar(), this.set.altar().battery());
@@ -364,6 +390,11 @@ public final class NightPhase implements PhaseHooks {
             default -> {
             }
         }
+    }
+
+    /** El dueño de la cabeza sigue conectado y en la fase (muerto), así que el caldero puede devolverlo. */
+    private static boolean canReturn(Game g, UUID owner) {
+        return Bukkit.getPlayer(owner) != null && g.stateOf(owner) != null;
     }
 
     private Location besideAltar() {
@@ -396,6 +427,8 @@ public final class NightPhase implements PhaseHooks {
             });
             case CROMOS -> this.card = w.dropItem(loc, HeadItems.card(), i -> {
                 i.setUnlimitedLifetime(true);
+                i.setPersistent(false);
+                i.setInvulnerable(true);
                 i.setVelocity(new Vector());
                 i.getScoreboardTags().add(NightPowers.TAG);
             });
@@ -519,6 +552,7 @@ public final class NightPhase implements PhaseHooks {
     private void place(World w, BlockPos p, String state) {
         Block b = w.getBlockAt(p.x(), p.y(), p.z());
         this.placed.record(p, b.getBlockData().getAsString());
+        this.journal.accept(this.placed);
         b.setBlockData(Bukkit.createBlockData(state), false);
     }
 

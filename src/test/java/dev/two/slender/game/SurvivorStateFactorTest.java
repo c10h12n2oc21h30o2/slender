@@ -21,4 +21,17 @@ class SurvivorStateFactorTest {
         night.stat.update(0.1, true, 30);
         assertEquals(2.0 * normal.stat.value(), night.stat.value(), 1e-9);
     }
+
+    /** Pendiente 10: la tarea que pasa a espectador 30 ticks después de morir no pisa a quien ya revivió. */
+    @Test
+    void revivedInTheGapDoesNotBecomeSpectator() {
+        var in = getClass().getClassLoader().getResourceAsStream("config.yml");
+        SlenderConfig cfg = new SlenderConfig(YamlConfiguration.loadConfiguration(new InputStreamReader(in, StandardCharsets.UTF_8)));
+        SurvivorState st = new SurvivorState(UUID.randomUUID(), cfg, 1.0);
+        st.alive = false;
+        org.junit.jupiter.api.Assertions.assertTrue(SurvivorState.becomesSpectator(st));
+        st.alive = true;
+        org.junit.jupiter.api.Assertions.assertFalse(SurvivorState.becomesSpectator(st), "revivido por el caldero");
+        org.junit.jupiter.api.Assertions.assertTrue(SurvivorState.becomesSpectator(null));
+    }
 }

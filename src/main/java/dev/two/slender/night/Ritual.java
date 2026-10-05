@@ -6,6 +6,9 @@ import java.util.UUID;
 public final class Ritual {
     public enum Status { IDLE, RUNNING, CANCELLED, DONE }
 
+    /** Por qué empieza o no un ritual. */
+    public enum Start { STARTED, BUSY, COOLDOWN, OWNER_GONE }
+
     private final double seconds;
     private final double radius;
     private final double cooldown;
@@ -22,14 +25,30 @@ public final class Ritual {
     }
 
     public boolean start(UUID carrier, UUID owner, double now) {
-        if (this.running || now < this.coolUntil) {
-            return false;
+        return this.tryStart(carrier, owner, now, true) == Start.STARTED;
+    }
+
+    /** {@code ownerCanReturn}: el dueño de la cabeza sigue en la fase (si se ha ido, revivirlo no sirve de nada). */
+    public Start tryStart(UUID carrier, UUID owner, double now, boolean ownerCanReturn) {
+        if (this.running) {
+            return Start.BUSY;
+        }
+        if (now < this.coolUntil) {
+            return Start.COOLDOWN;
+        }
+        if (!ownerCanReturn) {
+            return Start.OWNER_GONE;
         }
         this.carrier = carrier;
         this.owner = owner;
         this.startedAt = now;
         this.running = true;
-        return true;
+        return Start.STARTED;
+    }
+
+    /** Segundos que le quedan al caldero para poder usarse otra vez. */
+    public double cooldownLeft(double now) {
+        return Math.max(0, this.coolUntil - now);
     }
 
     public Status tick(double now, double carrierDistance, boolean carrierAlive) {

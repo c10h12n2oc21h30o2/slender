@@ -106,6 +106,7 @@ noche:
   estatica-por-fase: 0.08
   velas-inicio: 2
   velas-max: 4
+  max-miembros: 8           # jugadores como mucho en una noche
   frecuencia-por-fase: 0.25
   luces: {radio: 12, min: 30, max: 60, pila-mirando: 6.0}
   correr: {umbral: 6.0, baja-por-fase: 0.5, distancia: 0.6}
@@ -278,6 +279,9 @@ messages:
   noche-snitch: "<gold>¡{player} ha atrapado la Snitch Dorada! +1 vela.</gold>"
   noche-perdido: "<gray>{player} está perdido: se salta esta fase.</gray>"
   noche-estado: "<gray>Noche: fase <white>{phase}</white>, velas <white>{candles}</white>, miembros <white>{members}</white>, misión <white>{mission}</white>.</gray>"
+  noche-llena: "<red>Esta noche ya tiene {max} jugadores.</red>"
+  noche-caldero-espera: "<gray>El caldero aún está frío: espera <white>{seconds}</white> s.</gray>"
+  noche-caldero-ausente: "<gray>{player} ya no está en la fase: el caldero no puede traerlo.</gray>"
   noche-ninguna: "<gray>No hay ninguna noche en marcha.</gray>"
   noche-terminada: "<gray>Noche terminada: queda guardada sin contar la fase en curso.</gray>"
   noche-fase-puesta: "<gray>La noche pasa a la fase <white>{phase}</white>.</gray>"

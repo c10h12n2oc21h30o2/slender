@@ -34,6 +34,11 @@ public final class NightRules {
         return Next.NIGHT_LOST;
     }
 
+    /** Unirse: quien ya es miembro siempre; uno nuevo solo si caben (spec: de 1 a 8 jugadores). */
+    public static boolean canJoin(NightState s, UUID who, int max) {
+        return s.members.containsKey(who) || s.members.size() < max;
+    }
+
     /** En la sala: gastar una vela para que un perdido vuelva ya. */
     public static boolean spendForLost(NightState s, UUID who) {
         if (!s.lost.containsKey(who) || s.candles <= 0) {

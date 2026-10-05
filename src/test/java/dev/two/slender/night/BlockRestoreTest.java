@@ -31,4 +31,15 @@ class BlockRestoreTest {
         r.clear();
         assertTrue(r.restoreOrder().isEmpty());
     }
+
+    /** Pendiente 4: si el servidor se cae a mitad de fase, lo puesto se apunta en disco y se deshace al arrancar. */
+    @Test
+    void survivesASaveAndLoad() {
+        BlockRestore r = new BlockRestore();
+        r.record(new BlockPos(-191, 64, 12), "minecraft:oak_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]");
+        r.record(new BlockPos(-191, 65, 12), "minecraft:air");
+        BlockRestore back = BlockRestore.parse(r.serialize());
+        assertEquals(r.restoreOrder(), back.restoreOrder());
+        assertTrue(BlockRestore.parse(List.of("basura", "")).restoreOrder().isEmpty());
+    }
 }

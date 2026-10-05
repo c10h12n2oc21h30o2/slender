@@ -68,4 +68,21 @@ class NightSettingsTest {
             assertNotNull(y.getString("messages." + k), "falta messages." + k);
         }
     }
+
+    /** Pendiente 6: un factor-jugadores mal escrito no rompe el arranque y siempre hay factor para 1 jugador. */
+    @Test
+    void badPlayerFactorKeysAreSkipped() {
+        YamlConfiguration y = new YamlConfiguration();
+        y.set("factor-jugadores.dos", 1.0);
+        y.set("factor-jugadores.3", 1.2);
+        y.set("max-miembros", 6);
+        NightSettings s = NightSettings.from(y);
+        org.junit.jupiter.api.Assertions.assertFalse(s.playerFactor().containsKey(2));
+        org.junit.jupiter.api.Assertions.assertEquals(1.2, s.playerFactor().floorEntry(1).getValue(), 1e-9);
+        org.junit.jupiter.api.Assertions.assertEquals(6, s.maxMembers());
+        org.junit.jupiter.api.Assertions.assertEquals(8, NightSettings.defaults().maxMembers());
+        YamlConfiguration bad = new YamlConfiguration();
+        bad.set("factor-jugadores.uno", 2.0);
+        org.junit.jupiter.api.Assertions.assertEquals(0.75, NightSettings.from(bad).playerFactor().floorEntry(1).getValue(), 1e-9);
+    }
 }

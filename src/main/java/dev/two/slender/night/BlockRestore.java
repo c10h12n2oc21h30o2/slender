@@ -24,6 +24,36 @@ public final class BlockRestore {
         return out;
     }
 
+    /** Una línea por bloque, "x y z|estado", en el orden en que se pusieron. */
+    public List<String> serialize() {
+        List<String> out = new ArrayList<>();
+        this.original.forEach((p, d) -> out.add(p.x() + " " + p.y() + " " + p.z() + "|" + d));
+        return out;
+    }
+
+    /** Lo contrario de serialize(); las líneas que no se entienden se saltan. */
+    public static BlockRestore parse(List<String> lines) {
+        BlockRestore r = new BlockRestore();
+        for (String l : lines) {
+            int bar = l.indexOf('|');
+            if (bar < 0) {
+                continue;
+            }
+            String[] xyz = l.substring(0, bar).trim().split(" ");
+            try {
+                r.record(new BlockPos(Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]), Integer.parseInt(xyz[2])),
+                        l.substring(bar + 1));
+            } catch (RuntimeException e) {
+                // línea rota: se ignora
+            }
+        }
+        return r;
+    }
+
+    public boolean isEmpty() {
+        return this.original.isEmpty();
+    }
+
     public void clear() {
         this.original.clear();
     }

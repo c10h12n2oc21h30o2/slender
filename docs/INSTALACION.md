@@ -52,7 +52,8 @@ se pone al empezarla y se quita al acabar. Tienen que estar construidas las 7 se
 - **Admin:** `/slender noche estado` (fase, velas, miembros y misión), `/slender noche terminar` (la fase en curso
   no cuenta y la noche queda guardada) y `/slender noche fase N` (con la noche esperando en la sala).
 - **Ajustes:** el apartado `noche:` del `config.yml` (páginas por fase y por jugadores, tiempo, agresividad,
-  estática, velas, cada poder, el caldero y la Snitch). Cambia y `/slender reload`.
+  estática, velas, jugadores como mucho por noche, cada poder, el caldero y la Snitch). Cambia y `/slender reload`.
+- **Si el servidor se cae a mitad de fase,** al arrancar se deshace lo que la fase había puesto en el castillo.
 - **Arreglo:** las velas de Hogwarts ahora parpadean como las lámparas de los otros mapas.
 
 ## Novedades 1.8.1: andén 9¾ y Expreso nuevos

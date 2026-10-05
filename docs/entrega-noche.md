@@ -71,17 +71,22 @@ Los ficheros están en `C:\Users\kivi2\IdeaProjects\slender\`: `Slender.jar`, `I
   - el contador de la fase ya no se para.
 - **El falso compañero ya no se delata:** sin la etiqueta "NPC" y sin nombre a la vista.
 
-## Pendientes menores (no arreglados)
+## Pendientes menores (arreglados después de la revisión)
 
-- Unirse durante una fase guarda lo que va pasando en ella.
-- El aviso de "misión fallida" no le llega a nadie (el tablón sí lo pone).
-- Alguien que no está en la partida (un admin en creativo) puede coger cabezas y cromos.
-- Si el servidor se cae a mitad de fase, se quedan en el mundo el caldero y las cabezas.
-- No hay un tope de 8 miembros.
-- Un `factor-jugadores` mal escrito en el config rompe el arranque.
-- El ritual durante los 60 s de espera del caldero falla sin avisar.
-- Si el dueño de la cabeza se ha desconectado, el ritual gasta la cabeza sin revivir a nadie.
-- Una cabeza que se sale del mapa por un lado no vuelve sola al caldero.
+- Unirse a mitad de fase apunta en disco solo al miembro nuevo, no lo que va pasando en la fase.
+- El aviso de "misión fallida" llega a los jugadores al volver a la sala.
+- Nadie que no juegue la fase (un admin en creativo, alguien de otra partida) puede coger cabezas ni cromos.
+- Si el servidor se cae a mitad de fase:
+  - las cabezas y los cromos no se guardan con el mundo;
+  - el caldero y los braseros se apuntan en `plugins/Slender/noches/obras.txt` y se deshacen solos al arrancar.
+- Como mucho 8 miembros por noche (`noche.max-miembros`). Si está llena, avisa.
+- Un `factor-jugadores` mal escrito ya no rompe el arranque: la clave rara se ignora y siempre hay factor para 1 jugador.
+- El caldero dice por qué no empieza:
+  - "aún está frío, espera N s";
+  - "X ya no está en la fase".
+  Si el dueño se va durante el ritual, la cabeza no se gasta.
+- Una cabeza que se sale del mapa por un lado (no solo por abajo) vuelve al caldero.
+- Revivir justo al morir tiene test automático: la tarea que pasa a espectador no pisa al revivido.
 
 ## Lista de comprobación en el servidor
 
@@ -104,5 +109,7 @@ Los ficheros están en `C:\Users\kivi2\IdeaProjects\slender\`: `Slender.jar`, `I
   - fogonazo (5);
   - suplantar (6), y el falso compañero no tiene que llevar etiqueta;
   - perseguir (7).
+- [ ] Caldero recién usado: otro ritual antes de 60 s avisa de cuánto falta.
+- [ ] Parar el servidor a la fuerza a mitad de fase (con un brasero puesto): al arrancar, el castillo queda como estaba.
 - [ ] Las velas de Hogwarts parpadean.
 - [ ] Bedrock: cabezas, fogonazo, partículas de la Snitch y el falso compañero.
