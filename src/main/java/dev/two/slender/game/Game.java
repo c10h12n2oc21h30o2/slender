@@ -88,6 +88,8 @@ public final class Game {
     private Director director;
     private SlenderPlayerController slenderCtl;
     private Team team;
+    /** LA NOCHE ENTERA: reglas de la fase; null en una partida normal. */
+    private PhaseHooks hooks;
 
     public Game(Plugin var1, SlenderConfig var2, Msg var3, Items var4, HubAccess var5, ArenaMap var6, World var7, Consumer<UUID> var8) {
         this.state = GameState.WAITING;
@@ -115,6 +117,57 @@ public final class Game {
         return this.map;
     }
 
+    /** Pone las reglas de una fase de la noche (solo antes de empezar). */
+    public void hooks(PhaseHooks h) {
+        if (this.acceptingPlayers()) {
+            this.hooks = h;
+        }
+    }
+
+    public PhaseHooks hooks() {
+        return this.hooks;
+    }
+
+    public World world() {
+        return this.world;
+    }
+
+    public SlenderBody body() {
+        return this.body;
+    }
+
+    public Director director() {
+        return this.director;
+    }
+
+    public Flashlights flashlights() {
+        return this.flashlights;
+    }
+
+    public SightService sight() {
+        return this.sight;
+    }
+
+    public Msg msg() {
+        return this.msg;
+    }
+
+    public Random random() {
+        return this.random;
+    }
+
+    public long tick() {
+        return this.tick;
+    }
+
+    public ScareScheduler scares() {
+        return this.scares;
+    }
+
+    public List<UUID> participantIds() {
+        return List.copyOf(this.participants.keySet());
+    }
+
     public GameState state() {
         return this.state;
     }
@@ -135,7 +188,7 @@ public final class Game {
         return this.state == GameState.PLAYING || this.state == GameState.ESCAPE;
     }
 
-    private List<Player> online() {
+    public List<Player> online() {
         ArrayList var1 = new ArrayList();
         Iterator var2 = this.participants.keySet().iterator();
 
@@ -150,7 +203,7 @@ public final class Game {
         return var1;
     }
 
-    private List<Player> aliveSurvivors() {
+    public List<Player> aliveSurvivors() {
         ArrayList var1 = new ArrayList();
         Iterator var2 = this.participants.values().iterator();
 
@@ -167,7 +220,7 @@ public final class Game {
         return var1;
     }
 
-    private SurvivorState stateOf(UUID var1) {
+    public SurvivorState stateOf(UUID var1) {
         Participant var2 = (Participant)this.participants.get(var1);
         return var2 == null ? null : var2.state;
     }
@@ -197,6 +250,11 @@ public final class Game {
     public void leave(UUID var1, LeaveReason var2) {
         boolean var3 = this.state == GameState.PLAYING || this.state == GameState.ESCAPE || this.state == GameState.ENDING;
         Participant var4 = (Participant)this.participants.remove(var1);
+        if (var4 != null && this.hooks != null && var2 != LeaveReason.RESET && this.running() && var4.state != null && var4.state.active()) {
+            Player leaving = Bukkit.getPlayer(var1);
+            var4.state.alive = false;
+            this.hooks.onLeave(this, var1, leaving == null ? null : leaving.getLocation());
+        }
         if (var4 != null) {
             this.onRemove.accept(var1);
             Player var5 = Bukkit.getPlayer(var1);
@@ -213,7 +271,10 @@ public final class Game {
                 this.teamRemove(var5);
                 if (var3 && (var2 == LeaveReason.COMMAND || var2 == LeaveReason.RESET)) {
                     SnapshotStore.resetForGame(var5);
-                    this.hub.backToHub(var5);
+                    // en la noche, al acabar la fase los lleva NightManager a la sala (no a la estación)
+                    if (!(var2 == LeaveReason.RESET && this.hooks != null)) {
+                        this.hub.backToHub(var5);
+                    }
                 }
             }
 
@@ -340,7 +401,8 @@ public final class Game {
             this.lastPageTick = this.tick;
             this.pagesCollected = 0;
             this.phrases = new PhraseDeck(this.map.ambience().phrasesOr(this.cfg.pagePhrases), this.random);
-            this.timeLeft = this.cfg.timeLimit(this.mode.id());
+            int wantPages = this.hooks != null ? this.hooks.pages(this.map.pageSpots().size()) : this.cfg.pages;
+            this.timeLeft = this.hooks != null ? this.hooks.timeSeconds(wantPages) : this.cfg.timeLimit(this.mode.id());
             this.body = new SlenderBody(this.plugin, this.cfg);
             this.scares = new ScareScheduler(this.plugin, this.cfg, this.msg, this.sight, this.flashlights, this.pages, this::stateOf, this::freePageSpots);
             Collections.shuffle(var1, this.random);
@@ -355,7 +417,7 @@ public final class Game {
                     var6.role = Role.SLENDER;
                 } else {
                     var6.role = Role.SURVIVOR;
-                    var6.state = new SurvivorState(var5.getUniqueId(), this.cfg);
+                    var6.state = new SurvivorState(var5.getUniqueId(), this.cfg, this.hooks != null ? this.hooks.staticFactor() : 1.0);
                     var5.teleport(this.toLocation((Loc)this.map.spawns().get(var3++ % this.map.spawns().size())));
                     var5.getInventory().clear();
                     var5.getInventory().setItem(0, this.items.make("flashlight"));
@@ -364,11 +426,17 @@ public final class Game {
                     this.atmosphere.darkness(var5);
                     this.atmosphere.applyFog(var5, 0, false);
                     var5.setLevel(0);
-                    Hud.title(var5, this.msg.get(this.mode == Mode.COOP ? "start-coop" : "start-asim-survivor", "pages", String.valueOf(this.cfg.pages)), Component.empty(), 10, 70, 20);
+                    Hud.title(var5, this.msg.get(this.mode == Mode.COOP ? "start-coop" : "start-asim-survivor", "pages", String.valueOf(wantPages)), Component.empty(), 10, 70, 20);
+                    if (this.hooks != null && this.hooks.startsAsSpectator(var5.getUniqueId())) {
+                        var6.state.alive = false;
+                        this.flashlights.clear(var5.getUniqueId(), var1, this.world);
+                        var5.getInventory().clear();
+                        var5.setGameMode(GameMode.SPECTATOR);
+                    }
                 }
             }
 
-            this.pages.spawnAll(this.world, PageSelector.choose(this.map.pageSpots(), this.cfg.pages, this.random));
+            this.pages.spawnAll(this.world, PageSelector.choose(this.map.pageSpots(), wantPages, this.random));
             this.totalPages = Math.max(1, this.pages.remaining());
             this.batteries.spawn(this.world, PageSelector.choose(this.map.batterySpots(), this.cfg.batteriesPerGame, this.random));
             if (var2 == null) {
@@ -383,6 +451,9 @@ public final class Game {
             }
 
             this.world.setTime(18000L);
+            if (this.hooks != null) {
+                this.hooks.onStart(this);
+            }
         }
     }
 
@@ -431,6 +502,12 @@ public final class Game {
                     do {
                         if (!var7.hasNext()) {
                             this.scares.tickApparitions(this.tick);
+                            if (this.hooks != null) {
+                                this.hooks.onTick(this);
+                                if (!this.running()) {
+                                    return;
+                                }
+                            }
                             if (this.slenderCtl != null && this.slenderCtl.slender() != null) {
                                 Player var15 = Bukkit.getPlayer(this.slenderCtl.slender());
                                 if (var15 != null) {
@@ -440,7 +517,7 @@ public final class Game {
 
                             if (this.tick % 10L == 0L) {
                                 if (this.director != null) {
-                                    boolean var16 = !var3 && DirectorMath.dormant(this.pagesCollected, (double)(this.tick - this.startTick) / 20.0);
+                                    boolean var16 = !var3 && (this.hooks == null || this.hooks.dormantAllowed()) && DirectorMath.dormant(this.pagesCollected, (double)(this.tick - this.startTick) / 20.0);
                                     Director var10000 = this.director;
                                     List var10001 = this.aliveSurvivors();
                                     Function<UUID, SurvivorState> var10002 = this::stateOf;
@@ -502,6 +579,12 @@ public final class Game {
     }
 
     private void secondStep(double var1) {
+        if (this.hooks != null) {
+            this.hooks.onSecond(this);
+            if (!this.running()) {
+                return;
+            }
+        }
         List var3 = this.aliveSurvivors();
         boolean var4 = this.state == GameState.ESCAPE;
         this.scares.tick(var3, var1, this.tick, this.random);
@@ -552,6 +635,9 @@ public final class Game {
     }
 
     private double aggression() {
+        if (this.hooks != null) {
+            return this.hooks.aggression(this.pagesCollected, this.totalPages, (double)(this.tick - this.lastPageTick) / 20.0, this.state == GameState.ESCAPE);
+        }
         return DirectorMath.aggression(this.pagesCollected, (double)(this.tick - this.lastPageTick) / 20.0, this.state == GameState.ESCAPE);
     }
 
@@ -650,6 +736,9 @@ public final class Game {
 
     private void escape(Player var1) {
         SurvivorState var2 = this.stateOf(var1.getUniqueId());
+        if (this.hooks != null) {
+            this.hooks.onEscape(this, var1);
+        }
         var2.escaped = true;
         this.escapes.escaped(var1.getUniqueId());
         this.flashlights.clear(var1.getUniqueId(), this.online(), this.world);
@@ -667,11 +756,16 @@ public final class Game {
             Hud.title(var1, this.msg.parse("<dark_red><obfuscated>XXXXXXXXXX</obfuscated></dark_red>"), Component.empty(), 0, 30, 10);
             var1.setWalkSpeed(0.0F);
             this.spawnCorpse(var1);
+            if (this.hooks != null) {
+                this.hooks.onKill(this, var1);
+            }
             this.broadcast("died", "player", var1.getName());
             UUID var4 = var1.getUniqueId();
             Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
                 Player var2x = Bukkit.getPlayer(var4);
-                if (var2x != null && this.participants.containsKey(var4)) {
+                SurvivorState now = this.stateOf(var4);
+                // si lo han revivido en estos 30 ticks (caldero), no se le pasa a espectador
+                if (var2x != null && this.participants.containsKey(var4) && (now == null || !now.alive)) {
                     var2x.setWalkSpeed(0.2F);
                     var2x.setGameMode(GameMode.SPECTATOR);
                     this.msg.send(var2x, "spectating");
@@ -785,6 +879,20 @@ public final class Game {
     }
 
     public void reset() {
+        PhaseHooks h = this.hooks;
+        PhaseResult result = null;
+        if (h != null) {
+            java.util.Set<UUID> esc = new java.util.LinkedHashSet<>();
+            java.util.Set<UUID> dead = new java.util.LinkedHashSet<>();
+            for (Participant p : this.participants.values()) {
+                if (p.state != null && p.state.escaped) {
+                    esc.add(p.id);
+                } else if (p.state != null && !p.state.alive) {
+                    dead.add(p.id);
+                }
+            }
+            result = new PhaseResult(this.outcome(), this.state != GameState.ENDING, esc, dead, List.copyOf(this.participants.keySet()));
+        }
         Iterator var1 = (new ArrayList(this.participants.keySet())).iterator();
 
         while(var1.hasNext()) {
@@ -813,6 +921,44 @@ public final class Game {
         this.escapes.clear();
         this.pagesCollected = 0;
         this.totalPages = 0;
+        if (h != null) {
+            h.onCleanup(this);
+            this.hooks = null;
+            h.onFinish(this, result);
+        }
+    }
+
+    /** Devuelve a la partida a un superviviente muerto (caldero de LA NOCHE ENTERA). */
+    public void revive(UUID id, Location at, double battery) {
+        SurvivorState st = this.stateOf(id);
+        Player p = Bukkit.getPlayer(id);
+        if (st == null || p == null || !this.running() || st.alive || st.escaped) {
+            return;
+        }
+        st.alive = true;
+        st.stat.reset();
+        p.setGameMode(GameMode.ADVENTURE);
+        p.setWalkSpeed(0.2F);
+        p.teleport(at);
+        p.getInventory().setItem(0, this.items.make("flashlight"));
+        p.getInventory().setHeldItemSlot(0);
+        this.flashlights.register(id);
+        this.flashlights.set(id, battery);
+        this.atmosphere.darkness(p);
+        this.atmosphere.applyFog(p, this.pagesCollected, this.state == GameState.ESCAPE);
+    }
+
+    /** Clic en un bloque durante una fase de la noche: true = lo ha manejado la fase. */
+    public boolean interactBlock(Player p, org.bukkit.block.Block b) {
+        return this.hooks != null && this.running() && b != null && this.hooks.onInteractBlock(this, p, b);
+    }
+
+    public boolean interactEntity(Player p, Entity e) {
+        return this.hooks != null && this.running() && this.hooks.onInteractEntity(this, p, e);
+    }
+
+    public PhaseHooks.Pickup pickup(Player p, org.bukkit.entity.Item item) {
+        return this.hooks != null && this.running() ? this.hooks.onPickup(this, p, item) : PhaseHooks.Pickup.IGNORE;
     }
 
     private void holdChunks(boolean var1) {

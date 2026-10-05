@@ -2,6 +2,7 @@ package dev.two.slender.listener;
 
 import dev.two.slender.SlenderPlugin;
 import dev.two.slender.game.Game;
+import dev.two.slender.game.PhaseHooks;
 import dev.two.slender.ui.MenuHolder;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import java.util.Iterator;
@@ -73,6 +74,13 @@ public final class GameListener implements Listener {
         priority = EventPriority.HIGH
     )
     public void onInteract(PlayerInteractEvent var1) {
+        if (var1.getHand() == EquipmentSlot.HAND && var1.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Optional<Game> night = this.game(var1.getPlayer());
+            if (night.isPresent() && night.get().interactBlock(var1.getPlayer(), var1.getClickedBlock())) {
+                var1.setCancelled(true);
+                return;
+            }
+        }
         if (var1.getHand() == EquipmentSlot.HAND && var1.getAction() != Action.PHYSICAL) {
             Player var2 = var1.getPlayer();
             String var3 = this.plugin.items().idOf(var1.getItem());
@@ -180,6 +188,10 @@ public final class GameListener implements Listener {
         } else {
             Entity var2 = var1.getRightClicked();
             Optional var3 = this.game(var1.getPlayer());
+            if (var3.isPresent() && ((Game)var3.get()).interactEntity(var1.getPlayer(), var2)) {
+                var1.setCancelled(true);
+                return;
+            }
             if (tagged(var2) || var3.isPresent() && var2 instanceof ItemFrame) {
                 var1.setCancelled(true);
             }
@@ -257,6 +269,17 @@ public final class GameListener implements Listener {
     @EventHandler
     public void onPickup(PlayerAttemptPickupItemEvent var1) {
         Item var2 = var1.getItem();
+        Optional<Game> night = this.game(var1.getPlayer());
+        if (night.isPresent()) {
+            PhaseHooks.Pickup v = night.get().pickup(var1.getPlayer(), var2);
+            if (v == PhaseHooks.Pickup.ALLOW) {
+                return;
+            }
+            if (v == PhaseHooks.Pickup.DENY) {
+                var1.setCancelled(true);
+                return;
+            }
+        }
         if (var2.getScoreboardTags().contains("slender_battery")) {
             var1.setCancelled(true);
             this.game(var1.getPlayer()).ifPresent((var2x) -> {

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -60,16 +61,7 @@ public final class GameManager {
                 if (!MapValidator.playable(var6, this.cfg.pages)) {
                     this.msg.send(var1, "map-incomplete", "map", var6.displayName(), "id", var2);
                 } else {
-                    Game var8 = (Game)this.games.computeIfAbsent(var2, (var3x) -> {
-                        Plugin var10002 = this.plugin;
-                        SlenderConfig var10003 = this.cfg;
-                        Msg var10004 = this.msg;
-                        Items var10005 = this.items;
-                        HubAccess var10006 = this.hub;
-                        Map var10009 = this.byPlayer;
-                        Objects.requireNonNull(var10009);
-                        return new Game(var10002, var10003, var10004, var10005, var10006, var6, var7, var10009::remove);
-                    });
+                    Game var8 = this.gameFor(var2, var6, var7);
                     String var9 = var8.size() != 0 && var8.mode() != null ? var8.mode().id() : null;
                     String var10 = JoinRules.resolveMode(var9, var3);
                     switch (JoinRules.check(var9, var3, var8.acceptingPlayers(), var8.size(), this.cfg.maxPlayers(var10))) {
@@ -98,6 +90,40 @@ public final class GameManager {
         } else {
             this.msg.send(var1, "already-in-game");
         }
+    }
+
+    private Game gameFor(String id, ArenaMap map, World world) {
+        return (Game)this.games.computeIfAbsent(id, k -> new Game(this.plugin, this.cfg, this.msg, this.items, this.hub, map, world,
+                this.byPlayer::remove));
+    }
+
+    /**
+     * Arranca una fase de LA NOCHE ENTERA en ese mapa con esos jugadores (COOP, sin cuenta atrás). Devuelve la clave del
+     * motivo si no puede: "map-not-built" o "busy" (hay una partida suelta en ese mapa).
+     */
+    public Optional<String> startPhase(String mapId, List<Player> players, PhaseHooks hooks) {
+        ArenaMap map = (ArenaMap)this.maps.get(mapId);
+        World w = (World)this.world.get();
+        if (map == null || w == null) {
+            return Optional.of("map-not-built");
+        }
+        Game g = this.gameFor(mapId, map, w);
+        if (!g.acceptingPlayers() || g.size() != 0) {
+            return Optional.of("busy");
+        }
+        g.hooks(hooks);
+        for (Player p : players) {
+            Game other = (Game)this.byPlayer.get(p.getUniqueId());
+            if (other != null) {
+                other.leave(p.getUniqueId(), LeaveReason.COMMAND);
+            }
+            this.byPlayer.put(p.getUniqueId(), g);
+            g.join(p, Mode.COOP);
+        }
+        if (g.acceptingPlayers()) {
+            g.forceStart();
+        }
+        return Optional.empty();
     }
 
     public void leave(Player var1) {

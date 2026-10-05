@@ -72,6 +72,21 @@ public final class Flashlights {
         return var2 == null ? 0.0 : var2.battery.level();
     }
 
+    /** Gasta pila de golpe (LA NOCHE ENTERA: mirar a Slender con la linterna encendida). */
+    public void drain(UUID id, double amount) {
+        State st = (State)this.states.get(id);
+        if (st != null) {
+            st.battery.drain(amount);
+        }
+    }
+
+    public void set(UUID id, double level) {
+        State st = (State)this.states.get(id);
+        if (st != null) {
+            st.battery.set(level);
+        }
+    }
+
     public void charge(UUID var1, double var2) {
         State var4 = (State)this.states.get(var1);
         if (var4 != null) {

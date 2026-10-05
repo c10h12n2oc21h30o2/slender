@@ -15,8 +15,13 @@ public final class SurvivorState {
     public long nextHeartbeatTick;
 
     public SurvivorState(UUID var1, SlenderConfig var2) {
+        this(var1, var2, 1.0);
+    }
+
+    /** staticFactor multiplica lo rápido que sube la estática (LA NOCHE ENTERA la sube por fase). */
+    public SurvivorState(UUID var1, SlenderConfig var2, double staticFactor) {
         this.id = var1;
-        this.stat = new StaticModel(var2.staticLookRate, var2.staticProximityRate, var2.staticProximityRadius, var2.staticDecayRate);
+        this.stat = new StaticModel(var2.staticLookRate * staticFactor, var2.staticProximityRate * staticFactor, var2.staticProximityRadius, var2.staticDecayRate);
         this.stamina = new StaminaModel(var2.staminaDrain, var2.staminaRegen, var2.staminaRecoverAt);
     }
 

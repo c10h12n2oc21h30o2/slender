@@ -157,6 +157,15 @@ public final class HubManager implements HubAccess {
         }
     }
 
+    /** Como backToHub, pero a otro sitio de la estación (la Sala de los Menesteres). */
+    public void sendTo(Player p, Location loc) {
+        if (this.inside.contains(p.getUniqueId())) {
+            p.teleport(loc);
+            this.doors.forget(p.getUniqueId());
+            this.prepare(p);
+        }
+    }
+
     public void exit(Player var1) {
         UUID var2 = var1.getUniqueId();
         if (this.plugin.games().gameOf(var2).isPresent()) {

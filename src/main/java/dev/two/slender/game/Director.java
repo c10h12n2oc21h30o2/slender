@@ -34,6 +34,11 @@ public final class Director {
     private UUID target;
     private long targetSince;
     private long nextTeleport;
+    /** LA NOCHE ENTERA: a quién ir y a qué distancia en el próximo teletransporte, adónde ir, o parado. */
+    private UUID lureTarget;
+    private double lureFactor = 1.0;
+    private Location lureLoc;
+    private boolean suspended;
 
     public Director(SlenderConfig var1, SightService var2, SlenderBody var3, ArenaMap var4, BiConsumer<Player, String> var5) {
         this.cfg = var1;
@@ -52,6 +57,65 @@ public final class Director {
         return this.isolation;
     }
 
+    /** El próximo teletransporte va a por ese jugador, a distanceFactor de la distancia normal (mínimo 7). */
+    public void lurePlayer(UUID id, double distanceFactor) {
+        this.lureTarget = id;
+        this.lureFactor = distanceFactor;
+    }
+
+    /** El próximo teletransporte coloca a Slender a 6–10 bloques de loc (si no lo ven). */
+    public void lureTo(Location loc) {
+        this.lureLoc = loc;
+    }
+
+    public void suspend(boolean on) {
+        this.suspended = on;
+    }
+
+    public boolean suspended() {
+        return this.suspended;
+    }
+
+    public boolean observed(List<Player> players) {
+        return this.body.alive() && this.sight.observedByAny(players, this.body.center(), this.body.head());
+    }
+
+    private double distance(double aggression) {
+        return Math.max(7.0, DirectorMath.teleportDistance(aggression) * this.lureFactor);
+    }
+
+    private void lureUsed() {
+        this.lureTarget = null;
+        this.lureFactor = 1.0;
+    }
+
+    /** Coloca a Slender cerca de lureLoc, en suelo válido y sin que lo vean. */
+    private boolean placeNearLure(Player face, List<Player> players, Random r) {
+        Location loc = this.lureLoc;
+        this.lureLoc = null;
+        if (loc == null) {
+            return false;
+        }
+        for (int i = 0; i < 12; i++) {
+            double ang = r.nextDouble() * Math.PI * 2;
+            double d = 6 + r.nextDouble() * 4;
+            Location c = loc.clone().add(Math.cos(ang) * d, 0, Math.sin(ang) * d);
+            Location g = SlenderBody.ground(c, 4, 6);
+            if (g == null || !SpotRules.allows(this.map.id(), g.getBlockX(), g.getBlockY(), g.getBlockZ())) {
+                continue;
+            }
+            if (this.sight.observedByAny(players, g.clone().add(0, 1.4, 0), g.clone().add(0, 2.3, 0))) {
+                continue;
+            }
+            if (!this.body.alive()) {
+                this.body.spawn(g, true);
+            }
+            this.body.moveTo(g, face.getLocation());
+            return true;
+        }
+        return false;
+    }
+
     public void tick(List<Player> var1, Function<UUID, SurvivorState> var2, Predicate<UUID> var3, double var4, boolean var6, long var7, Random var9) {
         LinkedHashMap var10 = new LinkedHashMap();
         Iterator var11 = var1.iterator();
@@ -62,18 +126,23 @@ public final class Director {
         }
 
         this.isolation.update(var10, 0.5);
+        if (this.suspended) {
+            return;
+        }
         if (!var1.isEmpty() && !var6) {
             Player var13 = this.pickTarget(var1, var2, var3, var7, var9);
             if (var13 != null) {
                 if (!this.body.alive()) {
-                    if (this.appear(var13, var1, var4, var9)) {
+                    if (this.placeNearLure(var13, var1, var9) || this.appear(var13, var1, var4, var9)) {
                         this.nextTeleport = var7 + ticks(DirectorMath.teleportIntervalSeconds(var4));
                     }
 
                 } else {
                     boolean var14 = this.sight.observedByAny(var1, this.body.center(), this.body.head());
                     if (!var14 && var7 >= this.nextTeleport) {
-                        this.teleport(var13, var1, var4, var9);
+                        if (!this.placeNearLure(var13, var1, var9)) {
+                            this.teleport(var13, var1, var4, var9);
+                        }
                         this.nextTeleport = var7 + ticks(DirectorMath.teleportIntervalSeconds(var4));
                     } else if (!var14) {
                         this.creep(var13, var4);
@@ -94,6 +163,15 @@ public final class Director {
     }
 
     private Player pickTarget(List<Player> var1, Function<UUID, SurvivorState> var2, Predicate<UUID> var3, long var4, Random var6) {
+        if (this.lureTarget != null) {
+            for (Player p : var1) {
+                if (p.getUniqueId().equals(this.lureTarget)) {
+                    this.target = this.lureTarget;
+                    this.targetSince = var4;
+                    return p;
+                }
+            }
+        }
         Optional var7 = this.isolation.priorityTarget();
         boolean var8 = this.target != null && var1.stream().anyMatch((var1x) -> {
             return var1x.getUniqueId().equals(this.target);
@@ -171,7 +249,7 @@ public final class Director {
     }
 
     private boolean appear(Player var1, List<Player> var2, double var3, Random var5) {
-        Location var6 = this.hiddenSpot(var1, var2, DirectorMath.teleportDistance(var3), var5);
+        Location var6 = this.hiddenSpot(var1, var2, this.distance(var3), var5);
         if (var6 == null) {
             var6 = this.hiddenSpot(var1, var2, 30.0, var5);
         }
@@ -181,6 +259,7 @@ public final class Director {
         } else {
             this.body.spawn(var6, true);
             this.body.moveTo(var6, var1.getLocation());
+            this.lureUsed();
             return true;
         }
     }
@@ -197,9 +276,10 @@ public final class Director {
             }
         }
 
-        Location var9 = this.hiddenSpot(var1, var2, DirectorMath.teleportDistance(var3), var5);
+        Location var9 = this.hiddenSpot(var1, var2, this.distance(var3), var5);
         if (var9 != null) {
             this.body.moveTo(var9, var1.getLocation());
+            this.lureUsed();
         }
 
     }
