@@ -255,3 +255,28 @@ def test_spawns_free(built):
         for sp in s['spawns']:
             x, y, z = p3(sp)
             assert vol.get(x, y, z).split('[')[0] in AIRY and vol.get(x, y + 1, z).split('[')[0] in AIRY, (s['id'], sp, vol.get(x, y, z))
+
+@needs_world
+def test_altar_spot(built):
+    """Caldero de LA NOCHE ENTERA: suelo abierto, alcanzable y seco, lejos del spawn y sin tapar nada."""
+    vol, _, data = built
+    H, L, W = vol.data.shape
+    for s in data['sections']:
+        floor = set(content.decode_cells(s['floor']))
+        idx = lambda x, y, z: x + z * W + y * W * L
+        x, y, z = p3(s['altar'])
+        for dx in (-1, 0, 1):
+            for dz in (-1, 0, 1):
+                assert idx(x + dx, y, z + dz) in floor, (s['id'], 'alrededor', dx, dz)
+        for dy in (0, 1, 2):
+            assert vol.get(x, y + dy, z).split('[')[0] in AIRY, (s['id'], 'sin aire', dy)
+        assert not wet(vol.get(x, y, z)), s['id']
+        sx, sy, sz = p3(s['spawns'][0])
+        assert ((x - sx) ** 2 + (z - sz) ** 2) ** 0.5 >= 25, (s['id'], 'cerca del spawn')
+        busy = [p3(b) for b in s['batteries']] + [p3(sp) for sp in s['spawns']] + [p3(g) for g in s['gate']]
+        busy += [p3(n['pos']) for n in s['notes']] + [p3(l) for l, _ in s['lightBlocks']] + [tuple(c[:3]) for c in s['seal']]
+        for pg in s['pages']:
+            (px, py, pz), f = p3(pg), pg.split('|')[1]
+            busy.append((px + FACE[f][0], py, pz + FACE[f][1]))
+        for bx, by, bz in busy:
+            assert max(abs(bx - x), abs(by - y), abs(bz - z)) > 2, (s['id'], 'tapa algo', (bx, by, bz))

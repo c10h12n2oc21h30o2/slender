@@ -105,4 +105,20 @@ class HogwartsBuilderTest {
         assertTrue(logged.stream().anyMatch(m -> m.contains("json roto")), logged.toString());
         assertEquals(7, HogwartsMaps.safely(HogwartsMaps::all, log).size());
     }
+
+    /** LA NOCHE ENTERA: caldero de cada sección y celdas de suelo alcanzable en coordenadas del mundo. */
+    @Test
+    void altarAndFloorCells() {
+        for (HogwartsSections.Section s : HogwartsSections.resource()) {
+            HogwartsBuilder b = new HogwartsBuilder(s);
+            assertTrue(b.altarWorld() != null, s.id());
+            BlockPos a = b.altarWorld();
+            assertTrue(b.floorCount() > 1000, s.id());
+            BlockPos f = b.floorWorld(0);
+            HogwartsMaps.all();
+            assertTrue(dev.two.slender.map.SpotRules.allows(s.id(), f.x(), f.y(), f.z()), s.id() + " " + f);
+            assertTrue(dev.two.slender.map.SpotRules.allows(s.id(), a.x(), a.y(), a.z()), s.id() + " caldero " + a);
+            assertEquals(s.spawns().size(), b.spawnCellsWorld().size());
+        }
+    }
 }

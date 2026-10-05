@@ -45,7 +45,8 @@ public final class HogwartsSections {
     public record Section(String id, String name, int order, String icon, int[] bounds, int fallY, List<Loc> spawns,
                           List<PageSpot> pages, List<BlockPos> batteries, List<BlockPos> gate, String gateBlock,
                           BlockPos exitMin, BlockPos exitMax, List<Seal> seal, Board board, List<NoteData> notes,
-                          List<LightBlock> lightBlocks, Ambience ambience, int story, int[] floor, List<Integer> gateWet) {
+                          List<LightBlock> lightBlocks, Ambience ambience, int story, int[] floor, List<Integer> gateWet,
+                          BlockPos altar) {
         /** ¿Es (x, y, z) del schem suelo alcanzable? (o la celda de encima, por las losas). Sin datos: sí. */
         public boolean isFloor(int x, int y, int z, int width, int length) {
             if (this.floor.length == 0) {
@@ -131,7 +132,8 @@ public final class HogwartsSections {
                 o.get("gateBlock").getAsString(), BlockPos.parse(ex.get(0).getAsString()), BlockPos.parse(ex.get(1).getAsString()),
                 List.copyOf(seal), board, List.copyOf(notes), List.copyOf(lightBlocks), amb,
                 o.has("story") ? o.get("story").getAsInt() : o.get("order").getAsInt(),
-                o.has("floor") ? decodeCells(o.get("floor").getAsString()) : new int[0], ints(o, "gateWet"));
+                o.has("floor") ? decodeCells(o.get("floor").getAsString()) : new int[0], ints(o, "gateWet"),
+                o.has("altar") ? BlockPos.parse(o.get("altar").getAsString()) : null);
     }
 
     /** Índices ordenados en diferencias varint y base64 (content.encode_cells de tools/hogwarts). */

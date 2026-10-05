@@ -73,6 +73,36 @@ def decode_cells(text: str) -> list[int]:
     return out
 
 
+def pick_altar(floor: np.ndarray, air: np.ndarray, busy, spawn, region_reached: np.ndarray):
+    """Caldero de LA NOCHE ENTERA: celda de suelo con las 8 de alrededor también de suelo, aire en ella y las dos de
+    encima, a > 2 bloques de todo lo de `busy`, a ≥ 25 del spawn; la más cercana al centro de la zona alcanzada."""
+    H, L, W = floor.shape
+    ok = floor.copy()
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            sh = np.zeros_like(floor)
+            sh[:, max(0, -dz):L - max(0, dz), max(0, -dx):W - max(0, dx)] = \
+                floor[:, max(0, dz):L - max(0, -dz), max(0, dx):W - max(0, -dx)]
+            ok &= sh
+    up = np.zeros_like(air)
+    up[:-1] = air[1:]
+    up2 = np.zeros_like(air)
+    up2[:-2] = air[2:]
+    ok &= air & up & up2
+    for bx, by, bz in busy:
+        ok[max(0, by - 2):by + 3, max(0, bz - 2):bz + 3, max(0, bx - 2):bx + 3] = False
+    ys, zs, xs = np.nonzero(ok)
+    sx, _, sz = spawn
+    far = (xs - sx) ** 2 + (zs - sz) ** 2 >= 25 ** 2
+    ys, zs, xs = ys[far], zs[far], xs[far]
+    if len(xs) == 0:
+        raise ValueError('sin sitio para el caldero')
+    ry, rz, rx = np.nonzero(region_reached)
+    cy, cz, cx = ry.mean(), rz.mean(), rx.mean()
+    i = int(np.argmin((xs - cx) ** 2 + (zs - cz) ** 2 + 4 * (ys - cy) ** 2))
+    return int(xs[i]), int(ys[i]), int(zs[i])
+
+
 def compile_section(d: sections.SectionDef, c: dict, ctx: sections.Context, others) -> dict:
     gate = [tuple(conv(g)) for g in c['gate']]
     spawns = [conv(s) for s in c['spawns']]
@@ -95,6 +125,13 @@ def compile_section(d: sections.SectionDef, c: dict, ctx: sections.Context, othe
                  'places': [[n, x + OX, z + OZ] for n, x, z in b['places']]}
     lights = [conv(l[:3]) for l in c['lights']]
     wet = wet_mask(sctx.vol)
+    floor_m = res['reached_mask'] & res['region'] & ~wet
+    busy = [tuple(conv(b))[:3] for b in c['batteries']] + [tuple(sp[:3]) for sp in spawns] + list(gate)
+    busy += [tuple(conv(n['pos']))[:3] for n in c['notes']] + [tuple(l[:3]) for l in lights] + [tuple(x[:3]) for x in seal]
+    for p in c['pages']:
+        wx, wy, wz = conv(p[:3])[:3]
+        busy.append((wx + FACES[p[3]][0], wy, wz + FACES[p[3]][1]))
+    altar = pick_altar(floor_m, air_mask(sctx.vol), busy, spawns[0][:3], res['reached_mask'] & res['region'])
     return {
         'id': d.id, 'name': d.name, 'order': d.order, 'icon': d.icon, 'story': d.order,
         'bounds': bounds, 'fallY': int(ys.min()) - 6,
@@ -113,7 +150,9 @@ def compile_section(d: sections.SectionDef, c: dict, ctx: sections.Context, othe
         'sounds': [f'{pos(conv(s[:3]))}|{s[3]}|{s[4]}|{s[5]}|{s[6]}|{s[7]}' for s in c['sounds']],
         'phrases': c['phrases'],
         # pies alcanzables y secos (Director: Slender no aparece tras un derrumbe ni dentro de roca vaciada)
-        'floor': encode_cells(res['reached_mask'] & res['region'] & ~wet),
+        'floor': encode_cells(floor_m),
+        # caldero de LA NOCHE ENTERA (celda de los pies)
+        'altar': pos(altar),
     }
 
 

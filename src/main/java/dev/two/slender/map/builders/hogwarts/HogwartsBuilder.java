@@ -66,6 +66,34 @@ public final class HogwartsBuilder implements MapBuilder {
         return this.s.isFloor(wx - o.x() - DX, wy - o.y() - DY, wz - o.z() - DZ, HogwartsSections.WIDTH, HogwartsSections.LENGTH);
     }
 
+    private BlockPos toWorld(int sx, int sy, int sz) {
+        BlockPos o = this.origin(0);
+        return new BlockPos(o.x() + DX + sx, o.y() + DY + sy, o.z() + DZ + sz);
+    }
+
+    /** Caldero de LA NOCHE ENTERA (celda de los pies, coordenadas del mundo); null si la sección no lo tiene. */
+    public BlockPos altarWorld() {
+        BlockPos a = this.s.altar();
+        return a == null ? null : this.toWorld(a.x(), a.y(), a.z());
+    }
+
+    public int floorCount() {
+        return this.s.floor().length;
+    }
+
+    /** La celda i de suelo alcanzable de la sección, en coordenadas del mundo. */
+    public BlockPos floorWorld(int i) {
+        int idx = this.s.floor()[i];
+        int w = HogwartsSections.WIDTH;
+        int l = HogwartsSections.LENGTH;
+        return this.toWorld(idx % w, idx / (w * l), (idx / w) % l);
+    }
+
+    public java.util.List<BlockPos> spawnCellsWorld() {
+        return this.s.spawns().stream()
+                .map(p -> this.toWorld((int) Math.floor(p.x()), (int) Math.floor(p.y()), (int) Math.floor(p.z()))).toList();
+    }
+
     /** Un bloque que se pone después de pegar el castillo (coordenadas del schem). */
     public record Placement(BlockPos pos, String state) {
     }
